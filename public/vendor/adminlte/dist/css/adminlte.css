@@ -1674,6 +1674,8 @@ pre code {
   margin-bottom: 1rem;
   color: #212529;
   background-color: transparent;
+  overflow-x: scroll !important;
+  overflow-y: scroll !important;
 }
 
 .table th,

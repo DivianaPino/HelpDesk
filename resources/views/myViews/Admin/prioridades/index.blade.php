@@ -3,15 +3,17 @@
 @section('title', 'Prioridades')
 
 @section('content_header')
-    <h1 style="text-align:center; font-size: 40px; font-weight:bold; color:#566573">Todas las prioridades</h1>
+   
 @stop
 
 @section('content')
+
+<h1 class="titulo_prin">Todas las prioridades</h1>
 <div>    
      <div  class="card">
-        <div  class="card-body col-md-8" style="margin:0 auto;" >
-            <table id="tabla_areas" class="table  table-striped table-bordered shadow-lg mt-4" style="font-size:15px; text-align: center;" >
-            <a href="prioridades/create" class="btn btn-primary mb-3" style="width:100px; font-size:20px;">Crear</a>
+        <div  class="card-body">
+            <table id="tabla_prioridades" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap" style="width:100%" >
+            <a href="prioridades/create" class="btn btn-primary btn-crear mb-3">Crear</a>
                @if(session('status'))
                 <p class="alert alert-success">{{ Session('status') }}</p>
                @endif
@@ -32,11 +34,11 @@
                             <td>{{$prioridad->nombre}}</td>
                             <td>{{$prioridad->tiempo_resolucion}}</td>
                             <td style="text-align: center;">
-                                <form action="{{route('prioridades.destroy',$prioridad->id)}}" method="POST">
+                                <form action="{{route('prioridades.destroy',$prioridad->id)}}" method="POST" class="formulario-eliminar">
                                     <a href="/prioridades/{{$prioridad->id}}/edit" class="btn btn-warning">Editar</a>
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger ">Borrar</button>
+                                    <button type="submit" class="btn btn-danger ">Eliminar</button>
                                 </form> 
                             </td>
                         </tr>
@@ -50,21 +52,74 @@
 @stop
 
 @section('css')
-      <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="/css/styles.css">
+
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.min.css">
+
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.bootstrap5.css">
+
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.css">
+
 @stop
 
 @section('js')
-<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap5.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/2.0.2/js/dataTables.min.js"></script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/2.0.2/js/dataTables.js"></script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/2.0.2/js/dataTables.bootstrap5.js"></script>
+
+<script  type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@if(session('eliminar') == 'ok')
+  <script>
+      Swal.fire({
+      title: "¡Eliminada!",
+      text: "La prioridad se elimino con éxito",
+      icon: "success"
+      });
+  </script>
+@endif
+
+
+<script>
+
+    $(".formulario-eliminar").submit(function(e){
+        e.preventDefault();
+
+        Swal.fire({
+        title: "¿Estás seguro?",
+        text: "La prioridad se eliminara definitivamente",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "¡Si, eliminar!",
+        cancelButtonText: "Cancelar"
+        }).then((result) => {
+        if (result.isConfirmed) {
+
+            this.submit();
+        }
+        });
+    });
+    
+</script>
+
+
 
 <script>
 $(document).ready(function() {
-    $('#tabla_areas').DataTable({
-      //Opciones de paginación
+    $('#tabla_prioridades').DataTable({
+
+        responsive:true,
+
+        //Opciones de paginación
         "lengthMenu": [
-            [5, 10, 50, -1],
-            [5, 10, 50, "All"]
+            [10, 30, 50, -1],
+            [10, 30, 50, "All"]
         ],
         "language":{
             "info": "_TOTAL_ registros", 
@@ -85,7 +140,8 @@ $(document).ready(function() {
             "zeroRecords":"No hay coincidencias",
             "infoEmpty": "",
             "infoFiltered":"",
-        }
+        },
+        
     });
 });
 </script>

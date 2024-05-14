@@ -22,6 +22,7 @@ class CreateTicketsTable extends Migration
             $table->string('asunto');
             $table->text('mensaje');
             $table->string('asignado_a')->nullable();
+            $table->text('imagen')->nullable();
             $table->dateTime('fecha_inicio');
             $table->dateTime('fecha_caducidad')->nullable();
             $table->timestamps();
@@ -31,6 +32,7 @@ class CreateTicketsTable extends Migration
             $table->foreign('estado_id')->references('id')->on('estados')->onDelete('cascade');
             $table->foreign('prioridad_id')->references('id')->on('prioridads')->onDelete('cascade');  
             $table->foreign('clasificacion_id')->references('id')->on('clasificacions')->onDelete('cascade');
+            
         });
     }
 

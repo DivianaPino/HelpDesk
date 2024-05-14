@@ -94,6 +94,7 @@ class UsuariosController extends Controller
     {
         $usuario= User::find($id);
         $areas= Area::all();
+        
         return view('myViews.Admin.usuarios.area')->with(['usuario'=>$usuario, 'areas'=>$areas]);
     }
 
@@ -101,6 +102,8 @@ class UsuariosController extends Controller
     public function actualizar_area(Request $request, $id)
     {
         $usuario= User::find($id);
+        // sync(): Para asignarle las areas ingresadas al usuario, haciendo una nueva asignación, eliminando las asignaciones
+        // que estaban seleccionadas anteriormente pero ahora no estan en la nueva asignación.
         $usuario->areas()->sync($request->areas);
         return redirect()->route('asignar_area', $usuario)->with('info', 'La asignación de área se realizó correctamente');
     }
@@ -115,6 +118,9 @@ class UsuariosController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $usuario= User::find($id);
+        $usuario->delete();
+        return redirect()->route('usuarios.index')->with('eliminar' , 'ok');
     }
+    
 }

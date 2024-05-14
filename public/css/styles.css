@@ -2,22 +2,2497 @@
 .titulo{
    text-align:center; 
    font-size: 40px;
-}
-
-
-td{
-  text-align: center;
-  font-size: 18px;
-}
-
-.table td{
-    vertical-align:middle;
 } 
 
-/* alinear verticalmente */
-.linea{
+.text-center{
+  text-align: center;
+}
+
+/* TABLAS */
+
+.table td{
+  vertical-align:middle;
+}  
+
+#tabla_tktAbiertos th{
+  text-align: center !important;
+}
+
+table{
+    table-layout: fixed;
+    width: 100% !important;
+}
+
+.desactivar_enlace{
+   pointer-events: none;
+   background-color: #9dd1eb;
+   border:none;
+}
+
+@media(max-width: 425px){
+
+  .dt-paging-button{
+    font-size: 6px !important;
+  }
+
+  .dt-length, .dt-search, .dt-info {
+    font-size: 10px !important;
+  }
+}
+
+@media(max-width: 325px){
+
+  .dt-paging-button{
+    font-size: 4px !important;
+  }
+
+  .dt-length, .dt-search, .dt-info {
+    font-size: 8px !important;
+  }
+}
+
+/**-------TODOS LOS USUARIOS-------- */
+
+
+#tabla_usuarios th, 
+#tabla_usuarios td{
+  font-size: 30px !important;
+   text-align: center !important;
+}
+
+#tabla_usuarios th {
+  width: auto !important;
+  white-space: normal;
+  overflow: hidden;
+  white-space: nowrap;
+  word-wrap: break-word !important;
+}
+
+#tabla_usuarios td{
+  white-space: normal !important;
+}
+
+#tabla_usuarios .btn-info{
+  white-space: nowrap;
+}
+
+@media(max-width: 2560px){
+  
+  #tabla_usuarios th {
+    font-size: 22px !important;
+  } 
+
+  #tabla_usuarios td{
+    font-size:20px !important ;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  #tabla_usuarios .btn-info,
+  #tabla_usuarios .btn-warning,
+  #tabla_usuarios .btn-danger{
+    width: 90px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_usuarios .btn-danger{
+    margin-bottom: 6px !important;
+  }
+}
+
+@media(max-width: 1440px){
+
+  #tabla_usuarios td,
+  #tabla_usuarios th {
+    font-size: 14px !important;
+  } 
+  
+  #tabla_usuarios .btn-info,
+  #tabla_usuarios .btn-warning,
+  #tabla_usuarios .btn-danger{
+    width: 140px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_usuarios .btn-info{
+    margin-bottom: 4px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_usuarios .btn-warning{
+    margin-bottom: 4px !important;
+    margin-top: 0px !important;
+  }
+
+  #tabla_usuarios .btn-danger{
+    margin-bottom: 4px !important;
+  }
+}
+
+@media(max-width: 1230px){
+  
+  #tabla_usuarios td,
+  #tabla_usuarios th {
+    font-size: 12px !important;
+  } 
+
+  #tabla_usuarios .btn-info, 
+  #tabla_usuarios .btn-warning,
+  #tabla_usuarios .btn-danger{
+    width: 100px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_usuarios .btn-info{
+    margin-bottom: 0px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_usuarios .btn-warning{
+    margin-bottom: 4px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_usuarios .btn-danger{
+    padding: 2px !important;
+    margin-bottom: 4px !important;
+  }
+}
+
+@media(max-width: 1024px){
+  
+  #tabla_usuarios th{
+    font-size: 13px !important;
+  }
+
+  #tabla_usuarios td{
+    font-size: 12px !important;
+  }
+  
+  #tabla_usuarios .btn-info, 
+  #tabla_usuarios .btn-warning,
+  #tabla_usuarios .btn-danger{
+    width: 90px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_usuarios .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_usuarios .btn-warning{
+    margin-top: 0 !important;
+    margin-bottom: 2px !important;
+  }
+
+  #tabla_usuarios .btn-danger{
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+}
+
+@media(max-width: 600px){
+  
+  #tabla_usuarios th,  
+  #tabla_usuarios td {
+    font-size: 10px !important;
+  } 
+
+  #tabla_usuarios .btn-info, 
+  #tabla_usuarios .btn-warning,
+  #tabla_usuarios .btn-danger{
+    width: 70px !important;
+    font-size: 8px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_usuarios .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_usuarios .btn-warning{
+    margin-top: 0 !important;
+    margin-bottom: 2px !important;
+  }
+
+  #tabla_usuarios .btn-danger{
+    margin-bottom: 4px !important;
+    margin-top: 0px !important;
+  }
+}
+
+@media(max-width: 425px){
+
+  #tabla_usuarios th{
+    font-size: 7px !important;
+  } 
+
+  #tabla_usuarios td {
+    font-size: 6px !important;
+  } 
+
+  #tabla_usuarios .btn-info, 
+  #tabla_usuarios .btn-warning,
+  #tabla_usuarios .btn-danger{
+    width: 50px !important;
+    font-size: 7px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_usuarios .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_usuarios .btn-warning{
+    margin-top: 0 !important;
+    margin-bottom: 2px !important;
+  }
+
+  #tabla_usuarios .btn-danger{
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+}
+
+@media(max-width: 325px){
+
+  #tabla_usuarios th,  
+  #tabla_usuarios td {
+    font-size: 5px !important;
+  } 
+
+  #tabla_usuarios .btn-info, 
+  #tabla_usuarios .btn-warning,
+  #tabla_usuarios .btn-danger{
+    width: 35px !important;
+    font-size: 5px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_usuarios .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_usuarios .btn-warning{
+    margin-top: 0 !important;
+    margin-bottom: 2px !important;
+  }
+
+  #tabla_usuarios .btn-danger{
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+}
+
+/**---- TODOS LOS TICKETS------ */
+
+#tabla_tickets th, 
+#tabla_tickets td{
+   text-align: center !important;
+   font-size: 30px !important;
+}
+
+#tabla_tickets th {
+  width: auto !important;
+  white-space: normal;
+  overflow: hidden;
+  white-space: nowrap;
+  word-wrap: break-word !important;
+}
+
+#tabla_tickets td{
+  white-space: normal !important;
+}
+
+#tabla_tickets .btn-info{
+  white-space: nowrap;
+}
+
+@media(max-width: 2560px){
+  
+  #tabla_tickets th {
+    font-size: 22px !important;
+  } 
+
+  #tabla_tickets td{
+    font-size:20px !important ;
+  }
+
+  #tabla_tickets td{
+    padding: 0 !important;
+    margin: 0 !important;
+  }  
+
+  #tabla_tickets .btn-info,
+  #tabla_tickets .btn-danger{
+    width: 90px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_tickets .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 6px !important;
+  }
+
+  #tabla_tickets .btn-danger{
+    margin-bottom: 6px !important;
+    margin-top: 2px !important;
+  }
+}
+
+@media(max-width: 1440px){
+
+  #tabla_tickets td,
+  #tabla_tickets th {
+    font-size: 12px !important;
+  } 
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  } 
+
+  #tabla_tickets .btn-info,
+  #tabla_tickets .btn-danger{
+    width: 70px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_tickets .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 6px !important;
+  }
+
+  #tabla_tickets .btn-danger{
+    margin-bottom: 6px !important;
+    margin-top: 2px !important;
+  }
+}
+
+@media(max-width: 1230px){
+  
+  #tabla_tickets td,
+  #tabla_tickets th {
+    font-size: 10px !important;
+  } 
+
+  #tabla_tickets .btn-info,
+   #tabla_tickets .btn-danger {
+    width: 65px !important;
+    font-size: 12px !important;
+    padding: 2px ;
+  }
+
+  #tabla_tickets .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_tickets .btn-danger{
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+}
+
+@media(max-width: 1024px){
+  
+  #tabla_tickets th,
+  #tabla_tickets td{
+    font-size: 8px !important;
+  }
+
+  #tabla_tickets .btn-info,
+  #tabla_tickets .btn-danger {
+    width: 50px !important;
+    font-size: 8px !important;
+    padding: 2px;
+  }
+  
+  #tabla_tickets .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_tickets .btn-danger{
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+}
+
+@media(max-width: 600px){
+  
+  #tabla_tickets th,  
+  #tabla_tickets td {
+    font-size: 5px !important;
+  } 
+
+  #tabla_tickets .btn-info,
+  #tabla_tickets .btn-darger {
+    width: 35px !important;
+    font-size: 5px !important;
+    padding: 2px;
+  }
+ 
+  #tabla_tickets .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_tickets .btn-darger{
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+}
+
+@media(max-width: 425px){
+
+  #tabla_tickets th,  
+  #tabla_tickets td {
+    font-size: 4.5px !important;
+
+  }
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  }
+
+
+  #tabla_tickets .btn-info,
+  #tabla_tickets .btn-danger  {
+    width: 20px !important;
+    font-size: 4px !important;
+    padding: 0px !important;
+  }
+
+  #tabla_tickets .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_tickets .btn-danger{
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+}
+
+
+@media(max-width: 325px){
+
+  #tabla_tickets th,  
+  #tabla_tickets td {
+    font-size: 3.5px !important;
+  } 
+
+  #tabla_tickets .btn-info,
+  #tabla_tickets .btn-danger  {
+    width: 15px !important;
+    font-size: 2px !important;
+    padding: 0px !important;
+  }
+
+  #tabla_tickets .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_tickets .btn-danger{
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+}
+
+/**--------TODAS LAS AREAS------------  */
+
+.titulo_prin{
+  text-align:center; 
+  font-size: 60px; 
+  font-weight:bold; 
+  color:#566573;
+  margin: 20px;
+  margin-bottom: 10px;
+  padding-top: 25px ;
+}
+
+#tabla_areas th, 
+#tabla_areas td{
+  text-align: center !important;
+}
+
+#tabla_areas .linea{
+  display:inline;
+  color:#78909C;
+  font-size:20px; 
+  vertical-align:middle;
+} 
+
+#tabla_areas th {
+  width: auto !important;
+  white-space: normal;
+  overflow: hidden;
+  white-space: nowrap;
+  word-wrap: break-word !important;
+}
+
+#tabla_areas td{
+  white-space: normal !important;
+}
+
+@media(max-width: 2560px){
+
+  #tabla_areas td,
+  #tabla_areas th {
+    font-size: 25px !important;
+    text-align: center !important;
+  } 
+
+  .btn-crear{
+    width: 120px; 
+    font-size: 20px;
+  }
+}
+
+@media(max-width: 1440px){
+
+  .titulo_prin{
+    text-align:center; 
+    font-size: 40px; 
+    font-weight:bold; 
+    color:#566573;
+    margin: 20px;
+    margin-bottom: 10px;
+    padding-top: 25px ;
+  }
+  
+  #tabla_areas .linea{
     display:inline;
     color:#78909C;
-    font-size:25px; 
+    font-size:15px; 
     vertical-align:middle;
+  } 
+
+  .btn-crear{
+    width: 100px !important; 
+    font-size: 18px !important;
+  }
+  
+  #tabla_areas td,
+  #tabla_areas th {
+    font-size: 16px !important;
+    text-align: center !important;
+  } 
+
+  #tabla_areas td{
+    padding: 0 !important;
+    margin: 0 !important;
+  }  
+  
+  #tabla_areas .btn-info, 
+  #tabla_areas .btn-warning, 
+  #tabla_areas .btn-danger{
+    width: 80px !important;
+    font-size: 14px !important;
+    padding: 2px !important;
+    margin-top: 4px !important;
+    margin-bottom: 6px !important;
+  }
+
+  #tabla_areas .btn-warning{
+    margin-right: 2px !important;
+  }
 }
+
+@media(max-width: 1200px){
+
+  #tabla_areas .linea{
+    display:inline;
+    color:#78909C;
+    font-size:12px; 
+    vertical-align:middle;
+  } 
+
+  .btn-crear{
+    width: 80px; 
+    font-size: 16px;
+  }
+
+  #tabla_areas td,
+  #tabla_areas th {
+    font-size: 14px !important;
+    text-align: center !important;
+  } 
+
+  #tabla_areas td{
+    padding: 0 !important;
+    margin: 0 !important;
+  }  
+  
+  #tabla_areas .btn-info, 
+  #tabla_areas .btn-warning, 
+  #tabla_areas .btn-danger{
+    width: 70px !important;
+    font-size: 10px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_areas .btn-warning{
+    margin-right: 2px !important;
+  }
+}
+
+@media(max-width: 1024px){
+
+  .titulo_prin{
+    text-align:center; 
+    font-size: 35px; 
+    font-weight:bold; 
+    color:#566573;
+    margin: 20px;
+    margin-bottom: 10px;
+    padding-top: 25px ;
+  }
+
+  #tabla_areas .linea{
+    display:inline;
+    color:#78909C;
+    font-size:8px; 
+    vertical-align:middle;
+  } 
+
+  .btn-crear{
+    width: 70px; 
+    font-size: 16px;
+  }
+
+  #tabla_areas td,
+  #tabla_areas th {
+    font-size: 12px !important;
+    text-align: center !important;
+  } 
+
+  #tabla_areas td{
+    padding: 0 !important;
+    margin: 0 !important;
+  }  
+  
+  #tabla_areas .btn-info, 
+  #tabla_areas .btn-warning, 
+  #tabla_areas .btn-danger{
+    width: 50px !important;
+    font-size: 8px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_areas .btn-warning{
+    margin-right: 2px !important;
+  } 
+}
+
+ @media(max-width: 768px){
+
+  .titulo_prin{
+    text-align:center; 
+    font-size: 30px; 
+    font-weight:bold; 
+    color:#566573;
+    margin: 20px;
+    margin-bottom: 10px;
+    padding-top: 25px ;
+  }
+
+  #tabla_areas .linea{
+    display:inline;
+    color:#78909C;
+    font-size:5px; 
+    vertical-align:middle;
+  } 
+
+  .btn-crear{
+    width: 60px; 
+    font-size: 15px;
+  }
+
+  #tabla_areas td,
+  #tabla_areas th {
+    font-size: 12px !important;
+  } 
+} 
+
+@media(max-width: 600px){
+
+  .titulo_prin{
+    text-align:center; 
+    font-size: 30px; 
+    font-weight:bold; 
+    color:#566573;
+    margin: 20px;
+    margin-bottom: 10px;
+    padding-top: 25px ;
+  }
+
+  #tabla_areas .linea{
+    display:inline;
+    color:#78909C;
+    font-size:4px; 
+    vertical-align:middle;
+  } 
+
+  .btn-crear{
+    width: 55px; 
+    font-size: 12px;
+  }
+
+  #tabla_areas td,
+  #tabla_areas th {
+    font-size: 6px !important;
+  } 
+
+  #tabla_areas .btn-info, 
+  #tabla_areas .btn-warning, 
+  #tabla_areas .btn-danger{
+    width: 28px !important;
+    font-size: 4px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_areas .btn-warning{
+    margin-right: 1px !important;
+  }
+} 
+
+@media(max-width: 355px){
+
+  .titulo_prin{
+    text-align:center; 
+    font-size: 25px; 
+    font-weight:bold; 
+    color:#566573;
+    margin: 20px;
+    margin-bottom: 10px;
+    padding-top: 25px ;
+  }
+
+  #tabla_areas .linea{
+    display:inline;
+    color:#78909C;
+    font-size:4px; 
+    vertical-align:middle;
+  } 
+
+  .btn-crear{
+    width: 45px; 
+    font-size: 7px;
+  }
+
+  #tabla_areas td,
+  #tabla_areas th {
+    font-size: 5px !important;
+  } 
+
+  #tabla_areas .btn-info, 
+  #tabla_areas .btn-warning, 
+  #tabla_areas .btn-danger{
+    width: 20px !important;
+    font-size: 3px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_areas .btn-warning{
+    margin-right: 1px !important;
+  }
+} 
+
+
+/** TODAS LAS PRIORIDADES  */
+
+#tabla_prioridades th, 
+#tabla_prioridades td{
+  text-align: center !important;
+}
+
+#tabla_prioridades th {
+  width: auto !important;
+  white-space: normal;
+  overflow: hidden;
+  white-space: nowrap;
+  word-wrap: break-word !important;
+}
+
+#tabla_prioridades td{
+  white-space: normal !important;
+}
+
+@media(max-width: 2560px){
+
+  #tabla_prioridades td,
+  #tabla_prioridades th {
+    font-size: 25px !important;
+    text-align: center !important;
+  } 
+}
+
+@media(max-width: 1440px){
+
+  #tabla_prioridades td,
+  #tabla_prioridades th {
+    font-size: 16px !important;
+    text-align: center !important;
+  } 
+
+  #tabla_prioridades td{
+    padding: 0 !important;
+    margin: 0 !important;
+  }  
+
+  #tabla_prioridades .btn-info, 
+  #tabla_prioridades .btn-warning, 
+  #tabla_prioridades .btn-danger{
+    width: 80px !important;
+    font-size: 14px !important;
+    padding: 2px !important;
+    margin-top: 4px !important;
+    margin-bottom: 6px !important;
+  }
+
+  #tabla_prioridades .btn-warning{
+    margin-right: 2px !important;
+  }
+}
+
+@media(max-width: 1200px){
+
+  #tabla_prioridades td,
+  #tabla_prioridades th {
+    font-size: 14px !important;
+    text-align: center !important;
+  } 
+
+  #tabla_prioridades td{
+    padding: 0 !important;
+    margin: 0 !important;
+  }  
+  
+  #tabla_prioridades .btn-info, 
+  #tabla_prioridades .btn-warning, 
+  #tabla_prioridades .btn-danger{
+    width: 70px !important;
+    font-size: 10px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_prioridades .btn-warning{
+    margin-right: 2px !important;
+  }
+}
+
+@media(max-width: 1024px){
+
+  #tabla_prioridades td,
+  #tabla_prioridades th {
+    font-size: 12px !important;
+    text-align: center !important;
+  } 
+
+  #tabla_prioridades td{
+    padding: 0 !important;
+    margin: 0 !important;
+  }  
+  
+
+
+  #tabla_prioridades .btn-info, 
+  #tabla_prioridades .btn-warning, 
+  #tabla_prioridades .btn-danger{
+    width: 50px !important;
+    font-size: 8px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_prioridades .btn-warning{
+    margin-right: 2px !important;
+  }
+}
+
+@media(max-width: 768px){
+
+  #tabla_prioridades td,
+  #tabla_prioridades th {
+    font-size: 12px !important;
+  } 
+
+} 
+
+@media(max-width: 600px){
+
+  #tabla_prioridades td,
+  #tabla_prioridades th {
+    font-size: 6px !important;
+  } 
+
+  #tabla_prioridades .btn-info, 
+  #tabla_prioridades .btn-warning, 
+  #tabla_prioridades .btn-danger{
+    width: 28px !important;
+    font-size: 5px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_prioridades .btn-warning{
+    margin-right: 1px !important;
+  }
+} 
+
+@media(max-width: 355px){
+
+
+  #tabla_prioridades td,
+  #tabla_prioridades th {
+    font-size: 5px !important;
+  } 
+
+  #tabla_prioridades .btn-info, 
+  #tabla_prioridades .btn-warning, 
+  #tabla_prioridades .btn-danger{
+    width: 20px !important;
+    font-size: 3px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_prioridades .btn-warning{
+    margin-right: 1px !important;
+  }
+} 
+
+/**-------TICKETS REPORTADOS----------- */
+
+.content-tituloTR .titulo_prin{
+  font-size: 60px;
+}
+
+#tabla_tktReportados td,
+#tabla_tktReportados th {
+  width: auto !important;
+  white-space: normal;
+  /* text-overflow: ellipsis; */
+  overflow: hidden;
+  font-size: 14px;
+  text-align:center !important;
+  white-space: nowrap;
+  word-wrap: break-word !important;
+
+}
+
+.text-EsperandoResp{
+  font-size: 12px !important;
+}
+
+@media(max-width: 1440px){
+
+  .content-tituloTR .titulo_prin{
+    font-size: 40px;
+  }
+
+  .text-EsperandoResp{
+    font-size: 10px !important;
+  }
+
+  #tabla_tktReportados td,
+  #tabla_tktReportados th {
+    font-size: 14px !important;
+  } 
+
+  #tabla_tktReportados td{
+    padding: 0 !important;
+    margin: 0 !important;
+  }  
+  
+  #tabla_tktReportados .btn-info{
+    width: 90px !important;
+    font-size: 14px !important;
+    padding: 2px !important;
+    margin: 6px !important;
+  }
+}
+
+@media(max-width: 1024px){
+  .text-EsperandoResp{
+    font-size: 8px !important;
+  }
+}
+
+ @media(max-width: 768px){
+
+  .content-tituloTR .titulo_prin{
+    font-size: 35px;
+  }
+
+  .text-EsperandoResp{
+    font-size: 7px !important;
+  }
+  
+  #tabla_tktReportados td,
+  #tabla_tktReportados th {
+    font-size: 12px !important;
+  } 
+} 
+
+@media(max-width: 600px){
+
+  .content-tituloTR .titulo_prin{
+    font-size: 28px;
+  }
+  .text-EsperandoResp{
+    font-size: 5px !important;
+  }
+
+  #tabla_tktReportados td,
+  #tabla_tktReportados th {
+    font-size: 6px !important;
+  } 
+
+  #tabla_tktReportados .btn-info{
+    width: 24px !important; 
+    font-size: 7px !important;
+    padding: 2px !important;
+  }
+} 
+
+@media(max-width: 320px){
+
+  .content-tituloTR .titulo_prin{
+    font-size: 25px;
+  }
+
+  .text-EsperandoResp{
+    font-size: 2px !important;
+  }
+  
+  #tabla_tktReportados td,
+  #tabla_tktReportados th {
+    font-size: 5px !important;
+  } 
+
+  #tabla_tktReportados .btn-info{
+    width: 20px !important; 
+    font-size: 5px !important;
+    background-color:#2d8fc0;
+    padding: 2px !important;
+  }
+} 
+
+
+/**------------TICKETS AREA------------- */
+
+#tabla_tktArea th {
+  width: auto !important;
+  white-space: normal;
+  overflow: hidden;
+  font-size: 12px !important;
+  text-align:center !important;
+  white-space: nowrap;
+  word-wrap: break-word !important;
+}
+
+#tabla_tktArea td{
+  white-space: normal !important;
+  text-align: center !important;
+}
+
+@media(max-width: 1440px){
+  #tabla_tktArea td,
+  #tabla_tktArea th {
+    font-size: 13px !important;
+  } 
+
+  #tabla_tktArea td{
+    padding: 0 !important;
+    margin: 0 !important;
+  }  
+  
+  #tabla_tktArea .btn-info{
+    width: 40px !important;
+    font-size: 14px !important;
+    padding: 2px !important;
+    margin: 6px !important;
+
+  }
+}
+
+@media(max-width: 1024px){
+  #tabla_tktArea td,
+  #tabla_tktArea th {
+    font-size: 10px !important;
+  } 
+  
+  #tabla_tktArea .btn-info{
+    width: 35px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+    margin: 6px !important;
+  }
+}
+
+@media(max-width: 600px){
+  
+  #tabla_tktArea th {
+    font-size: 5px !important;
+  } 
+
+  #tabla_tktArea td{
+    font-size: 6px !important;
+  }
+  
+  #tabla_tktArea .btn-info{
+    width: 25px !important;
+    font-size: 8px !important;
+    padding: 2px !important;
+    margin: 6px !important;
+  }
+}
+
+@media(max-width: 400px){
+
+  #tabla_tktArea th{
+    font-size: 4.5px !important;
+    text-align: center !important;
+  }
+
+  #tabla_tktArea td{
+    font-size: 5px !important;
+  } 
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  }
+  
+  #tabla_tktArea .btn-info{
+    width: 18px !important;
+    font-size: 6px !important;
+    padding: 2px !important;
+    margin: 6px !important;
+  }
+}
+
+
+@media(max-width: 325px){
+
+  #tabla_tktArea th, #tabla_tktArea td{
+    font-size: 4px !important;
+  }
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  }
+  
+  #tabla_tktArea .btn-info{
+    width: 15px !important;
+    font-size: 5px !important;
+    padding: 2px !important;
+    margin: 6px !important;
+  }
+}
+
+/**------------ MIS TICKETS ------------- */
+
+#tabla_misTickets th, 
+#tabla_misTickets td{
+   text-align: center !important;
+   font-size: 30px !important;
+}
+
+#tabla_misTickets th {
+  width: auto !important;
+  white-space: normal;
+  overflow: hidden;
+  white-space: nowrap;
+  word-wrap: break-word !important;
+}
+
+#tabla_misTickets td{
+  white-space: normal !important;
+}
+
+#tabla_misTickets .btn-info{
+  white-space: nowrap;
+}
+
+@media(max-width: 2560px){
+  
+  #tabla_misTickets th {
+    font-size: 22px !important;
+  } 
+
+  #tabla_misTickets td{
+    font-size:20px !important ;
+  }
+
+  #tabla_misTickets td{
+    padding: 0 !important;
+    margin: 0 !important;
+  }  
+
+  #tabla_misTickets .btn-verMsj, 
+  #tabla_misTickets .btn-primary,
+  #tabla_misTickets .btn-responder{
+    width: 100px !important;
+    font-size: 18px !important;
+    padding: 4px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+ 
+  #tabla_misTickets .btn-ver{
+    width: 80px !important;
+    font-size: 16px !important;
+    padding: 2px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  .btn-success{
+    width: 90px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+}
+
+@media(max-width: 1440px){
+
+  #tabla_misTickets td,
+  #tabla_misTickets th {
+    font-size: 12px !important;
+  } 
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  } 
+
+
+  #tabla_misTickets .btn-verMsj,
+  #tabla_misTickets .btn-primary, 
+  #tabla_misTickets .btn-responder{
+    width: 70px !important;
+    font-size: 12px !important;
+    padding: 4px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_misTickets .btn-ver{
+    width: 50px !important;
+    font-size: 14px !important;
+    padding: 2px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  .btn-success{
+    width: 70px !important;
+    font-size: 12px !important;
+    padding: 4px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+}
+
+@media(max-width: 1230px){
+  
+  #tabla_misTickets td,
+  #tabla_misTickets th {
+    font-size: 10px !important;
+  } 
+
+  #tabla_misTickets .btn-verMsj, 
+  #tabla_misTickets .btn-primary, 
+  #tabla_misTickets .btn-responder{
+    width: 50px !important;
+    font-size: 8px !important;
+    padding: 4px;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_misTickets .btn-ver{
+    width: 40px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  .btn-success{
+    width: 60px !important;
+    font-size: 8px !important;
+    padding: 2px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+}
+
+@media(max-width: 1024px){
+  
+  #tabla_misTickets th,
+  #tabla_misTickets td{
+    font-size: 8px !important;
+  }
+
+  #tabla_misTickets .btn-verMsj,
+  #tabla_misTickets .btn-primary, 
+  #tabla_misTickets .btn-responder{
+    width: 50px !important;
+    font-size: 8px !important;
+    padding: 2px;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_misTickets .btn-ver{
+    width: 30px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  .btn-success{
+    width: 40px !important;
+    font-size: 8px !important;
+    padding: 2px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+
+}
+
+@media(max-width: 600px){
+  
+  #tabla_misTickets th,  
+  #tabla_misTickets td {
+    font-size: 5px !important;
+  } 
+
+  #tabla_misTickets .btn-verMsj, 
+  #tabla_misTickets .btn-primary, 
+  #tabla_misTickets .btn-responder{
+    width: 35px !important;
+    font-size: 5px !important;
+    padding: 2px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_misTickets .btn-ver{
+    width: 20px !important;
+    font-size: 8px !important;
+    padding: 2px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  .btn-success{
+    width: 30px !important;
+    font-size: 6px !important;
+    padding: 2px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+}
+
+@media(max-width: 425px){
+
+  #tabla_misTickets th,  
+  #tabla_misTickets td {
+    font-size: 4.5px !important;
+  }
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  }
+
+  #tabla_misTickets .btn-verMsj,
+  #tabla_misTickets .btn-primary, 
+  #tabla_misTickets .btn-responder{
+    width: 20px !important;
+    font-size: 3px !important;
+    padding: 2px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_misTickets .btn-ver{
+    width: 15px !important;
+    font-size: 4px !important;
+    padding: 2px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  .btn-success{
+    width: 20px !important;
+    font-size: 3.5px !important;
+    padding: 2px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+  
+}
+
+@media(max-width: 325px){
+
+  #tabla_misTickets th,  
+  #tabla_misTickets td {
+    font-size: 3.5px !important;
+  } 
+
+  #tabla_misTickets .btn-verMsj, 
+  #tabla_misTickets .btn-primary, 
+  #tabla_misTickets .btn-responder{
+    width: 18px !important;
+    font-size: 3px !important;
+    padding: 1.5px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_misTickets .btn-ver{
+    width: 10px !important;
+    font-size: 3px !important;
+    padding: 1.5px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+ 
+  .btn-success{
+    width: 15px !important;
+    font-size: 2.5px !important;
+    padding: 2px !important;
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+  
+}
+
+/** TICKETS NO ASIGNADOS  */
+
+#tabla_ticketsNA th, 
+#tabla_ticketsNA td{
+   text-align: center !important;
+   font-size: 30px !important;
+}
+
+#tabla_ticketsNA th {
+  width: auto !important;
+  white-space: normal;
+  overflow: hidden;
+  white-space: nowrap;
+  word-wrap: break-word !important;
+}
+
+#tabla_ticketsNA td{
+  white-space: normal !important;
+}
+
+#tabla_ticketsNA .btn-info{
+  white-space: nowrap;
+}
+
+@media(max-width: 2560px){
+  
+  #tabla_ticketsNA th {
+    font-size: 22px !important;
+  } 
+
+  #tabla_ticketsNA td{
+    font-size:20px !important ;
+  }
+
+  #tabla_ticketsNA td{
+    padding: 0 !important;
+    margin: 0 !important;
+  }  
+
+  #tabla_ticketsNA .content-btnOpciones a {
+    width: 50px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_ticketsNA .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 6px !important;
+  }
+
+  #tabla_ticketsNA .btn-warning{
+    margin-bottom: 2px !important;
+    margin-top: 2px !important;
+  }
+}
+
+@media(max-width: 1440px){
+
+  #tabla_ticketsNA td,
+  #tabla_ticketsNA th {
+    font-size: 12px !important;
+  } 
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  } 
+
+  #tabla_ticketsNA .content-btnOpciones a {
+    width: 70px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_ticketsNA .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 6px !important;
+  }
+
+  #tabla_ticketsNA .btn-warning{
+    margin-bottom: 2px !important;
+    margin-top: 2px !important;
+  }
+}
+
+@media(max-width: 1230px){
+  
+  #tabla_ticketsNA td,
+  #tabla_ticketsNA th {
+    font-size: 10px !important;
+  } 
+
+  #tabla_ticketsNA .content-btnOpciones a {
+    width: 65px !important;
+    font-size: 12px !important;
+    padding: 2px ;
+  }
+
+  #tabla_ticketsNA .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_ticketsNA .btn-warning{
+    margin-top: 0 !important;
+    margin-bottom: 2px !important;
+  }
+}
+
+@media(max-width: 1024px){
+  
+  #tabla_ticketsNA th,
+  #tabla_ticketsNA td{
+    font-size: 8px !important;
+  }
+
+  #tabla_ticketsNA .content-btnOpciones a {
+    width: 50px !important;
+    font-size: 8px !important;
+    padding: 2px;
+  }
+  
+  #tabla_ticketsNA .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_ticketsNA .btn-warning{
+    margin-top: 0 !important;
+    margin-bottom: 2px !important;
+  }
+}
+
+@media(max-width: 600px){
+  
+  #tabla_ticketsNA th,  
+  #tabla_ticketsNA td {
+    font-size: 5px !important;
+  } 
+
+  #tabla_ticketsNA .content-btnOpciones a {
+    width: 35px !important;
+    font-size: 5px !important;
+    padding: 2px;
+  }
+ 
+  #tabla_ticketsNA .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_ticketsNA .btn-warning{
+    margin-top: 0 !important;
+    margin-bottom: 2px !important;
+  }
+}
+
+@media(max-width: 425px){
+
+  #tabla_ticketsNA th,  
+  #tabla_ticketsNA td {
+    font-size: 4.5px !important;
+
+  }
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  }
+
+  #tabla_ticketsNA .content-btnOpciones a {
+    width: 25px !important;
+    font-size: 6px !important;
+    padding: 0px !important;
+  }
+
+  #tabla_ticketsNA .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_ticketsNA .btn-warning{
+    margin-top: 0 !important;
+    margin-bottom: 2px !important;
+  }
+}
+
+
+@media(max-width: 325px){
+
+  #tabla_ticketsNA th,  
+  #tabla_ticketsNA td {
+    font-size: 3.5px !important;
+  } 
+
+  #tabla_ticketsNA .content-btnOpciones a {
+    width: 15px !important;
+    font-size: 2px !important;
+    padding: 0px !important;
+  }
+
+  #tabla_ticketsNA .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_ticketsNA .btn-warning{
+    margin-top: 0px !important;
+    margin-bottom: 2px !important;
+  }
+}
+
+/**----- TICKETS ABIERTOS, EN ESPERA, RESUELTOS, VENCIDOS, REABIERTOS, CERRADOS, EN REVISIÓN--------- */
+
+
+#tabla_tkt_Reabiertos,
+#tabla_tktCerrados
+
+
+#tabla_tktAbiertos th, 
+#tabla_tktAbiertos td,
+#tabla_enEspera th,
+#tabla_enEspera td,
+#tabla_tktRevision th,
+#tabla_tktRevision td,
+#tabla_tktResueltos th,
+#tabla_tktResueltos td,
+#tabla_tktVencidos th,
+#tabla_tktVencidos td,
+#tabla_tkt_Reabiertos th,
+#tabla_tkt_Reabiertos td,
+#tabla_tktCerrados th,
+#tabla_tktCerrados td{
+   text-align: center !important;
+   font-size: 30px !important;
+}
+
+#tabla_tktAbiertos th,
+#tabla_enEspera th,
+#tabla_tktRevision th,
+#tabla_tktResueltos th,
+#tabla_tktVencidos th
+#tabla_tkt_Reabiertos th,
+#tabla_tktCerrados th
+ {
+  width: auto !important;
+  white-space: normal;
+  overflow: hidden;
+  white-space: nowrap;
+  word-wrap: break-word !important;
+}
+
+#tabla_tktAbiertos td,
+#tabla_enEspera td,
+#tabla_tktRevision td,
+#tabla_tktResueltos td,
+#tabla_tktVencidos td,
+#tabla_tkt_Reabiertos td,
+#tabla_tktCerrados td
+{
+  white-space: normal !important;
+}
+
+#tabla_tktAbiertos .btn-info,
+#tabla_enEspera .btn-info,
+#tabla_tktResueltos .btn-info,
+#tabla_tktVencidos .btn-info,
+#tabla_tkt_Reabiertos .btn-info,
+#tabla_tktRevision .btn-info,
+#tabla_tktCerrados .btn-info
+{
+  white-space: nowrap;
+}
+
+@media(max-width: 2560px){
+  
+  #tabla_tktAbiertos th,
+  #tabla_enEspera th,
+  #tabla_tktRevision th,
+  #tabla_tktResueltos th,
+  #tabla_tktVencidos th,
+  #tabla_tkt_Reabiertos th,
+  #tabla_tktCerrados th
+{
+    font-size: 22px !important;
+  } 
+
+  #tabla_tktAbiertos td,
+  #tabla_enEspera td,
+  #tabla_tktRevision td,
+  #tabla_tktResueltos td,
+  #tabla_tktVencidos td,
+  #tabla_tkt_Reabiertos td,
+  #tabla_tktCerrados td
+  {
+    font-size:20px !important ;
+  }
+
+  #tabla_tktAbiertos td,
+  #tabla_enEspera td,
+  #tabla_tktRevision td,
+  #tabla_tktResueltos td,
+  #tabla_tktVencidos td,
+  #tabla_tkt_Reabiertos td,
+  #tabla_tktCerrados td
+{
+    padding: 0 !important;
+    margin: 0 !important;
+  }  
+
+  #tabla_tktAbiertos .btn-info,
+  #tabla_enEspera .btn-info,
+  #tabla_tktResueltos .btn-info,
+  #tabla_tktVencidos .btn-info,
+  #tabla_tkt_Reabiertos .btn-info,
+  #tabla_tktCerrados .btn-info
+  {
+    width: 90px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+    margin-bottom: 3px !important;
+    margin-top: 6px !important;
+  }
+
+  #tabla_tktRevision .btn-info{
+    width: 120px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+    margin-bottom: 3px !important;
+    margin-top: 6px !important;
+  }
+}
+
+@media(max-width: 1440px){
+
+  #tabla_tktAbiertos td,
+  #tabla_tktAbiertos th,
+  #tabla_enEspera td,
+  #tabla_enEspera th,
+  #tabla_tktRevision td,
+  #tabla_tktRevision th,
+  #tabla_tktResueltos td,
+  #tabla_tktResueltos th,
+  #tabla_tktVencidos td,
+  #tabla_tktVencidos th,
+  #tabla_tkt_Reabiertos td,
+  #tabla_tkt_Reabiertos th,
+  #tabla_tktCerrados td,
+  #tabla_tktCerrados th {
+    font-size: 12px !important;
+  } 
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  } 
+
+  #tabla_tktAbiertos .btn-info,
+  #tabla_enEspera .btn-info,
+  #tabla_tktResueltos .btn-info,
+  #tabla_tktVencidos .btn-info,
+  #tabla_tkt_Reabiertos .btn-info,
+  #tabla_tktCerrados .btn-info{
+    width: 70px !important;
+    font-size: 14px !important;
+    padding: 3px !important;
+    margin: 6px !important;
+  }
+
+  #tabla_tktRevision .btn-info{
+    width: 90px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+    margin-bottom: 3px !important;
+    margin-top: 6px !important;
+  }
+}
+
+@media(max-width: 1230px){
+  
+  #tabla_tktAbiertos td,
+  #tabla_tktAbiertos th,
+  #tabla_enEspera td,
+  #tabla_enEspera th,
+  #tabla_tktRevision td,
+  #tabla_tktRevision th,
+  #tabla_tktResueltos td,  
+  #tabla_tktResueltos th,
+  #tabla_tktVencidos td,
+  #tabla_tktVencidos th,
+  #tabla_tkt_Reabiertos td,
+  #tabla_tkt_Reabiertos th,
+  #tabla_tktCerrados td,
+  #tabla_tktCerrados th{
+    font-size: 10px !important;
+  } 
+
+  #tabla_tktAbiertos .btn-info,
+  #tabla_enEspera .btn-info,
+  #tabla_tktResueltos .btn-info,
+  #tabla_tktVencidos .btn-info,
+  #tabla_tkt_Reabiertos .btn-info,
+  #tabla_tktCerrados .btn-info{
+    width: 65px !important;
+    font-size: 12px !important;
+    padding: 3px ;
+    margin: 6px !important;
+  }
+
+  #tabla_tktRevision .btn-info{
+    width: 60px !important;
+    font-size: 10px !important;
+    padding: 2px !important;
+    margin-bottom: 3px !important;
+    margin-top: 6px !important;
+  }
+}
+
+@media(max-width: 1024px){
+  
+  #tabla_tktAbiertos th,
+  #tabla_tktAbiertos td,
+  #tabla_enEspera th,
+  #tabla_enEspera td,
+  #tabla_tktRevision th,
+  #tabla_tktRevision td,
+  #tabla_tktResueltos th,
+  #tabla_tktResueltos td,
+  #tabla_tktVencidos th,
+  #tabla_tktVencidos td,
+  #tabla_tkt_Reabiertos th,
+  #tabla_tkt_Reabiertos td,
+  #tabla_tktCerrados th,
+  #tabla_tktCerrados td{
+    font-size: 8px !important;
+  }
+
+  #tabla_tktAbiertos .btn-info,
+  #tabla_enEspera .btn-info,
+  #tabla_tktResueltos .btn-info,
+  #tabla_tktVencidos .btn-info,
+  #tabla_tkt_Reabiertos .btn-info,
+  #tabla_tktCerrados .btn-info{
+    width: 50px !important;
+    font-size: 10px !important;
+    padding: 3px;
+    margin: 6px !important;
+  }
+
+  #tabla_tktRevision .btn-info{
+    width: 60px !important;
+    font-size: 10px !important;
+    padding: 2px !important;
+    margin-bottom: 3px !important;
+    margin-top: 6px !important;
+  }
+}
+
+@media(max-width: 600px){
+  
+  #tabla_tktAbiertos th,  
+  #tabla_tktAbiertos td,
+  #tabla_enEspera th,
+  #tabla_enEspera td,
+  #tabla_tktRevision th,
+  #tabla_tktRevision td,
+  #tabla_tktResueltos th,
+  #tabla_tktResueltos td,
+  #tabla_tktVencidos th,
+  #tabla_tktVencidos td,
+  #tabla_tkt_Reabiertos th,
+  #tabla_tkt_Reabiertos td,
+  #tabla_tktCerrados th,
+  #tabla_tktCerrados td{
+    font-size: 5px !important;
+  } 
+
+  #tabla_tktAbiertos .btn-info,
+  #tabla_enEspera .btn-info,
+  #tabla_tktResueltos .btn-info,
+  #tabla_tktVencidos .btn-info,
+  #tabla_tkt_Reabiertos .btn-info,
+  #tabla_tktCerrados .btn-info{
+    width: 35px !important;
+    font-size: 8px !important;
+    padding: 3px;
+    margin: 6px !important;
+  }
+
+  #tabla_tktRevision .btn-info{
+    width: 40px !important;
+    font-size: 6px !important;
+    padding: 2px !important;
+    margin-bottom: 3px !important;
+    margin-top: 6px !important;
+  }
+}
+
+@media(max-width: 425px){
+
+  #tabla_tktAbiertos th,  
+  #tabla_tktAbiertos td,
+  #tabla_enEspera th,
+  #tabla_enEspera td,
+  #tabla_tktRevision th,
+  #tabla_tktRevision td,
+  #tabla_tktResueltos th,
+  #tabla_tktResueltos td,
+  #tabla_tktVencidos th,
+  #tabla_tktVencidos td,
+  #tabla_tkt_Reabiertos th,
+  #tabla_tkt_Reabiertos td,
+  #tabla_tktCerrados th,
+  #tabla_tktCerrados td {
+    font-size: 4.5px !important;
+  }
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  }
+
+  #tabla_tktAbiertos .btn-info,
+  #tabla_enEspera .btn-info,
+  #tabla_tktResueltos .btn-info,
+  #tabla_tktVencidos .btn-info,
+  #tabla_tkt_Reabiertos .btn-info,
+  #tabla_tktCerrados .btn-info{
+    width: 20px !important;
+    font-size: 6px !important;
+    padding: 2px !important;
+    margin: 4px !important;
+  }
+
+  #tabla_tktRevision .btn-info{
+    width: 30px !important;
+    font-size: 4px !important;
+    padding: 2px !important;
+    margin-bottom: 3px !important;
+    margin-top: 6px !important;
+  }
+}
+
+@media(max-width: 325px){
+
+  #tabla_tktAbiertos th,  
+  #tabla_tktAbiertos td,
+  #tabla_enEspera th,
+  #tabla_enEspera td,
+  #tabla_tktRevision th, 
+  #tabla_tktRevision td,
+  #tabla_tktResueltos th,
+  #tabla_tktResueltos td,
+  #tabla_tktVencidos th,
+  #tabla_tktVencidos td,
+  #tabla_tkt_Reabiertos th,
+  #tabla_tkt_Reabiertos td,
+  #tabla_tktCerrados th,
+  #tabla_tktCerrados td{
+    font-size: 3.5px !important;
+  } 
+
+  #tabla_tktAbiertos .btn-info,
+  #tabla_enEspera .btn-info,
+  #tabla_tktResueltos .btn-info,
+  #tabla_tktVencidos .btn-info,
+  #tabla_tkt_Reabiertos .btn-info,
+  #tabla_tktCerrados .btn-info{
+    width: 15px !important;
+    font-size: 4px !important;
+    padding: 0px !important;
+    margin: 4px !important;
+  }
+
+  #tabla_tktRevision .btn-info{
+    width: 20px !important;
+    font-size: 3px !important;
+    padding: 2px !important;
+    margin-bottom: 3px !important;
+    margin-top: 6px !important;
+  }
+}
+
+/** TABLA HISTORIAL */
+
+
+#tabla_historial th, 
+#tabla_historial td{
+   text-align: center !important;
+   font-size: 30px !important;
+}
+
+#tabla_historial th{
+  width: auto !important;
+  white-space: normal !important; 
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  word-wrap: break-word !important;
+}
+
+#tabla_historial td{
+  white-space: normal !important;
+}
+
+#tabla_historial .btn-info,
+#tabla_historial .btn-success{
+  white-space: nowrap;
+}
+
+.content-btnVolver{
+  text-align: center;
+}
+
+.content-btnVolver .btn-volverInfo{
+  width: 120px;
+  font-size: 18px;
+  float: right;
+  margin-bottom:20px;
+}
+
+.content-btnVolver i{
+  margin-right: 10px;
+}
+
+@media(max-width: 2560px){
+  
+  #tabla_historial th{
+    font-size: 22px !important;
+  } 
+
+  #tabla_historial td{
+    font-size:20px !important ;
+  }
+
+  #tabla_historial td{
+    padding: 0 !important;
+    margin: 0 !important;
+  }  
+
+  #tabla_historial .btn-info,
+  #tabla_historial .btn-success{
+    width: 90px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+    margin-bottom: 3px !important;
+    margin-top: 6px !important;
+  }
+}
+
+@media(max-width: 1440px){
+
+  #tabla_historial td,
+  #tabla_historial th{
+    font-size: 14px !important;
+  } 
+
+  #tabla_historial td{
+    padding: 10px !important;
+  }
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  } 
+
+  #tabla_historial .btn-info, 
+  #tabla_historial .btn-success{
+    width: 120px !important;
+    font-size: 16px !important;
+    padding: 10px !important;
+    margin: 6px !important;
+  }
+}
+
+@media(max-width: 1230px){
+  
+  #tabla_historial td,
+  #tabla_historial th{
+    font-size: 10px !important;
+  } 
+
+  #tabla_historial .btn-info,
+  #tabla_historial .btn-success{
+    width: 65px !important;
+    font-size: 12px !important;
+    padding: 3px ;
+    margin: 6px !important;
+  }
+}
+
+@media(max-width: 1024px){
+  
+  #tabla_historial th,
+  #tabla_historial td{
+    font-size: 8px !important;
+  }
+
+  #tabla_historial .btn-info,
+  #tabla_historial .btn-success{
+    width: 50px !important;
+    font-size: 10px !important;
+    padding: 3px;
+    margin: 6px !important;
+  }
+}
+
+@media(max-width: 600px){
+  
+  #tabla_historial th,
+  #tabla_historial td{
+    font-size: 5px !important;
+  } 
+
+  #tabla_historial .btn-info,
+  #tabla_historial .btn-success{
+    width: 35px !important;
+    font-size: 8px !important;
+    padding: 3px;
+    margin: 6px !important;
+  }
+}
+
+@media(max-width: 425px){
+
+  #tabla_historial th,
+  #tabla_historial td {
+    font-size: 4.5px !important;
+  }
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  }
+
+  #tabla_historial .btn-info,
+  #tabla_historial .btn-success{
+    width: 20px !important;
+    font-size: 6px !important;
+    padding: 2px !important;
+    margin: 4px !important;
+  }
+}
+
+@media(max-width: 325px){
+
+  #tabla_historial th,
+  #tabla_historial td{
+    font-size: 3.5px !important;
+  } 
+
+  #tabla_historial .btn-info,
+  #tabla_historial .btn-success{
+    width: 15px !important;
+    font-size: 4px !important;
+    padding: 0px !important;
+    margin: 4px !important;
+  }
+}
+
+
+/** ASIGNAR TECNICO */
+
+@media(max-width: 2560px){
+  
+  #tabla_asignarTec th{
+    font-size: 22px !important;
+  } 
+
+  #tabla_asignarTec td{
+    font-size:20px !important ;
+  }
+
+  #tabla_asignarTec td{
+    padding: 0 !important;
+    margin: 0 !important;
+  }  
+
+  #tabla_asignarTec .btn-info{
+    width: 200px !important;
+    font-size: 18px !important;
+    padding: 2px !important;
+    margin-bottom: 3px !important;
+    margin-top: 6px !important;
+  }
+}
+
+@media(max-width: 1440px){
+
+  #tabla_asignarTec td,
+  #tabla_asignarTec th{
+    font-size: 16px !important;
+  } 
+
+  #tabla_asignarTec td{
+    padding: 10px !important;
+  }
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  } 
+
+  #tabla_asignarTec .btn-info{
+    width: 130px !important;
+    font-size: 16px !important;
+    padding: 10px !important;
+    margin: 6px !important;
+  }
+}
+
+@media(max-width: 1230px){
+  
+  #tabla_asignarTec td,
+  #tabla_asignarTec th{
+    font-size: 12px !important;
+  } 
+
+  #tabla_asignarTec .btn-info{
+    width: 100px !important;
+    font-size: 12px !important;
+    padding: 3px !important;
+    margin: 6px !important;
+  }
+}
+
+@media(max-width: 1024px){
+
+  .titulo_prin{
+    font-size: 36px !important;
+  }
+  
+  #tabla_asignarTec th,
+  #tabla_asignarTec td{
+    font-size: 12px !important;
+  }
+
+  #tabla_asignarTec .btn-info{
+    width: 100px !important;
+    font-size: 12px !important;
+    padding: 3px !important;
+    margin: 6px !important;
+  }
+
+  .btn-dark{
+    width: 100px !important;
+    font-size: 14px !important;
+  }
+}
+
+@media(max-width: 600px){
+
+  .titulo_prin{
+    font-size: 15px !important;
+  }
+  
+  #tabla_asignarTec th{
+    font-size: 8px !important;
+  } 
+
+  #tabla_asignarTec td{
+    font-size: 7px !important;
+  }
+
+  #tabla_asignarTec .btn-info{
+    width: 100px !important;
+    font-size: 10px !important;
+    padding: 3px !important;
+    margin: 6px !important;
+  }
+
+  .btn-dark{
+    width: 70px !important;
+    font-size: 8px !important;
+    margin: 0px !important;
+  }
+}
+
+@media(max-width: 425px){
+
+  #tabla_asignarTec th,
+  #tabla_asignarTec td {
+    font-size: 5px !important;
+  }
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  }
+
+  #tabla_asignarTec .btn-info{
+    width: 60px !important;
+    font-size: 8px !important;
+    padding: 2px !important;
+    margin: 4px !important;
+  }
+
+  .btn-dark{
+    width: 60px !important;
+    font-size: 8px !important;
+    margin: 0px !important;
+    padding: 2px !important;
+  }
+}
+
+@media(max-width: 325px){
+
+  #tabla_asignarTec th{
+    font-size: 5px !important;
+  } 
+
+  #tabla_asignarTec td{
+    font-size: 3px !important;
+  }
+
+  #tabla_asignarTec .btn-info{
+    width: 40px !important;
+    font-size: 4px !important;
+    padding: 0px !important;
+    margin: 4px !important;
+  }
+}
+
+.leyenda_tktArea{
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.leyenda_tktArea a{
+  text-decoration:underline;
+}
+
+.nuevo{
+  background-color:#09ac17 !important;
+  color:aliceblue !important;
+}
+
+.abierto{
+  background-color:   #ff6a06 !important;
+  color:aliceblue !important; 
+}
+
+.enEspera{
+  background-color:#ffdd00   !important; 
+}
+
+.enRevision{
+  background-color: #8E44AD !important;
+  color: aliceblue !important;
+}
+
+.resuelto{
+  background-color:#067af7 !important;
+  color:aliceblue !important;
+}
+
+.prd_urgente{
+  color: #d80b0b !important;
+  font-weight: bold !important;
+}
+
+.prd_alta{
+   color:  #fc6f04  !important; 
+   font-weight: bold !important;
+}
+
+.prd_media{
+  color:#066f12   !important; 
+  font-weight: bold !important;
+}
+
+.prd_baja{
+   color: #5e6264   !important; 
+   font-weight: bold !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

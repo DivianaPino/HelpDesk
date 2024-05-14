@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\TicketUpdate;
 
 class Ticket extends Model
 {
@@ -29,15 +30,29 @@ class Ticket extends Model
       return $this->belongsTo('App\Models\Prioridad');
     } 
 
-    public function respuesta() 
+    public function respuestas() 
     {
-        return $this->hasOne('App\Models\Respuesta');
+        return $this->hasMany('App\Models\Respuesta');
     }
 
-    
+    public function masInformacions()
+    {
+      return $this->hasMany('App\Models\MasInformacion');
+    }
 
+    public function respMasInfo()
+    {
+        return $this->hasMany('App\Models\RespMasinfo');
+    }
 
+    public function ultimaRespuesta()
+    {
+      return $this->hasOne('App\Models\Respuesta')->latest();
+    }
 
-
+    public function ticketHistorials()
+    {
+        return $this->hasMany('App\Models\TicketHistorial'); 
+    }
 
 }

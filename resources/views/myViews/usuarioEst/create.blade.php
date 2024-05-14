@@ -11,10 +11,7 @@
         <div class="col-md-12">
           <div class="form h-100">
             <h3>Crear Ticket</h3>
-            @if(session('status'))
-              <p class="alert alert-success">{{ Session('status') }}</p>
-            @endif
-            <form action="{{ url('tickets/usuario') }}" class="mb-5" method="post" id="contactForm" name="contactForm">
+            <form action="{{ url('usuario/tickets') }}" class="mb-5" method="post" id="contactForm" name="contactForm" enctype="multipart/form-data">
             @csrf
               <div class="row">
                 <div class="col-md-8 form-group mb-3">
@@ -50,7 +47,7 @@
                   <select class="custom-select" id="prioridad_id" name="prioridad_id" >
                     <option selected value="">Seleccionar</option>
                       @foreach($prioridads as $prioridad)
-                      <option value="{{ $prioridad->id }}" {{old('prioridad') == $prioridad->id ? 'selected' : '' }}>{{ $prioridad->nombre }}</option>
+                      <option value="{{ $prioridad->id }}" {{old('prioridad_id') == $prioridad->id ? 'selected' : '' }}>{{ $prioridad->nombre }}</option>
                       @endforeach
                   </select>
                   
@@ -91,6 +88,18 @@
              
               <div class="msj_error">
                 @error('mensaje')
+                  {{$message}}
+                @enderror
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 form-group mb-3 content-file">
+                    <input type="file" name="imagen" accept="image/*" >
+                </div>
+              </div>
+
+              <div class="msj_error">
+                @error('imagen')
                   {{$message}}
                 @enderror
               </div>

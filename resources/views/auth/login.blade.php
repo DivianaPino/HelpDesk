@@ -1,9 +1,9 @@
 <x-guest-layout>
 
     <!-- <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
-        <a href="{{ route('register') }}" class=" btn txt-btn  " >Registrarse</a>
-    </div>
-     -->
+        <a href="{{ route('/') }}" class=" btn txt-btn " ><i class="fa-solid fa-arrow-left fa-lg"></i> Página principal</a>
+    </div> -->
+    
         <x-jet-authentication-card >
 
             <x-slot name="logo">

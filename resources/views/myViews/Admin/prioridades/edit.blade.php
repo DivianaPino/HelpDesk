@@ -15,7 +15,7 @@
               <div class="row">
                 <div class="col-md-12 form-group mb-3">
                   <label for="nombre" class="col-form-label">Prioridad:</label>
-                  <input type="text" class="form-control" name="nombre" id="nombre"  value="{{$prioridad->nombre}}" >
+                  <input type="text" class="form-control" name="nombre" id="nombre"  value="{{$prioridad->nombre}}" disabled >
                 </div>
               </div>
 

@@ -37,7 +37,7 @@
 
                     <div class="enlaces">
                         @auth
-                        <a href="{{ route('usuario.create') }}" class=" btn txt-btn ">Dashboard</a>
+                        <a href="{{url('/usuarios')}}" class=" btn txt-btn ">Dashboard</a>
                         @else
                         <a href="{{ route('login') }}" class=" btn txt-btn ">Iniciar sesión</a>
 

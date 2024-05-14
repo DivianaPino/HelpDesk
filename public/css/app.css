@@ -2052,10 +2052,38 @@ select {
     padding: 1rem 2.5rem; 
     border-radius: 5px;
     transition: all .3s ease-in-out;
-    margin-top: 1rem;
+    margin-top: 14px;
     margin-right: 1rem;
-  
+
   }
+
+  @media(max-width: 425px){
+    .enlaces .btn{
+      width: 130px;
+      font-size: 12px;
+      text-align: center;
+      margin-top: 18px;
+      padding: 8px;
+    }
+
+    .imagen1{
+      height: 380px;
+    }
+    .imagenes-nosotros{
+      height: 350px;
+    }
+  }
+
+  @media(max-width: 375px){
+    .enlaces .btn{
+      width: 90px;
+      font-size: 10px;
+      text-align: center;
+      margin-top: 19px;
+      padding: 8px;
+    }
+  }
+  
   
   
   
@@ -2242,13 +2270,21 @@ select {
       background-position: 100% 100%;
     }
   }
+
+
+@media (max-width: 425px) {
+  .fondo{
+    background-image: none;
+     background-color:#2245d0 !important ;
+  }
+}
   
   .contenedor-form{
   width: 350px;
-  height: 460px;
+  height: 560px !important;
   background-color:#2245d0 ;
   padding: 20px;
-  border-radius: 20px;
+  
   }
   
   .img-formulario{

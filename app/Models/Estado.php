@@ -9,8 +9,13 @@ class Estado extends Model
 {
     use HasFactory;
 
-    public function tickets()
+    public function ticket()
     {
       return $this->hasMany('App\Models\Ticket');
+    }
+
+    public function ticketHistorials()
+    {
+        return $this->hasMany('App\Models\TicketHistorial'); 
     }
 }

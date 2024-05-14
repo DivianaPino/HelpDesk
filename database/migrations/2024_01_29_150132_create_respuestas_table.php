@@ -16,9 +16,9 @@ class CreateRespuestasTable extends Migration
         Schema::create('respuestas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('ticket_id');
-            $table->unsignedBigInteger('comentario_id');
+            $table->unsignedBigInteger('comentario_id')->nullable();
             $table->text('mensaje');
-            $table->text('imagen');
+            $table->text('imagen')->nullable();
             $table->dateTime('fecha');
             $table->timestamps();
 

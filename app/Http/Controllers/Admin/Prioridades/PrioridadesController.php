@@ -115,6 +115,6 @@ class PrioridadesController extends Controller
     {
         $prioridad= Prioridad::find($id);
         $prioridad->delete();
-        return redirect('/prioridades')->with('status', 'Prioridad eliminada exitosamente :)');
+        return redirect()->route('prioridades.index')->with('eliminar' , 'ok');
     }
 }

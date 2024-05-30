@@ -8,16 +8,17 @@
   <div class="container ">
     <div class="row align-items-stretch no-gutters contact-wrap ">
       <div class="col-md-12 ">
-        <div class="form h-100  content-fondo" >
+        <div class="form h-100  content-fondo form-respuesta" >
           <div class="content-btnVolver">
               <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volverInfo">
               <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
           </div>
           <h3 class="tituloRespuesta">Ticket #{{$idTicket}}: <span class="span_respTkt"> Respondido</span></h3>
+          
           @if(session('status'))
             <p class="alert alert-success">{{ Session('status') }}</p>
           @endif
-          <form action="" class="mb-5" method="post" id="contactForm" name="contactForm" enctype="multipart/form-data">
+          <form action="/comentar/respuesta/{{$respuesta['id']}}/ticket/{{$ticket->id}}" class="mb-5" method="post" id="contactForm" name="contactForm" enctype="multipart/form-data">
            @csrf
 
             <div class="cuadro1">
@@ -121,6 +122,45 @@
                 </div>
               </div>
             @endif  
+            <hr style="font-size:20px;">
+            <p class="text-select">Por favor ingresar si fue útil la respuesta</p>
+            <div class="row">
+                <div class="col-md-12 form-group mb-3">
+                  <textarea class="form-control" name="mensaje" id="mensaje" cols="30" rows="4"  placeholder="Ingresa aquí un comentario sobre la respuesta" required>{{old('mensaje')}}</textarea>            
+                </div>
+            </div>
+            <div class="containerSelectCheck">
+              <div class="select-container">
+                <select class="select-box" name="opcion" id="opcion" required>
+                    <option value="">Nivel de satisfacción</option>
+                    <option value="Totalmente satisfecho">Totalmente satisfecho</option> 
+                    <option value="Muy satisfecho">Muy satisfecho</option>
+                    <option value="Neutral">Neutral</option>
+                    <option value="Poco satisfecho">Poco satisfecho</option>
+                    <option value="Nada satisfecho">Nada satisfecho</option>
+                </select>
+                <div class="icon-container">
+                    <i class="fa-solid fa-caret-down"></i>
+                </div>
+              </div> 
+
+              <div class="checkbox-container" style="display:none;">
+                <input class="checkbox" type="checkbox" id="reabrir" name="reabrir">
+                <label class="labelReabrir" for="reabrir" style="color:#000;">Reabrir ticket</label>
+             </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 form-group" style="text-align:center; ">
+                  <input type="submit" value="Enviar" class="btnForm btnForm-comentario btn-primary rounded-0 py-2 px-4" >
+                </div>
+            </div>
+               
+
+         
+
+
+
 
           </form>
         </div>
@@ -138,8 +178,24 @@
 @section('js')
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.js"></script>
 
-
 <script src="https://kit.fontawesome.com/6f3d5551a7.js" crossorigin="anonymous"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('.select-box').change(function() {
+        var selectedOption = $(this).val();
+        if (selectedOption === "Nada satisfecho" || selectedOption === "Poco satisfecho" || selectedOption === "Neutral") {
+            // Muestra el checkbox y su etiqueta si la opción seleccionada es "Nada satisfecho", "Poco satisfecho" o "Neutral"
+            $('.checkbox-container').show();
+        } else {
+            // Oculta el checkbox y su etiqueta si la opción seleccionada no es ninguna de las anteriores
+            $('.checkbox-container').hide();
+        }
+    });
+});
+</script>
 
 
 @stop

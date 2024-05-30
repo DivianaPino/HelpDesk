@@ -18,5 +18,10 @@ class Respuesta extends Model
     {
       return $this->hasOne('App\Models\Comentario');
     }
+
+    public function ticketHistorials()
+    {
+      return $this->hasMany('App\Models\TicketHistorial');
+    }
 }
 

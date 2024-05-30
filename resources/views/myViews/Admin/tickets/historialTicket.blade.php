@@ -45,7 +45,7 @@
                                 </div>
                             @endif 
                             
-                         
+                            @php $contadorSolucion= 1; @endphp
 
                             @foreach($masInfo as $masInf)
 
@@ -113,40 +113,42 @@
 
                             @endforeach
 
-                            @if($solucion)
-                                <hr style=" border:none; height: 3px; background-color:#76D7C4;">
-                                
-                                <div class="row">
-                                    <div class="col-md-12 form-group mb-3">
-                                        <label for="mensaje" class="col-form-label titulo-resolucion">Resolución del incidente</label>
-                                        <span style="display: block; font-size:14px;">{{Carbon\Carbon::parse($solucion->fecha)->format('d-m-Y H:i:s')}}</span>
-                                        <textarea class="form-control" name="mensaje" id="mensaje" cols="30" rows="4"  disabled>{{$solucion['mensaje']}}</textarea>
-                                    </div>
-                                </div>
-                                
-                                @if(isset($solucion->imagen))
+                            @if($soluciones)
+                                @foreach($soluciones as $solucion)
+                                    <hr style=" border:none; height: 3px; background-color:#76D7C4;">
+                                    
                                     <div class="row">
                                         <div class="col-md-12 form-group mb-3">
-                                            <img src="{{asset('images/respuestas/tickets/'.$solucion->imagen)}}"
-                                                class="img-fluid img-rounded" width="120px"> 
-
-                                            <a href="{{ asset('images/respuestas/tickets/'.$solucion->imagen) }}" download>Descargar Imagen</a>   
+                                            <label for="mensaje" class="col-form-label titulo-resolucion">Resolución Nro: {{$contadorSolucion++}} del incidente</label>
+                                            <span style="display: block; font-size:14px;">{{Carbon\Carbon::parse($solucion->fecha)->format('d-m-Y H:i:s')}}</span>
+                                            <textarea class="form-control" name="mensaje" id="mensaje" cols="30" rows="4"  disabled>{{$solucion['mensaje']}}</textarea>
                                         </div>
                                     </div>
-                                @else
-                                    <div class="row">
-                                        <div class="col-md-12 form-group mb-3">
-                                        <img src="{{asset('images/respuestas/tickets/'.$solucion->imagen)}}" 
-                                        class="img-fluid img-rounded" width="120px" hidden> 
-                                            <a href="{{ asset('images/respuestas/tickets/'.$solucion->imagen) }}" download hidden>Descargar Imagen</a>   
+                                    
+                                    @if(isset($solucion->imagen))
+                                        <div class="row">
+                                            <div class="col-md-12 form-group mb-3">
+                                                <img src="{{asset('images/respuestas/tickets/'.$solucion->imagen)}}"
+                                                    class="img-fluid img-rounded" width="120px"> 
+
+                                                <a href="{{ asset('images/respuestas/tickets/'.$solucion->imagen) }}" download>Descargar Imagen</a>   
+                                            </div>
                                         </div>
-                                    </div>
-                                @endif 
+                                    @else
+                                        <div class="row">
+                                            <div class="col-md-12 form-group mb-3">
+                                            <img src="{{asset('images/respuestas/tickets/'.$solucion->imagen)}}" 
+                                            class="img-fluid img-rounded" width="120px" hidden> 
+                                                <a href="{{ asset('images/respuestas/tickets/'.$solucion->imagen) }}" download hidden>Descargar Imagen</a>   
+                                            </div>
+                                        </div>
+                                    @endif 
 
-                                <hr style="border:none; height: 3px; background-color:#76D7C4;">
+                                    <hr style="border:none; height: 3px; background-color:#76D7C4;">
 
+                                @endforeach
                             @endif
-        
+
                         </form>
                    </div>
                 </div>

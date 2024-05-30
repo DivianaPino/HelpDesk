@@ -98,7 +98,7 @@
 
                             <!-- fecha de respuesta -->
                              @if ($ticket->respuestas->count() > 0)
-                                <td>{{\Carbon\Carbon::parse($ticket->ultimaRespuesta['fecha'])->format('d-m-Y')}}</td>
+                                <td>{{ \Carbon\Carbon::parse($ticket->respuestas->last()['updated_at']) }}</td>
                              @else
                                 <td>---</td>
                              @endif
@@ -131,7 +131,7 @@
                                         @endisset
                                     @endif
                                 @elseif($ticket->estado->nombre == "Resuelto")
-                                    <a class="btn btn-success" href="/form/respuesta/{{$ticket->id}}">Ver solución</a>
+                                    <a class="btn btn-success" href="/historial/ticket/{{$ticket->id}}">Ver</a>
                                 @endif 
                             </td>
                         </tr>
@@ -203,7 +203,7 @@ $(document).ready(function() {
         "order": [[9, 'desc']],
         "columnDefs": [
             {
-                "targets": 9, 
+                "targets": [8, 9],
                 "type": "date",
                 "render": function (data, type, row) {
                     // Verificar si 'data' es una fecha válida

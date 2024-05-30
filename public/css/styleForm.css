@@ -68,8 +68,8 @@ body {
     letter-spacing: .2rem;
     text-transform: uppercase;
     border-radius: 30px !important; 
-   
   }
+
     .btnForm.btn-primary {
       border-radius: 30px;
       background: #153ddd;
@@ -269,6 +269,22 @@ padding: 0px 6px 0px 6px
   
 }
 
+.cuadro3{
+  display: flex;
+  justify-content: center;
+  font-size: 20px;
+  color: #030304;
+  font-weight: 700;
+  background-color: #0f99b8;
+  margin-bottom: 5px;
+  padding: 5px;
+}
+
+.cuadro3 i{
+  color: #030304 !important;
+  margin-top: 7px;
+} 
+
 .iconoResponder{
     margin-top: 2px;
     margin-left: 10px;
@@ -410,6 +426,327 @@ padding: 0px 6px 0px 6px
   display:flex !important; 
   justify-content:center !important;
 }
+
+
+/* Select */
+
+.select-container{
+  display: flex;
+  justify-content: center;
+  position: relative;
+  width: 250px;
+}
+
+.select-box{
+  border: none;
+  appearance: none;
+  padding: 0 30px 0 15px;
+  width: 100%;
+  color: white;
+  background-color: #2873ff;
+  font-size: 16px;
+}
+
+.select-container select option:not(:first-child) {
+  background-color: white; /* Cambia el color del fondo de las opciones */
+  color: #023ca9;
+}
+
+.btnForm-comentario{
+  font-size:18px; 
+  width:250px;
+}
+
+@media(max-width: 2560px){
+  .text-select{
+    text-align:center; font-size:30px; color:#000; 
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-weight:bold;
+    color: #064b08;
+    background-color: rgb(17, 240, 17);
+  }
+}
+
+@media(max-width: 1260px){
+  .text-select{
+     font-size:25px;
+  }
+
+  .btnForm-comentario{
+    font-size:16px;
+     width:250px;
+  }
+}
+
+@media(max-width: 1272px){
+  .text-select{
+     font-size:24px;
+  }
+
+  .btnForm-comentario{
+    font-size:14px; 
+    width:200px;
+  }
+}
+
+@media(max-width: 1060px){
+  .text-select{
+     font-size:20px;
+  }
+
+  .btnForm-comentario{
+    font-size:10px; 
+    width:100px;
+  }
+
+  .select-container{
+    width: 220px;
+  }
+
+  .select-container .select-box{
+    font-size: 14px;
+  }
+}
+
+@media(max-width: 700px){
+  .text-select{
+     font-size:16px !important;
+  }
+
+  .btnForm-comentario{
+    font-size:10px; 
+    width:100px;
+    padding: 2px !important;
+    margin-top: 20px !important;
+  }
+
+  .select-container{
+    width: 150px;
+  }
+
+  .select-container .select-box{
+    font-size: 10px;
+  }
+
+  .select-container .icon-container{
+    width: 30px !important;
+  }
+
+  .icon-container i {
+    font-size: 20px !important;
+  }
+
+}
+
+@media(max-width: 470px){
+  .text-select{
+    font-size: 14px !important;
+  }
+}
+
+@media(max-width: 390px){
+  .text-select{
+    font-size: 16px !important;
+  
+  }
+}
+
+
+@media(max-width: 320px){
+  .text-select{
+    font-size: 10px !important;
+  }
+}
+
+
+
+.select-container .icon-container{
+  width: 50px;
+  height: 100%;
+  position: absolute;
+  right:0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #023ca9;
+}
+
+.icon-container i{
+  font-size: 30px;
+  color: white;
+}
+
+/** Respuesta del ticket */
+.containerSelectCheck{
+  width:400px; display:flex; justify-content:space-between;
+}
+.form-respuesta .btnForm-comentario{
+     margin-top: 40px !important;
+}
+
+.containerSelectCheck .checkbox-container .labelReabrir{
+  margin-top: 10px !important;
+}
+
+@media(max-width: 768px){
+  .form-respuesta .btn-volverInfo{
+    width: 100px;
+    font-size:16px ;
+    height: 30px;
+    padding-top: 3px !important;
+    margin-bottom: 10px !important;
+    margin-top: 3px !important;
+  }
+  .form-respuesta .tituloRespuesta{
+    font-size: 22px !important;
+  }
+  .form-respuesta .span_respTkt{
+    font-size: 22px;
+  }
+
+  .containerSelectCheck{
+    width:350px; 
+  }
+}
+
+@media(max-width: 525px){
+
+  .form-respuesta .btn-volverInfo{
+    width: 80px;
+    font-size:14px ;
+    height: 25px;
+    padding-top: 3px !important;
+    margin-bottom: 10px !important;
+    margin-top: 3px !important;
+  }
+
+  .form-respuesta .content-btnVolver i{
+    font-size: 14px;
+  }
+
+  .form-respuesta .tituloRespuesta{
+    font-size: 18px !important;
+  }
+  .form-respuesta .span_respTkt{
+    font-size: 18px;
+  }
+
+  .containerSelectCheck{
+    width:300px; 
+  }
+}
+
+@media(max-width: 440px){
+  .form-respuesta .btn-volverInfo{
+    width: 80px;
+    font-size:12px ;
+    height: 25px;
+    padding-top: 4px !important;
+    margin-bottom: 10px !important;
+    margin-top: 3px !important;
+  }
+
+  .form-respuesta .content-btnVolver i{
+    font-size: 12px;
+  }
+
+  .form-respuesta .tituloRespuesta{
+    font-size: 14px !important;
+  }
+  .form-respuesta .span_respTkt{
+    font-size: 14px;
+  }
+
+  .containerSelectCheck{
+    width:230px; 
+    font-size: 8px;
+  }
+
+  .containerSelectCheck .checkbox-container {
+    display:flex; 
+    align-items:center;
+  }
+
+  .containerSelectCheck .checkbox-container .labelReabrir {
+    margin-left: 3px;
+  }
+
+
+}
+
+
+@media(max-width: 400px){
+  .form-respuesta .btn-volverInfo{
+    width: 60px;
+    font-size:8px ;
+    height: 15px;
+    padding-top: 2px !important;
+    padding-bottom: 6px !important;
+    margin-top: 5px !important;
+    margin-left: 5px !important;
+   
+  }
+  .form-respuesta .content-btnVolver i{
+    font-size: 10px;
+  }
+
+  .form-respuesta .tituloRespuesta{
+    font-size: 14px !important;
+  }
+  .form-respuesta .span_respTkt{
+    font-size: 14px;
+  }
+
+  .containerSelectCheck .checkbox-container .labelReabrir{
+    margin-top: 9px !important;
+  }
+}
+
+@media(max-width: 320px){
+  .form-respuesta .btn-volverInfo{
+    width: 60px;
+    font-size:8px ;
+    height: 15px;
+    padding-top: 3px !important;
+    padding-bottom: 6px !important;
+    margin-top: 5px !important;
+    margin-left: 5px !important;
+   
+  }
+
+  .form-respuesta .content-btnVolver i{
+    font-size: 10px;
+  }
+
+  .form-respuesta .tituloRespuesta{
+    font-size: 10px !important;
+  }
+  .form-respuesta .span_respTkt{
+    font-size: 10px;
+  }
+
+
+  .containerSelectCheck{
+   overflow: auto; 
+   display: flex;
+   flex-direction: column;
+  }
+
+  .containerSelectCheck .checkbox-container .labelReabrir{
+    margin-top: 8px !important;
+  }
+
+  .containerSelectCheck .labelReabri{
+    margin-top: 20px!important; 
+  }
+
+
+  .icon-container i {
+    font-size: 15px !important;
+  }
+
+}
+
 
 
 

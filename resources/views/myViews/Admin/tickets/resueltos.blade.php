@@ -27,6 +27,7 @@
                </thead>
 
                <tbody>
+
                     @foreach ($tickets as $ticket )
                         <tr>
                              <td>TK-{{$ticket->id}}</td>
@@ -59,14 +60,14 @@
                               <!-- Fecha de creación -->
                              <td>{{\Carbon\Carbon::parse($ticket->fecha_inicio)->format('d-m-Y')}}</td>
 
+                           
+
                              <!-- Fecha  de respuesta -->
-                             @foreach($ticket->respuestas as $respuesta)
-                              <td>{{\Carbon\Carbon::parse($respuesta->updated_at)}}</td>
-                             @endforeach
+                             <td>{{ \Carbon\Carbon::parse($ticket->respuestas->last()->updated_at) }}</td>
 
                              <!-- Botones - opciones -->
                              <td>
-                                <a class="btn btn-info" href="/detalles/{{$ticket->id}}" >Ver</a>
+                                <a class="btn btn-info" href="/historial/ticket/{{$ticket->id}}" >Ver</a>
                              </td>
 
                         </tr>

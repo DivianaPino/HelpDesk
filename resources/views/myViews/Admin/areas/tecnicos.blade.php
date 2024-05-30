@@ -1,14 +1,22 @@
 @extends('adminlte::page')
 
-@section('title', 'Técnicos')
+@section('title', 'Técnicos de área')
 
+@section('content_header')
+    
+@stop
 
-@section('content')
+@section('content') 
+<div class="content-btnVolver btnVolver_TecArea">
+    <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volverInfo">
+    <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
+</div>
+
+<h1 class="titulo_prin">Técnicos que pertenecen al área: {{ $area->nombre }} </h1>
 <div>
-     <div class="card">
-        <div class="card-body">
-        <h1>Técnicos que pertenecen al área: {{ $area->nombre }}</h1>
-            <table id="tabla_usuarios" class="table table-striped table-bordered shadow-lg mt-4" style="width:100%">
+     <div  class="card">
+        <div  class="card-body" >
+            <table id="tabla_TecArea" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap" style="width:100%;" >
                <thead class="text-center bg-dark text-white">
                    <tr>
                       <th>ID</th>
@@ -21,23 +29,18 @@
 
                <tbody>
                  
-               @foreach ($usuarios as $usuario )
-   
+                    @foreach ($usuarios as $usuario )
                           <tr>
                              <td>{{$usuario->id}}</td>
                              <td>{{$usuario->name}}</td>
                              <td>{{$usuario->email}}</td>
                              <td>{{$usuario->roles()->pluck('name')->implode(', ')}}</td>
-                             <td style="text-align: center;">
+                             <td class="content-btnOpciones">
                                  <a class="btn btn-info"  href="{{route('usuarios.edit', $usuario)}}">Editar rol</a>
                                  <a class="btn btn-warning" href="{{url('asignar_area', $usuario)}}">Cambiar área</a>
-
                              </td> 
                          </tr>
-
-    
-
-                  @endforeach
+                    @endforeach
 
                </tbody>
             </table>
@@ -48,22 +51,36 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="/css/styles.css">
+
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.min.css">
+
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.bootstrap5.css">
+
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.css">
 @stop
 
 @section('js')
-<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap5.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/2.0.2/js/dataTables.min.js"></script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/2.0.2/js/dataTables.js"></script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/2.0.2/js/dataTables.bootstrap5.js"></script>
+
+<script src="https://kit.fontawesome.com/6f3d5551a7.js" crossorigin="anonymous"></script>
 
 <script>
 $(document).ready(function() {
-    $('#tabla_usuarios').DataTable({
-      //Opciones de paginación
+    $('#tabla_TecArea').DataTable({
+
+        responsive:true,
+
+        //Opciones de paginación
         "lengthMenu": [
-            [5, 10, 50, -1],
-            [5, 10, 50, "All"]
+            [10, 30, 50, -1],
+            [10, 30, 50, "All"]
         ],
         "language":{
             "info": "_TOTAL_ registros", 
@@ -84,7 +101,9 @@ $(document).ready(function() {
             "zeroRecords":"No hay coincidencias",
             "infoEmpty": "",
             "infoFiltered":"",
-        }
+        },
+
+        "order": [[0, 'desc']],
     });
 });
 </script>

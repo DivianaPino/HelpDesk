@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use App\Events\MasInfoEvent;
+use App\Events\RespuestaEvent;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Ticket;
@@ -105,22 +108,25 @@ class TicketsController extends Controller
 
         $ticket=Ticket::find($idTicket);
 
-        // Asigna el usuario autenticado al ticket
-        $ticket->asignado_a = Auth::user()->name;
-         // cambiar estado a "abierto"
-        $ticket->estado_id= 2;
-        $ticket->save();
+        if (!is_null($ticket->asignado_a)) {
+            return redirect()->back()->with('error', 'EL TICKET YA HA SIDO ATENDIDO POR OTRO AGENTE');
+        }else{ 
 
-        $historial= new TicketHistorial();
-        $historial->ticket_id= $idTicket;
-        $historial->estado_id=2;
-        $historial->updated_at= Carbon::now();
-        $historial->save();
+            // Asigna el usuario autenticado al ticket
+            $ticket->asignado_a = Auth::user()->name;
+            // cambiar estado a "abierto"
+            $ticket->estado_id= 2;
+            $ticket->save();
 
+            $historial= new TicketHistorial();
+            $historial->ticket_id= $idTicket;
+            $historial->estado_id=2;
+            $historial->updated_at= Carbon::now();
+            $historial->save();
 
-        return redirect()->back()->with('status', 'Asignación exitosa. EL TICKET HA SIDO ABIERTO');
+            return redirect()->back()->with('status', 'Asignación exitosa. EL TICKET HA SIDO ABIERTO');
         // return redirect()->route('form_Respuestaticket', ['idTicket' => $ticket->id])->with( 'status', 'Asignación exitosa. EL TICKET HA SIDO ABIERTO')->with('ticket', $ticket);
-
+        }
     }
     
     // TICKETS ASIGNADOS
@@ -163,6 +169,17 @@ class TicketsController extends Controller
     
     public function guardar_respuestaTicket(Request $request, $idTicket){
 
+        $request->validate([
+            'mensaje' =>'required',
+            'imagen' => 'image',
+        ],
+        [
+            'mensaje.required' => 'El campo mensaje es requerido',
+            'imagen.image' => 'El archivo debe ser una imagen',
+        ]
+    );
+
+
         if($request->hasFile('imagen')){
 
             $file = $request->file('imagen'); // obtenemos el archivo
@@ -192,6 +209,8 @@ class TicketsController extends Controller
              $historial->updated_at= Carbon::now();
              $historial->save();
 
+             event(new RespuestaEvent($respuesta));
+
         }else{
 
             $respuesta= new Respuesta();
@@ -211,6 +230,8 @@ class TicketsController extends Controller
              $historial->respuesta_id=$respuesta->id;
              $historial->updated_at= Carbon::now();
              $historial->save();
+
+             event(new RespuestaEvent($respuesta));
 
         }
 
@@ -274,6 +295,9 @@ class TicketsController extends Controller
             $historial->updated_at= Carbon::now();
             $historial->save();
 
+            // Enviamos masInfo al event,para luego crear la notitificación
+            event(new MasInfoEvent($masInfo));
+
         
         }else{
 
@@ -294,6 +318,9 @@ class TicketsController extends Controller
             $historial->masinfo_id=$masInfo->id;
             $historial->updated_at= Carbon::now();
             $historial->save();
+
+            // Enviamos masInfo al event,para luego crear la notitificación
+            event(new MasInfoEvent($masInfo));
         }
 
         return back()->with('status', 'Mensaje enviado exitosamente :)');
@@ -507,9 +534,9 @@ class TicketsController extends Controller
         $respMasInfo = RespMasInfo::where('ticket_id',$ticket_id)->get();
        
         // solucion del ticket
-        $solucion=Respuesta::where('ticket_id',$ticket_id)->first();
-
-        return view('myViews.Admin.tickets.historialTicket', compact('ticket_id', 'ticket', 'masInfo','respMasInfo','solucion' ));
+        $soluciones=Respuesta::where('ticket_id',$ticket_id)->get();
+     
+        return view('myViews.Admin.tickets.historialTicket', compact('ticket_id', 'ticket', 'masInfo','respMasInfo','soluciones' ));
        
     }
 
@@ -586,7 +613,55 @@ class TicketsController extends Controller
     public function destroy($id)
     {
         $ticket= Ticket::find($id);
-        $ticket->delete();
+        $respuestas=Respuesta::where('ticket_id', $id)->get();
+        $masInfos=MasInformacion::where('ticket_id', $id)->get();
+        $respMasInfos=RespMasInfo::where('ticket_id', $id)->get();
+
+
+        //* ELIMINAR LA IMAGEN DEL TICKET (DE LA CARPETA)
+        $rutaTicket_img = public_path('images/tickets/'). $ticket->imagen;  
+
+        if (file_exists($rutaTicket_img)) // Verificar si existe un archivo asociado
+        {
+           File::delete($rutaTicket_img); // Eliminar el archivo
+        } 
+
+        //* ELIMINAR TICKET
+        $ticket->delete(); 
+
+
+        // *ELIMINAR LA IMAGEN DE LA RESPUESTA DEL TICKET (DE LA CARPETA)
+        foreach($respuestas as $respuesta){
+
+            $rutaRespuesta_img = public_path('images/respuestas/tickets/'). $respuesta->imagen; 
+
+            if (file_exists($rutaRespuesta_img))
+            {
+               File::delete($rutaRespuesta_img); 
+            } 
+        }
+
+        // *ELIMINAR LA IMAGEN DE MAS INFO DEL TICKET (DE LA CARPETA)
+        foreach($masInfos as $masInfo){
+
+            $rutaMasInfo_img = public_path('images/masInfo/tickets/'). $masInfo->imagen; 
+
+            if (file_exists($rutaMasInfo_img))
+            {
+               File::delete($rutaMasInfo_img); 
+            } 
+        }
+
+          // *ELIMINAR LA IMAGEN DE LA RESPUESTA_MAS INFO DEL TICKET (DE LA CARPETA)
+          foreach($respMasInfos as $respMasInfo){
+
+            $rutarespMasInfo_img = public_path('images/respMasInfo/tickets/'). $respMasInfo->imagen; 
+
+            if (file_exists($rutarespMasInfo_img))
+            {
+               File::delete($rutarespMasInfo_img); 
+            } 
+        }
 
         return redirect()->route('tickets.index')->with('eliminar' , 'ok');
   

@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\TicketUpdate;
 
 class Ticket extends Model
 {
     use HasFactory;
+    use Notifiable;
 
     public function user()
     {
@@ -54,5 +56,15 @@ class Ticket extends Model
     {
         return $this->hasMany('App\Models\TicketHistorial'); 
     }
+
+    public function comments()
+    {
+        return $this->hasMany('App\Models\Comentario');
+    }
+
+    // public function notifications()
+    // {
+    //     return $this->hasMany(Notification::class);
+    // }
 
 }

@@ -2187,7 +2187,7 @@ table{
 
   #tabla_historial .btn-info,
   #tabla_historial .btn-success{
-    width: 65px !important;
+    width: 100px !important;
     font-size: 12px !important;
     padding: 3px ;
     margin: 6px !important;
@@ -2203,7 +2203,7 @@ table{
 
   #tabla_historial .btn-info,
   #tabla_historial .btn-success{
-    width: 50px !important;
+    width: 90px !important;
     font-size: 10px !important;
     padding: 3px;
     margin: 6px !important;
@@ -2219,9 +2219,9 @@ table{
 
   #tabla_historial .btn-info,
   #tabla_historial .btn-success{
-    width: 35px !important;
-    font-size: 8px !important;
-    padding: 3px;
+    width: 50px !important;
+    font-size: 5px !important;
+    padding: 3px !important;
     margin: 6px !important;
   }
 }
@@ -2241,8 +2241,8 @@ table{
 
   #tabla_historial .btn-info,
   #tabla_historial .btn-success{
-    width: 20px !important;
-    font-size: 6px !important;
+    width: 30px !important;
+    font-size: 4px !important;
     padding: 2px !important;
     margin: 4px !important;
   }
@@ -2257,8 +2257,8 @@ table{
 
   #tabla_historial .btn-info,
   #tabla_historial .btn-success{
-    width: 15px !important;
-    font-size: 4px !important;
+    width: 20px !important;
+    font-size: 2px !important;
     padding: 0px !important;
     margin: 4px !important;
   }
@@ -2428,6 +2428,262 @@ table{
     margin: 4px !important;
   }
 }
+
+/** TECNICOS QUE PERTENECEN A UN AREA*/
+
+#tabla_TecArea th, 
+#tabla_TecArea td{
+   text-align: center !important;
+   font-size: 30px !important;
+}
+
+#tabla_TecArea th {
+  width: auto !important;
+  white-space: normal;
+  overflow: hidden;
+  white-space: nowrap;
+  word-wrap: break-word !important;
+}
+
+#tabla_TecArea td{
+  white-space: normal !important;
+}
+
+#tabla_TecArea .btn-info{
+  white-space: nowrap;
+}
+
+@media(max-width: 2560px){
+  
+  #tabla_TecArea th {
+    font-size: 22px !important;
+  } 
+
+  #tabla_TecArea td{
+    font-size:20px !important ;
+  }
+
+  #tabla_TecArea td{
+    padding: 0 !important;
+    margin: 0 !important;
+  }  
+
+  #tabla_TecArea .content-btnOpciones a {
+    width: 90px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_TecArea .btn-info, #tabla_TecArea .btn-warning{
+    margin-bottom: 6px !important;
+    margin-top: 6px !important;
+  }
+
+}
+
+@media(max-width: 1440px){
+
+  #tabla_TecArea td,
+  #tabla_TecArea th {
+    font-size: 14px !important;
+  } 
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  } 
+
+  #tabla_TecArea .content-btnOpciones a {
+    width: 130px !important;
+    font-size: 12px !important;
+    padding: 2px !important;
+  }
+
+  #tabla_TecArea .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 6px !important;
+  }
+
+  #tabla_TecArea .btn-warning{
+    margin-bottom: 6px !important;
+    margin-top: 2px !important;
+  }
+
+
+  .btnVolver_TecArea .btn-volverInfo{
+  width: 120px;
+  font-size: 18px;
+  float: right;
+  margin-bottom:20px;
+  }
+
+  
+}
+
+@media(max-width: 1230px){
+  
+  #tabla_TecArea td,
+  #tabla_TecArea th {
+    font-size: 12px !important;
+  } 
+
+  #tabla_TecArea .content-btnOpciones a {
+    width: 120px !important;
+    font-size: 12px !important;
+    padding: 2px ;
+  }
+
+  #tabla_TecArea .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 6px !important;
+  }
+
+  #tabla_TecArea .btn-warning{
+    margin-top: 0 !important;
+    margin-bottom: 6px !important;
+  }
+
+  .btnVolver_TecArea .btn-volverInfo{
+    width: 100px;
+    font-size: 12px;
+    float: right;
+    margin-bottom:20px;
+    }
+}
+
+@media(max-width: 1024px){
+  
+  #tabla_TecArea th,
+  #tabla_TecArea td{
+    font-size: 10px !important;
+  }
+
+  #tabla_TecArea .content-btnOpciones a {
+    width: 100px !important;
+    font-size: 8px !important;
+    padding: 2px;
+  }
+  
+  #tabla_TecArea .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_TecArea .btn-warning{
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+
+  .btnVolver_TecArea .btn-volverInfo{
+    width: 70px;
+    font-size: 8px;
+    float: right;
+    margin-bottom:20px;
+    padding: 2px;
+    }
+
+    
+}
+
+@media(max-width: 600px){
+  
+  #tabla_TecArea th,  
+  #tabla_TecArea td {
+    font-size: 8px !important;
+  } 
+
+  #tabla_TecArea .content-btnOpciones a {
+    width: 60px !important;
+    font-size: 8px !important;
+    padding: 2px;
+  }
+ 
+  #tabla_TecArea .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_TecArea .btn-warning{
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+
+  .btnVolver_TecArea .btn-volverInfo{
+    width: 60px;
+    font-size: 6px;
+    float: right;
+    margin-top: 10px !important;
+    margin-bottom:20px !important;
+    padding: 2px;
+  }
+}
+
+@media(max-width: 425px){
+
+  #tabla_TecArea th,  
+  #tabla_TecArea td {
+    font-size: 6px !important;
+
+  }
+
+  table.dataTable>thead>tr>th:not(.sorting_disabled),
+  table.dataTable>thead>tr>td:not(.sorting_disabled) {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  }
+
+  #tabla_TecArea .content-btnOpciones a {
+    width: 40px !important;
+    font-size: 6px !important;
+    padding: 0px !important;
+  }
+
+  #tabla_TecArea .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_TecArea .btn-warning{
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+}
+
+
+@media(max-width: 325px){
+
+  #tabla_TecArea th,  
+  #tabla_TecArea td {
+    font-size: 6px !important;
+  } 
+
+  #tabla_TecArea .content-btnOpciones a {
+    width: 30px !important;
+    font-size: 2px !important;
+    padding: 0px !important;
+  }
+
+  #tabla_TecArea .btn-info{
+    margin-bottom: 2px !important;
+    margin-top: 4px !important;
+  }
+
+  #tabla_TecArea .btn-warning{
+    margin-top: 0px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .btnVolver_TecArea .btn-volverInfo{
+    width: 50px !important;
+    font-size: 4px;
+    float: right;
+    margin-top: 10px !important;
+    margin-bottom:20px !important;
+    padding: 2px;
+  }
+}
+
 
 .leyenda_tktArea{
   display: flex;

@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use App\Notifications\ComentarioNotification;
+use App\Events\ComentarioEvent;
+use App\Events\TicketEvent;
+use App\Events\RespMasInfoEvent;
 use Carbon\Carbon;
 use App\Models\Ticket;
 use App\Models\User;
@@ -17,6 +22,8 @@ use App\Models\TicketHistorial;
 use App\Models\MasInformacion;
 use App\Models\RespMasInfo;
 use App\Models\Respuesta;
+use App\Models\Comentario;
+
 
 class TicketsUsuarioController extends Controller
 {
@@ -27,7 +34,7 @@ class TicketsUsuarioController extends Controller
      */
     public function index()
     {
-        $tickets=Ticket::where('user_id', auth()->user()->id)->orderBy('id', 'desc')->get();
+        $tickets=Ticket::where('user_id', auth()->user()->id)->get();
         return view('myViews.usuarioEst.index')->with(['tickets'=> $tickets]);
     }
 
@@ -102,6 +109,9 @@ class TicketsUsuarioController extends Controller
             $ticket->fecha_caducidad=Carbon::now()->addDays($tiempoResolucion);
             $ticket->save();
 
+            // Enviamos el ticket al event, para despues crear la notificación 
+            event(new TicketEvent($ticket));
+
         }else{
 
             $ticket=new Ticket();
@@ -114,6 +124,9 @@ class TicketsUsuarioController extends Controller
             $ticket->estado_id=Estado::first()->id;
             $ticket->fecha_caducidad=Carbon::now()->addDays($tiempoResolucion);
             $ticket->save();
+
+            // Enviamos el ticket al event, para despues crear la notificación 
+            event(new TicketEvent($ticket));
         }
 
         $tickets=Ticket::where('user_id', auth()->user()->id)->orderBy('id', 'desc')->get();
@@ -124,10 +137,12 @@ class TicketsUsuarioController extends Controller
     public function historial($idTicket){
         
         //Historial del ticket que viene por parametro
-         $tickets = TicketHistorial::where('ticket_id', $idTicket)->get();
-       
+        $tickets = TicketHistorial::where('ticket_id', $idTicket)->get();
        
         $mensajes=MasInformacion::where('ticket_id', $idTicket)->get();
+
+        // $idRespuesta =Ticket::find($idTicket)->respuestas()->get();
+        // $respuesta = TicketHistorial::where('ticket_id', $idTicket)->get()
 
         return view('myViews.usuarioEst.historial' , compact ('idTicket', 'tickets', 'mensajes'));
     }
@@ -200,6 +215,10 @@ class TicketsUsuarioController extends Controller
             $historial->updated_at= Carbon::now();
             $historial->save();
 
+             // Enviamos $respuesta al event (RespMasInfoEvent),para luego crear la notitificación
+             event(new RespMasInfoEvent($respuesta));
+
+
         }else{
 
             $respuesta=new RespMasInfo();
@@ -226,23 +245,68 @@ class TicketsUsuarioController extends Controller
             $historial->estado_id=4;
             $historial->updated_at= Carbon::now();
             $historial->save();
+
+            // Enviamos $respuesta al event (RespMasInfoEvent),para luego crear la notitificación
+            event(new RespMasInfoEvent($respuesta));
+
         }
 
         return back()->with('status', 'Respuesta enviada exitosamente :)');
     }
 
     public function verRespuesta($idTicket, $idRespuesta){
-          //Obtener el historial que esta en la posicion que viene en el parametro $idMensaje (ya que pueden haber registros eliminados)
-        $hist_Posicion=TicketHistorial::where('ticket_id', $idTicket)->orderBy('id', 'asc')->skip($idRespuesta-1)->first();
       
-        $idRespuesta=$hist_Posicion->respuesta_id;
-   
         $ticket=Ticket::find($idTicket);
 
-        $respuestaTicket=Respuesta::where('id', $idRespuesta)->first();
-       
+        $ticketResueltos=TicketHistorial::where('ticket_id', $idTicket)->where('estado_id', 5)->get();
+
+        // Obtener el ticket basado en la posición
+        $registroRespuesta = $ticketResueltos->skip($idRespuesta - 1)->first();
+                          
+        $idResp= $registroRespuesta->respuesta_id;
+   
+        $respuestaTicket= Respuesta::find($idResp);
+     
         return view('myViews.usuarioEst.respuesta')->with(['idTicket'=>$idTicket, 'ticket'=> $ticket,'respuesta' => $respuestaTicket]);
     }
+
+    public function comentar_Respuesta(Request $request,$idTicket, $idRespuesta){
+
+        $request->validate([
+            'mensaje' =>'required',
+            'opcion' => 'required',
+        ],
+        [
+            'mensaje.required' => 'El campo mensaje es requerido',
+            'opcion.required' => 'Debe seleccionar una opción',
+        ]);
+
+        $usuarioId=auth()->user()->id;
+   
+        $comentario=new Comentario();
+        $comentario->respuesta_id=$idTicket;   
+        $comentario->ticket_id=$idRespuesta;   
+        $comentario->mensaje=$request->mensaje;
+        $comentario->nivel_satisfaccion=$request->opcion;
+        $comentario->bool_reabrir=$request->has('reabrir')? true : false;;
+        $comentario->save();
+
+        //*NOTIFICACION A LOS USUARIOS AL COMENTAR
+        // User::all()
+        //     ->except($usuarioId)
+        //     ->each(function(User $user) use ($comentario){
+        //         $user->notify(new ComentarioNotification($comentario));
+        //     });
+
+        //* NOTIFICACION A LOS USUARIOS PERO UTILIZANDO EVENT Y LISTENER (más simplificado)
+        // Enviamos el comentario al event,para luego crear la notificación
+        event(new ComentarioEvent($comentario));
+
+        return back()->with('status', 'Comentario enviado exitosamente :)');
+       
+    }
+
+   
 
 
     /**

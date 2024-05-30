@@ -25,9 +25,10 @@
                </thead>
 
                <tbody>
-                
+                    @php $contadorResueltos = 1; @endphp
+               
                     @foreach ($tickets as $ticket )
-
+               
                         @if($ticket->estado->nombre == "En espera" && !is_null($ticket->masinfo_id))  
 
                                <tr>
@@ -73,6 +74,8 @@
 
                                     <td>{{$ticket->updated_at}}</td>
 
+            
+
                                     <td class="content-btnInfo">
                                         @if($ticket->estado->nombre == "Nuevo")
                                                 <a class="btn btn-info" href="/ticket/{{$idTicket}}/mensaje/{{$ticket->masinfo_id}}" hidden>Ver mensaje</a>
@@ -81,7 +84,7 @@
                                         @elseif($ticket->estado->nombre == "En espera")
                                             <a class="btn btn-info" href="/ticket/{{$idTicket}}/mensaje/{{$ticket->masinfo_id}}" >Ver mensaje</a>
                                         @elseif($ticket->estado->nombre == "Resuelto")
-                                            <a class="btn btn-success" href="/ticket/{{$idTicket}}/respuesta/{{$ticket->masinfo_id}}">Ver respuesta</a>
+                                            <a class="btn btn-success" href="/ticket/{{$idTicket}}/respuesta/{{$ticket->respuesta_id}}">Ver respuesta</a>
                                         @endif 
                                     </td>
                                </tr> 
@@ -132,6 +135,9 @@
 
                                     <td>{{$ticket->updated_at}}</td>
 
+                                   
+
+
                                     <td class="content-btnInfo">
                                         @if($ticket->estado->nombre == "Nuevo")
                                                 <a class="btn btn-info" href="/ticket/{{$idTicket}}/mensaje/{{$ticket->masinfo_id}}" hidden>Ver mensaje</a>
@@ -140,8 +146,10 @@
                                         @elseif($ticket->estado->nombre == "En espera")
                                             <a class="btn btn-info" href="/ticket/{{$idTicket}}/mensaje/{{$ticket->masinfo_id}}" >Ver mensaje</a>
                                         @elseif($ticket->estado->nombre == "Resuelto")
-                                            <a class="btn btn-success" href="/ticket/{{$idTicket}}/respuesta/{{$ticket->masinfo_id}}">Ver respuesta</a>
+                                            <a class="btn btn-success" href="/ticket/{{$idTicket}}/respuesta/{{$contadorResueltos++}}">Ver respuesta</a>
                                         @endif 
+
+                                        
                                     </td>
                                </tr> 
 

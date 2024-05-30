@@ -14,4 +14,9 @@ class Comentario extends Model
       return $this->belongsTo('App\Models\Respuesta');
     }
 
+    public function ticket()
+    {
+        return $this->belongsTo(Ticket::class);
+    }
+
 }

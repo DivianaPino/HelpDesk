@@ -25,5 +25,10 @@ class TicketHistorial extends Model
         return $this->belongsTo('App\Models\Estado');
     }
 
+    public function respuesta()
+    {
+        return $this->belongsTo('App\Models\Respuesta');
+    }
+
 
 }

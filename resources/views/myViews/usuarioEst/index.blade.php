@@ -76,7 +76,7 @@
                                <td class="resuelto">{{$ticket->estado->nombre}}</td>
                              @endif
 
-                             <td>{{\Carbon\Carbon::parse($ticket->updated_at)}}</td>
+                             <td>{{ \Carbon\Carbon::parse($ticket->respuestas->last()['updated_at']) }}</td>
                           
                              <td class="content-btnInfo">
                                  <a class="btn btn-info" href="/ticket/{{$ticket->id}}/historial" >Ver</a>

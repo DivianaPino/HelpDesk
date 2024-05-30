@@ -76,7 +76,7 @@ class AreasController extends Controller
     public function area_tecnicos($areaid)
     { 
         $area = Area::find($areaid);
-        $usuarios = $area->users; // Obtiene todos los usuarios de un área específica
+        $usuarios = $area->users->unique('id'); // Obtiene todos los usuarios de un área específica
         return view('myViews.Admin.areas.tecnicos')->with(['usuarios'=> $usuarios, 'area'=>$area]);
     }
 

@@ -2,22 +2,31 @@
 
 use Illuminate\Support\Facades\Route;
 
-//General
+// General
 use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\Dashboard\DashboardController;
 
-//Admin
+// Admin
 use App\Http\Controllers\Admin\Tickets\TicketsController;
 use App\Http\Controllers\Admin\Usuarios\UsuariosController;
 use App\Http\Controllers\Admin\Areas\AreasController;
 use App\Http\Controllers\Admin\Prioridades\PrioridadesController;
 use App\Http\Controllers\Admin\Analisis\AnalisisController;
+use App\Http\Controllers\Admin\Comentarios\ComentarioController;
 
-//Técnico de soporte
+// Técnico de soporte
 use App\Http\Controllers\TecnicoSop\MisTickets\MisTicketsController;
 
-//Usuario Estándar
+// Usuario Estándar
 use App\Http\Controllers\usuarioEst\TicketsUsuario\TicketsUsuarioController;
+
+// -Todos los Usuarios registrados
+use App\Http\Controllers\Todos_Registrados\Notificaciones\ComentarioNotiController;
+use App\Http\Controllers\Todos_Registrados\Notificaciones\TicketNotiController;
+use App\Http\Controllers\Todos_Registrados\Notificaciones\MasInfoNotiController;
+use App\Http\Controllers\Todos_Registrados\Notificaciones\RespMasInfoNotiController;
+use App\Http\Controllers\Todos_Registrados\Notificaciones\RespuestaNotiController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -36,30 +45,35 @@ Route::get('/', [HomeController::class, 'index'] )->name('/');
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
-    'verified'
+    'verified', 
+    'comentarioNoti',
+    'ticketNoti',
+    'masInfoNoti',
+    'respMasInfoNoti',
+    'respuestaNoti',
 ])->group(function () {
+
 
     Route::get('/dashboard', [DashboardController::class, 'index'] )->name('dashboard');
 
+    // Rol: Admin
     Route::resource('/usuarios', UsuariosController::class)->names('usuarios');
     Route::resource('/tickets', TicketsController::class)->names('tickets');  
+    Route::resource('/areas', AreasController::class)->names('areas');
+    Route::resource('/prioridades', PrioridadesController::class)->names('prioridades');
+    Route::get('/asignar_area/{id}', [UsuariosController::class, 'asignar_area'] )->name('asignar_area');
+    Route::put('/actualizar_area/{id}', [UsuariosController::class, 'actualizar_area'])->name('actualizar_area');
+    Route::get('/area/{areaId}/tecnicos', [AreasController::class, 'area_tecnicos'] )->name('area_tecnicos');
 
+    // Rol: Usuario estandar
     Route::resource('/usuario/tickets', TicketsUsuarioController::class)->names('usuarios_tickets');
     Route::get('/ticket/{idticket}/historial', [TicketsUsuarioController::class, 'historial'])->name('historial');
     Route::get('/ticket/{idticket}/mensaje/{idmensaje}', [TicketsUsuarioController::class, 'verMensaje'])->name('ver_mensaje');
     Route::post('/respuesta/mas_info/ticket/{idTicket}/{idMasInfo}', [TicketsUsuarioController::class, 'respMasInfo'] )->name('resp_masInfo');
     Route::get('/ticket/{idticket}/respuesta/{idrespuesta}', [TicketsUsuarioController::class, 'verRespuesta'])->name('ver_respuesta');
-    
+    Route::post('/comentar/respuesta/{idrespuesta}/ticket/{idTicket}', [TicketsUsuarioController::class, 'comentar_Respuesta'])->name('comentar_Respuesta');
    
-    
-    Route::resource('/areas', AreasController::class)->names('areas');
-    Route::resource('/prioridades', PrioridadesController::class)->names('prioridades');
-
-
-    Route::get('/asignar_area/{id}', [UsuariosController::class, 'asignar_area'] )->name('asignar_area');
-    Route::put('/actualizar_area/{id}', [UsuariosController::class, 'actualizar_area'])->name('actualizar_area');
-
-    Route::get('/area/{areaId}/tecnicos', [AreasController::class, 'area_tecnicos'] )->name('area_tecnicos');
+   
 
     // Rol: Técnico de soporte
     Route::get('/area_usuario/tickets', [TicketsController::class, 'area_tickets'] )->name('areaUsuario_tickets');
@@ -72,7 +86,7 @@ Route::middleware([
     Route::get('/mis_tickets/cerrados', [MisTicketsController::class, 'tickets_cerrados'] )->name('misTickets_cerrados');
     Route::get('/mis_tickets/reabiertos', [MisTicketsController::class, 'tickets_reAbiertos'] )->name('misTickets_reAbiertos');
 
-    
+    //  Roles: Admin, Jefe de área, soporte técnico 
     Route::get('/noasignados', [TicketsController::class, 'tickets_noasignados'] )->name('tickets_noasignados');
     Route::get('/detalles/{idTicket}', [TicketsController::class, 'detalles_ticket'] )->name('detalles_ticket');
     Route::put('/asignarTicket/{idTicket}', [TicketsController::class, 'asignar_ticket'] )->name('asignar_ticket');
@@ -99,16 +113,15 @@ Route::middleware([
     Route::get('/ver/ticket/{idTicket}', [TicketsController::class, 'verTicket'] )->name('verTicket');
     Route::get('/historial/ticket/{ticket_id}', [TicketsController::class, 'historialTicket'] )->name('historial_ticket');
 
-    Route::get('/volver/detalles/{ticket_id}', [TicketsController::class, 'volverDetalles'] )->name('volver_detalles');
-
-
+    Route::resource('comentarios', ComentarioController::class);
     
-    
-
     Route::get('/analisis', [AnalisisController::class, 'index'] )->name('index');
 
-    
-
-    
+    // Roles: Todos
+    Route::get('/notificacion/{idNotificacion}/ticket/{idticket}/resp/{idResp}', [ComentarioNotiController::class, 'marcar_como_leida'] )->name('c_marcar_como_leida');
+    Route::get('/notificacion/{idNotificacion}/ticket/{idticket}', [TicketNotiController::class, 'marcar_como_leida'] )->name('t_marcar_como_leida');
+    Route::get('/notificacion/{idNotificacion}/ticket/{idticket}/masInfo', [MasInfoNotiController::class, 'marcar_como_leida'] )->name('mi_marcar_como_leida');
+    Route::get('/notificacion/{idNotificacion}/ticket/{idticket}/respmasInfo', [RespMasInfoNotiController::class, 'marcar_como_leida'] )->name('rmi_marcar_como_leida');
+    Route::get('/notificacion/{idNotificacion}/ticket/{idticket}/respuesta', [RespuestaNotiController::class, 'marcar_como_leida'] )->name('resp_marcar_como_leida');
 
 });

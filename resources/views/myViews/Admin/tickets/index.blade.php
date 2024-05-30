@@ -69,19 +69,23 @@
                             <td>{{\Carbon\Carbon::parse($ticket->fecha_inicio)->format('d-m-Y')}}</td>
 
                             @if ($ticket->respuestas->count() > 0)
-                              <td>{{\Carbon\Carbon::parse($ticket->ultimaRespuesta['fecha'])->format('d-m-Y')}}</td>
+                              <td>{{ \Carbon\Carbon::parse($ticket->respuestas->last()['updated_at']) }}</td>
                             @else
                               <td>---</td>
                             @endif
 
-                              @if($ticket->estado->nombre == "En espera")
-                                 <td>En pausa</td>
-                              @else
-                                 <td>{{\Carbon\Carbon::parse($ticket->fecha_caducidad)->format('d-m-Y')}}</td>
-                              @endif
+                            @if($ticket->estado->nombre == "En espera")
+                              <td>En pausa</td>
+                            @else
+                              <td>{{\Carbon\Carbon::parse($ticket->fecha_caducidad)->format('d-m-Y')}}</td>
+                            @endif
                              
                             <td class="content-btnOpciones" >
+                              @if($ticket->estado->nombre == "Nuevo")
                                 <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
+                              @else
+                                <a class="btn btn-info" href="/historial/ticket/{{$ticket->id}}" >Ver</a>
+                              @endif
 
                                 <form action="{{route('tickets.destroy',$ticket->id)}}" method="POST" class="formulario-eliminar">
                                 @csrf
@@ -194,7 +198,7 @@ $(document).ready(function() {
         "order": [[7, 'desc']],
         "columnDefs": [
             {
-                "targets": 7, 
+                "targets": [7,8], 
                 "type": "date",
                 "render": function (data, type, row) {
                     // Verificar si 'data' es una fecha válida

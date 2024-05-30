@@ -14,7 +14,7 @@
             @csrf
 
             <div>
-                <x-jet-label for="name" value="{{ __('Nombre:') }}" class="texto-formulario" />
+                <x-jet-label for="name" value="{{ __('Nombre y Apellido:') }}" class="texto-formulario" />
                 <x-jet-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
             </div>
 

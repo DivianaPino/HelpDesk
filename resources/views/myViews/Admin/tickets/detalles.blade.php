@@ -16,6 +16,8 @@
               <h3>Detalles de ticket</h3>
               @if(session('status'))
                 <p class="alert alert-success">{{ Session('status') }}</p>
+              @elseif(session('error'))
+                <p class="alert alert-danger">{{ Session('error') }}</p>
               @endif
               <form action="/asignarTicket/{{$ticket->id}}" class="mb-5" method="post" id="contactForm" name="contactForm">
                 @csrf

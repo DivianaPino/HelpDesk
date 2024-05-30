@@ -68,6 +68,9 @@
                 <div class="imagen1">
                     <img src="../../assets/imgSoporte.png" alt="">
                 </div>
+                <div class="imagen2">
+                    <img src="../../assets/imgSoportePeque.png" alt="">
+                </div>
             </div>
         </div>
 

@@ -50,7 +50,8 @@ class MisTicketsController extends Controller
        
     }
 
-    // TICKETS ASIGNADOS
+    //*------------------------TICKETS POR ESTADOS QUE ESTAN ASIGNADOS AL AGENTE TECNICO AUTENTICADO:----------------------------
+
     public function tickets_abiertos()
     {
         $usuario= Auth::user();

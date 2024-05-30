@@ -292,7 +292,13 @@ return [
 
     'menu' => [
 
+// public function unreadNotifications(){
+//     return $this->notifications()->whereNull('read_at');
+// }
 
+// @if(count(auth()->user()->unreadNotificacion))
+// <span>{{count(auth()->user()->unreadNotificacion)}}</span>
+// @endif
 
         // Navbar items:
         [
@@ -303,6 +309,24 @@ return [
         [
             'type'         => 'fullscreen-widget',
             'topnav_right' => true,
+        ],
+        [
+            'type' => 'navbar-notification',
+            'badge_class' => 'notification-badge',
+            'id' => 'my-notification',                // An ID attribute (required).
+            'icon' => 'fas fa-bell fa-lg',            // A font awesome icon (required).
+            'icon_color' => 'warning',                // The initial icon color (optional).
+            'label' => 0,                             // The initial label for the badge (optional).
+            'label_color' => 'danger',                // The initial badge color (optional).
+            'url' => 'notifications/show',            // The url to access all notifications/elements (required).
+            'topnav_right' => true,                   // Or "topnav => true" to place on the left (required).
+            'dropdown_mode' => true,                  // Enables the dropdown mode (optional).
+            'dropdown_flabel' => 'All notifications', // The label for the dropdown footer link (optional).
+            'update_cfg' => [
+                'url' => 'notifications/get',         // The url to periodically fetch new data (optional).
+                'period' => 30,                       // The update period for get new data (in seconds, optional).
+            ],
+            
         ],
 
         // Sidebar items:

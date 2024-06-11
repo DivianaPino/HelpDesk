@@ -1,77 +1,67 @@
 @extends('adminlte::page')
 
-@section('title', 'Tickets abiertos')
+@section('title', 'Comentarios')
 
 @section('content_header')
     
 @stop
 
 @section('content')
-<h1 class="titulo_prin">Tickets abiertos</h1>
+<h1 class="titulo_prin">Todos los comentarios</h1>
 <div>
      <div  class="card">
         <div  class="card-body" >
-            <table id="tabla_tktAbiertos" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap" style="width:100%;" >
+            <table id="tabla_comentariosTodos" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap" style="width:100%;" >
                <thead class="text-center bg-dark text-white">
                    <tr>
                       <th>ID</th>
                       <th>Usuario</th>
                       <th>Clasificación</th>
-                      <th>Asunto</th>
-                      <th>Prioridad</th>
-                      <th>Estado</th>
-                      <th>Creado</th>
-                      <th>Caducidad</th>
+                      <th>Respuesta</th>
+                      <th>Calificación</th>
+                      <th>¿Reabierto?</th>
+                      <th>Fecha</th>
                       <th>Acciones</th>
                    </tr>
                </thead>
 
                <tbody>
                  
-                    @foreach ($tickets as $ticket )
-   
+                    @foreach ($comentarios as $comentario )
+
+                        @php
+                          $ticket= App\Models\Ticket::find($comentario->ticket_id);
+                          $respuesta=App\Models\Respuesta::find($comentario->respuesta_id);
+                        @endphp
+    
                         <tr>
                              <td>TK-{{$ticket->id}}</td>
                              <td>{{$ticket->user->name}}</td>
                              <td>{{$ticket->clasificacion->nombre}}</td>
-                             <td>{{$ticket->asunto}}</td>
-                            
-                             <!-- Prioridades -->
-                             @if($ticket->prioridad->nombre == "Urgente")
-                                <td class="prd_urgente">{{$ticket->prioridad->nombre}}</td>
-                             @elseif($ticket->prioridad->nombre == "Alta")
-                                <td class="prd_alta">{{$ticket->prioridad->nombre}}</td>
-                             @elseif($ticket->prioridad->nombre == "Media")
-                                <td class="prd_media">{{$ticket->prioridad->nombre}}</td>
-                             @elseif($ticket->prioridad->nombre == "Baja")
-                                <td class="prd_baja">{{$ticket->prioridad->nombre}}</td>
-                             @endif
+                             <td class=th_respuesta>
+                                @if (strlen($respuesta->mensaje) > 40) 
+                                    {{ substr($respuesta->mensaje, 0, 40) }}...
+                                @else
+                                    {{$respuesta->mensaje}}
+                                @endif
+                             </td>
+                             <td>{{$comentario->nivel_satisfaccion}}</td>
 
-                             <!-- Estados -->
-                             @if($ticket->estado->nombre == "Nuevo")
-                                <td class="nuevo">{{$ticket->estado->nombre}}</td>
-                             @elseif($ticket->estado->nombre == "Abierto")
-                                <td class="abierto">{{$ticket->estado->nombre}}</td>
-                             @elseif($ticket->estado->nombre == "En espera")
-                                <td class="enEspera">{{$ticket->estado->nombre}}</td>
-                             @elseif($ticket->estado->nombre == "Resuelto")
-                                <td class="resuelto">{{$ticket->estado->nombre}}</td>
-                             @elseif($ticket->estado->nombre == "Reabierto")
-                                <td class="reAbierto">{{$ticket->estado->nombre}}</td>
-                             @endif
+                             <td> 
+                                @if($comentario->bool_reabrir == 1)
+                                    SI 
+                                @else
+                                    NO 
+                                @endif
+                             </td>
 
-                            <!-- Fecha de creación -->
-                            <td>{{\Carbon\Carbon::parse($ticket->fecha_inicio)->format('d-m-Y')}}</td>
-                            <!-- Fecha de caducidad -->
-                            <td>{{\Carbon\Carbon::parse($ticket->fecha_caducidad)}}</td>
+                             <td>{{$comentario->created_at}}</td>
 
-                            <!-- Botones - opciones -->
+                             <!-- Botones - opciones -->
                             <td>
-                                <a class="btn btn-info" href="/detalles/{{$ticket->id}}" >Ver</a>
+                                <a class="btn btn-info" href="/comentario/{{$comentario->id}}" >Comentario</a>
                             </td>
-
                         </tr>
-
                     @endforeach
 
                </tbody>
@@ -107,7 +97,7 @@
 
 <script>
 $(document).ready(function() {
-    $('#tabla_tktAbiertos').DataTable({
+    $('#tabla_comentariosTodos').DataTable({
 
         responsive:true,
 
@@ -137,10 +127,10 @@ $(document).ready(function() {
             "infoFiltered":"",
         },
 
-        "order": [[7, 'desc']],
+        "order": [[6, 'desc']],
         "columnDefs": [
             {
-                "targets": 7, 
+                "targets": 6, 
                 "type": "date",
                 "render": function (data, type, row) {
                     // Asegurar de que 'data' esté en el formato 'YYYY-MM-DD'

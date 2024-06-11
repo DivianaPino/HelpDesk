@@ -34,6 +34,7 @@
                                <tr>
                                     <td>{{$ticket->ticket_id}}</td>
 
+
                                     @if($ticket->estado->nombre == "Nuevo")
                                         <td class="abierto">Abierto</td>
                                     @elseif($ticket->estado->nombre == "Abierto")
@@ -51,6 +52,8 @@
                                         @endisset
                                     @elseif($ticket->estado->nombre == "Resuelto")
                                         <td class="resuelto">{{$ticket->estado->nombre}}</td>
+                                    @elseif($ticket->estado->nombre == "Reabierto")
+                                        <td class="reAbierto">{{$ticket->estado->nombre}}</td>
                                     @endif
 
 
@@ -70,6 +73,8 @@
                                             la opción <span style="color:#fd0505;"> 'ver respuesta'</span> 
                                             y califique.
                                         </td>
+                                    @elseif($ticket->estado->nombre == "Reabierto")
+                                        <td>holaaa</td>
                                     @endif 
 
                                     <td>{{$ticket->updated_at}}</td>
@@ -85,6 +90,8 @@
                                             <a class="btn btn-info" href="/ticket/{{$idTicket}}/mensaje/{{$ticket->masinfo_id}}" >Ver mensaje</a>
                                         @elseif($ticket->estado->nombre == "Resuelto")
                                             <a class="btn btn-success" href="/ticket/{{$idTicket}}/respuesta/{{$ticket->respuesta_id}}">Ver respuesta</a>
+                                        @elseif($ticket->estado->nombre == "Reabierto")
+                                            <a class="btn btn-info" href="/ticket/{{$idTicket}}/mensaje/{{$ticket->masinfo_id}}" hidden>Ver mensaje</a>
                                         @endif 
                                     </td>
                                </tr> 
@@ -107,6 +114,8 @@
                                         <td class="enRevision">{{$ticket->estado->nombre}}</td>
                                     @elseif($ticket->estado->nombre == "Resuelto")
                                         <td class="resuelto">{{$ticket->estado->nombre}}</td>
+                                    @elseif($ticket->estado->nombre == "Reabierto")
+                                        <td class="reAbierto">{{$ticket->estado->nombre}}</td>
                                     @endif
 
 
@@ -131,9 +140,11 @@
                                             la opción <span style="color:#fd0505;"> 'ver respuesta'</span> 
                                             y califique.
                                         </td>
+                                    @elseif($ticket->estado->nombre == "Reabierto")
+                                        <td></td>
                                     @endif 
 
-                                    <td>{{$ticket->updated_at}}</td>
+                                    <td>{{\Carbon\Carbon::parse($ticket->updated_at)->format('d-m-Y H:i:s')}}</td>
 
                                    
 
@@ -147,6 +158,8 @@
                                             <a class="btn btn-info" href="/ticket/{{$idTicket}}/mensaje/{{$ticket->masinfo_id}}" >Ver mensaje</a>
                                         @elseif($ticket->estado->nombre == "Resuelto")
                                             <a class="btn btn-success" href="/ticket/{{$idTicket}}/respuesta/{{$contadorResueltos++}}">Ver respuesta</a>
+                                        @elseif($ticket->estado->nombre == "Reabierto")
+                                            <a class="btn btn-info" href="/ticket/{{$idTicket}}/mensaje/{{$ticket->masinfo_id}}" hidden>Ver mensaje</a>
                                         @endif 
 
                                         

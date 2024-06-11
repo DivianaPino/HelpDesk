@@ -14,8 +14,8 @@
                 <a style="margin-top:8px;" href="{{ session('previous_url') }}" class="btn btn-dark btn-volverInfo">
                   <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
               </div> 
-              <h3 class="tituloRespuesta">Formulario - Respuesta de ticket #{{$idTicket}}
-                <a  href="/historial/ticket/{{$ticket->id}}" class="btn btn-primary btn-historial">Historial</a>
+              <h3 class="tituloRespuesta">Formulario - Respuesta de ticket #{{$idTicket}} <span style="margin-right:15px;"></span>
+                <a  href="/historial/ticket/{{$ticket->id}}" class="btn btn-primary btn-historial" >Historial</a>
               </h3>
               @if(session('status'))
                 <p class="alert alert-success">{{ Session('status') }}</p>

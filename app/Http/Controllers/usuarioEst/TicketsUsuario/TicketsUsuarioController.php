@@ -270,7 +270,7 @@ class TicketsUsuarioController extends Controller
         return view('myViews.usuarioEst.respuesta')->with(['idTicket'=>$idTicket, 'ticket'=> $ticket,'respuesta' => $respuestaTicket]);
     }
 
-    public function comentar_Respuesta(Request $request,$idTicket, $idRespuesta){
+    public function comentar_Respuesta(Request $request,$idRespuesta, $idTicket){
 
         $request->validate([
             'mensaje' =>'required',
@@ -284,12 +284,26 @@ class TicketsUsuarioController extends Controller
         $usuarioId=auth()->user()->id;
    
         $comentario=new Comentario();
-        $comentario->respuesta_id=$idTicket;   
-        $comentario->ticket_id=$idRespuesta;   
+        $comentario->respuesta_id=$idRespuesta;   
+        $comentario->ticket_id=$idTicket;   
         $comentario->mensaje=$request->mensaje;
         $comentario->nivel_satisfaccion=$request->opcion;
         $comentario->bool_reabrir=$request->has('reabrir')? true : false;;
         $comentario->save();
+
+     
+       
+        if($comentario->bool_reabrir){
+            $ticket= Ticket::find($idTicket);
+            $ticket->estado_id=6;
+            $ticket->save();
+        }
+
+        $historial= new TicketHistorial();
+        $historial->ticket_id= $idTicket;
+        $historial->estado_id=6;
+        $historial->updated_at= Carbon::now();
+        $historial->save();
 
         //*NOTIFICACION A LOS USUARIOS AL COMENTAR
         // User::all()

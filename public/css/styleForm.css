@@ -59,7 +59,8 @@ body {
       outline: none;
       -webkit-box-shadow: none;
       box-shadow: none;
-      border-color: #000; }
+      border-color: #000; 
+    }
   
   .btnForm {
     border: none;
@@ -196,7 +197,7 @@ body {
   height:30px;
 }
 
-.tituloRespuesta{
+.tituloRespuesta, .tituloComentario{
   display: flex;
   justify-content: center;
   color:#2a2b2c !important;
@@ -576,7 +577,7 @@ padding: 0px 6px 0px 6px
   color: white;
 }
 
-/** Respuesta del ticket */
+/** Respuesta del ticket y comentarios*/
 .containerSelectCheck{
   width:400px; display:flex; justify-content:space-between;
 }
@@ -586,6 +587,12 @@ padding: 0px 6px 0px 6px
 
 .containerSelectCheck .checkbox-container .labelReabrir{
   margin-top: 10px !important;
+}
+
+@media(max-width: 1024px){
+  .form-respuesta .tituloComentario{
+    font-size: 22px !important;
+  }
 }
 
 @media(max-width: 768px){
@@ -600,8 +607,17 @@ padding: 0px 6px 0px 6px
   .form-respuesta .tituloRespuesta{
     font-size: 22px !important;
   }
+
+  .form-respuesta .tituloComentario{
+    font-size: 15px !important;
+  }
+
   .form-respuesta .span_respTkt{
     font-size: 22px;
+  }
+
+  .form-respuesta .tituloComentario{
+    font-size: 15px;
   }
 
   .containerSelectCheck{
@@ -627,6 +643,7 @@ padding: 0px 6px 0px 6px
   .form-respuesta .tituloRespuesta{
     font-size: 18px !important;
   }
+
   .form-respuesta .span_respTkt{
     font-size: 18px;
   }
@@ -653,6 +670,11 @@ padding: 0px 6px 0px 6px
   .form-respuesta .tituloRespuesta{
     font-size: 14px !important;
   }
+
+  .form-respuesta .tituloComentario{
+    font-size: 12px !important;
+  }
+
   .form-respuesta .span_respTkt{
     font-size: 14px;
   }
@@ -693,6 +715,11 @@ padding: 0px 6px 0px 6px
   .form-respuesta .tituloRespuesta{
     font-size: 14px !important;
   }
+
+  .form-respuesta .tituloComentario{
+     font-size: 8px !important;
+  }
+
   .form-respuesta .span_respTkt{
     font-size: 14px;
   }
@@ -721,6 +748,11 @@ padding: 0px 6px 0px 6px
   .form-respuesta .tituloRespuesta{
     font-size: 10px !important;
   }
+
+  .form-respuesta .tituloComentario{
+     font-size: 10px !important;
+  }
+
   .form-respuesta .span_respTkt{
     font-size: 10px;
   }

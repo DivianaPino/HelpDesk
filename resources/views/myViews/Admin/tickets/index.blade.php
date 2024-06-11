@@ -64,6 +64,8 @@
                               <td class="enRevision">{{$ticket->estado->nombre}}</td>
                             @elseif($ticket->estado->nombre == "Resuelto")
                               <td class="resuelto">{{$ticket->estado->nombre}}</td>
+                            @elseif($ticket->estado->nombre == "Reabierto")
+                              <td class="reAbierto">{{$ticket->estado->nombre}}</td>
                             @endif
 
                             <td>{{\Carbon\Carbon::parse($ticket->fecha_inicio)->format('d-m-Y')}}</td>
@@ -83,6 +85,9 @@
                             <td class="content-btnOpciones" >
                               @if($ticket->estado->nombre == "Nuevo")
                                 <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
+                              @elseif($ticket->estado->nombre == "Abierto" ||$ticket->estado->nombre == "En espera" || $ticket->estado->nombre == "Reabierto")
+                                <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
+                                <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
                               @else
                                 <a class="btn btn-info" href="/historial/ticket/{{$ticket->id}}" >Ver</a>
                               @endif

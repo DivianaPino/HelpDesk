@@ -59,7 +59,7 @@
                                 </div>
 
                                 <div class="">
-                                    <a href="/form/respuesta/{{$ticket->id}}" class="btn btn-dark btn-volverInfo">Volver</a>
+                                    <a  href="{{ session('previous_url') }}" class="btn btn-dark btn-volverInfo">Volver</a>
                                 </div>
 
                             </div>

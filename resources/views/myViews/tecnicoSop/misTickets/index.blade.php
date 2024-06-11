@@ -16,19 +16,20 @@
         <div  class="card-body" >
             <table id="tabla_misTickets" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap" style="width:100%;" >
                 <div class="leyenda_tktArea">
-                    <div>
+                    <div class="col-leyenda">
                         <p>Tickets abiertos: <a href="/mis_tickets/abiertos">{{$cant_tkt_abiertos}}</a></p>
                         <p>Tickets en espera:<a href="/mis_tickets/enEspera"> {{$cant_tkt_enEspera}}</a></p>
                     </div>
-                    <div>
+                    <div class="col-leyenda">
                         <p>Tickets en revisión:<a href="/mis_tickets/enRevision"> {{$cant_tkt_enRevision}}</a></p>
                         <p>Tickets resueltos:<a href="/mis_tickets/resueltos"> {{$cant_tkt_resueltos}}</a></p>
                     </div>
-                    <div>
+
+                    <div class="col-leyenda">
                         <p>Tickets reabiertos:<a href="/mis_tickets/reabiertos"> {{$cant_tkt_reAbiertos}}</a></p>
                         <p>Tickets cerrados:<a href="/mis_tickets/cerrados"> {{$cant_tkt_cerrados}}</a></p>
                     </div>
-                    <div>
+                    <div class="col-leyenda">
                         <p>Tickets vencidos:<a href="/mis_tickets/vencidos"> {{$cant_tkt_vencidos}}</a></p>
                     </div>
                 </div>
@@ -91,6 +92,8 @@
                                 <td class="enRevision">{{$ticket->estado->nombre}} <br>(El cliente ha respondido)</td>
                             @elseif($ticket->estado->nombre == "Resuelto")
                                 <td class="resuelto">{{$ticket->estado->nombre}}</td>
+                            @elseif($ticket->estado->nombre == "Reabierto")
+                                <td class="reAbierto">{{$ticket->estado->nombre}}</td>
                             @endif
 
                             <!-- fecha de inicio -->

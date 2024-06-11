@@ -17,9 +17,9 @@
                       <th>ID</th>
                       <th>Usuario</th>
                       <th>Clasificación</th>
-                      <th>Asunto</th>
                       <th>Prioridad</th>
                       <th>Estado</th>
+                      <th>Agente</th>
                       <th>Creado</th>
                       <th>Caducidad</th>
                       <th>Acciones</th>
@@ -34,7 +34,6 @@
                              <td>TK-{{$ticket->id}}</td>
                              <td>{{$ticket->user->name}}</td>
                              <td>{{$ticket->clasificacion->nombre}}</td>
-                             <td>{{$ticket->asunto}}</td>
                             
                              <!-- Prioridades -->
                              @if($ticket->prioridad->nombre == "Urgente")
@@ -56,8 +55,12 @@
                                 <td class="enEspera">{{$ticket->estado->nombre}}</td>
                              @elseif($ticket->estado->nombre == "Resuelto")
                                 <td class="resuelto">{{$ticket->estado->nombre}}</td>
+                             @elseif($ticket->estado->nombre == "Reabierto")
+                                <td class="reAbierto">{{$ticket->estado->nombre}}</td>
                              @endif
 
+                             <!-- Agente tecnico encargado -->
+                            <td>{{$ticket->asignado_a}}</td>
                             <!-- Fecha de creación -->
                             <td>{{\Carbon\Carbon::parse($ticket->fecha_inicio)->format('d-m-Y')}}</td>
                             <!-- Fecha de caducidad -->

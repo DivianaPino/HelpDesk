@@ -33,6 +33,7 @@ class MisTicketsController extends Controller
         $cant_tkt_reAbiertos=$tickets->where('estado_id', 6)->count();
         $cant_tkt_cerrados=$tickets->where('estado_id', 7)->count();
 
+   
          // Cantidad de tickets vencidos que estan asignados al técnico autenticado
          $estados = Estado::whereIn('nombre', ['Nuevo', 'Abierto', 'Reabierto'])->pluck('id');
          $fecha_actual=Carbon::now();
@@ -138,7 +139,7 @@ class MisTicketsController extends Controller
         
         $estado_reAbierto = Estado::where('nombre', 'Reabierto')->first();
         // Tickets que pertenecen a las areas del usuario auth con estado "Abierto"
-        $tickets_reAbierto = Ticket::whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estado_reAbierto->id)->get();
+        $tickets_reAbierto = Ticket::where('asignado_a', $usuario->name )->whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estado_reAbierto->id)->get();
 
         return view('myViews.tecnicoSop.misTickets.reAbiertos')->with('tickets', $tickets_reAbierto) ;
     }

@@ -14,19 +14,19 @@
         <div  class="card-body" >
             <table id="tabla_tktArea" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap"  collspacing="0" style="max-width: 1200px ; width:100%; font-size:14px;"  >
                 <div class="leyenda_tktArea">
-                    <div>
-                        <p>Tickets nuevos: <a href="/noasignados"> {{$cant_tkt_nuevos}}</a></p>
-                        <p>Tickets abiertos: <a href="/abiertos">{{$cant_tkt_abiertos}}</a></p>
+                    <div class="col-leyenda">
+                        <p>Tickets nuevos:<a href="/noasignados"> {{$cant_tkt_nuevos}}</a></p>
+                        <p>Tickets abiertos:<a href="/abiertos"> {{$cant_tkt_abiertos}}</a></p>
                     </div>
-                    <div>
+                    <div class="col-leyenda">
                         <p>Tickets en espera:<a href="/enEspera"> {{$cant_tkt_enEspera}}</a></p>
                         <p>Tickets en revisión:<a href="/enRevision"> {{$cant_tkt_enRevision}}</a></p>
                     </div>
-                    <div>
+                    <div class="col-leyenda"> 
                         <p>Tickets resueltos:<a href="/resueltos"> {{$cant_tkt_resueltos}}</a></p>
                         <p>Tickets reabiertos:<a href="/reabiertos"> {{$cant_tkt_reAbiertos}}</a></p>
                     </div>
-                    <div>
+                    <div class="col-leyenda">
                         <p>Tickets cerrados:<a href="/cerrados"> {{$cant_tkt_cerrados}}</a></p>
                         <p>Tickets vencidos:<a href="/vencidos"> {{$cant_tkt_vencidos}}</a></p>
                     </div>
@@ -83,6 +83,8 @@
                             <td class="enRevision">{{$ticket->estado->nombre}} <br>(El cliente ha respondido)</td>
                         @elseif($ticket->estado->nombre == "Resuelto")
                             <td class="resuelto">{{$ticket->estado->nombre}}</td>
+                        @elseif($ticket->estado->nombre == "Reabierto")
+                            <td class="reAbierto">{{$ticket->estado->nombre}}</td>
                         @endif
 
                         <!-- Agente tecnico asignado -->
@@ -104,9 +106,25 @@
                         <td>---</td>
                         @endif
 
-                        <!-- Botones - opciones -->
+                        <!-- Botones - opciones --> 
                         <td class="content-btnOpciones" >
-                            <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
+                            @if($ticket->estado->nombre == "Nuevo") 
+                                <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
+                            @elseif($ticket->estado->nombre == "Reabierto")
+                                <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
+                                <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                            @elseif($ticket->estado->nombre == "Resuelto")
+                                <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
+                            @elseif($usuario->name == $ticket->asignado_a && $ticket->estado->nombre == "Abierto")
+                                <a href="/form/respuesta/{{$ticket->id}}"  id="btn-responder" class="btn btn-info btn-asignarTec">Ver</a>
+                                <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                            @elseif($usuario->name == $ticket->asignado_a && $ticket->estado->nombre == "Reabierto")
+                                <a href="/form/respuesta/{{$ticket->id}}"  id="btn-responder" class="btn btn-info btn-asignarTec">Ver</a>
+                                <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                            @else
+                                <a class="btn btn-info" href="/historial/ticket/{{$ticket->id}}" >Ver</a>
+                                <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                            @endif 
                         </td>
 
                     </tr>

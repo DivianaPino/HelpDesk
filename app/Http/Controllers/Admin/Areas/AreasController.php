@@ -96,12 +96,12 @@ class AreasController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nombre' =>'required',
-        ],
-        [
-            'nombre.required' => 'El campo nombre del área o departamento es requerido',
-        ]
-    );
+                'nombre' =>'required',
+            ],
+            [
+                'nombre.required' => 'El campo nombre del área o departamento es requerido',
+            ]
+        );
 
         $area=Area::find($id);
         $clasificacion=Clasificacion::find($id);

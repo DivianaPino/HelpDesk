@@ -12,6 +12,7 @@ use App\Events\MasInfoEvent;
 use App\Events\RespuestaEvent;
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Role;
 use App\Models\Ticket;
 use App\Models\Area;
 use App\Models\Estado;
@@ -19,6 +20,8 @@ use App\Models\Respuesta;
 use App\Models\MasInformacion;
 use App\Models\RespMasInfo;
 use App\Models\TicketHistorial;
+use App\Models\Comentario;
+
 
 class TicketsController extends Controller
 {
@@ -73,7 +76,8 @@ class TicketsController extends Controller
                                                                                  'cant_tkt_resueltos',
                                                                                  'cant_tkt_reAbiertos',
                                                                                  'cant_tkt_cerrados',
-                                                                                 'cant_tkt_vencidos'
+                                                                                 'cant_tkt_vencidos',
+                                                                                 'usuario'
                                                                 )) ;
 
         }
@@ -156,13 +160,16 @@ class TicketsController extends Controller
         $ticket=Ticket::find($idTicket);
         session(['previous_url' => url()->previous()]);
   
-        if (Respuesta::where('ticket_id', $idTicket)->exists()) {
-            $ticket->estado_id = 5;
-            $ticket->save();
+        if (Respuesta::where('ticket_id', $idTicket)->exists() && $ticket->estado->nombre == "Reabierto") {
+            return view('myViews.Admin.tickets.form_respuesta')->with(['ticket'=> $ticket, 'idTicket' => $idTicket]);
+        }
+        elseif (Respuesta::where('ticket_id', $idTicket)->exists()) {
+            // $ticket->estado_id = 5;
+            // $ticket->save();
             $respTkt=Respuesta::orderBy('fecha', 'desc')->where('ticket_id', $idTicket)->first();
             return view('myViews.Admin.tickets.form_TktRespondido')->with(['ticket'=> $ticket,'respuesta'=> $respTkt, 'idTicket' => $idTicket]);
 
-        } else {
+        }else {
             return view('myViews.Admin.tickets.form_respuesta')->with(['ticket'=> $ticket, 'idTicket' => $idTicket]);
         }
     }
@@ -535,8 +542,11 @@ class TicketsController extends Controller
        
         // solucion del ticket
         $soluciones=Respuesta::where('ticket_id',$ticket_id)->get();
+
+
+        $comentarios=Comentario::where('ticket_id',$ticket_id)->get();
      
-        return view('myViews.Admin.tickets.historialTicket', compact('ticket_id', 'ticket', 'masInfo','respMasInfo','soluciones' ));
+        return view('myViews.Admin.tickets.historialTicket', compact('ticket_id', 'ticket', 'masInfo','respMasInfo','soluciones', 'comentarios' ));
        
     }
 
@@ -551,7 +561,89 @@ class TicketsController extends Controller
     }
 
 
+    public function todos_tecnicos(){
 
+        $usuario=Auth::user();
+
+        if ($usuario->hasRole(['Administrador'])) {
+            $tecnicos = User::whereHas('roles', function ($query) {
+                $query->whereIn('name', ['Jefe de área', 'Técnico de soporte']);
+            })->get();
+
+            return view('myViews.Admin.tickets.agentes_tecnicos', compact('tecnicos'));
+
+        }elseif($usuario->hasRole(['Jefe de área', 'Técnico de soporte'])){
+
+            // Obtener las áreas al que pertenece el usuario autenticado
+            $areasUsuario = $usuario->areas()->pluck('area_id');
+
+            // Filtrar los técnicos por las áreas obtenidas
+            $tecnicos = User::whereHas('roles', function ($query) {
+                $query->whereIn('name', ['Jefe de área', 'Técnico de soporte']);
+            })
+            ->whereHas('areas', function ($query) use ($areasUsuario) {
+                $query->whereIn('area_id', $areasUsuario);
+            })
+            ->get();
+
+            return view('myViews.tecnicoSop.agentesArea', compact('tecnicos'));
+        }
+    }
+
+    public function agentes_area($areaId){
+
+        $area= Area::find($areaId);
+        
+        // Tecnicos de area con rol jefe de area o tecnico de soporte
+        $tecnicosArea=$area->users()
+        ->whereHas('roles', function ($query) {
+            $query->whereIn('name', ['Jefe de área', 'Técnico de soporte']);
+        })
+        ->get();
+
+
+
+        return response()->json($tecnicosArea);
+
+    }
+
+    public function reasignar_ticket($idTicket){
+
+        $usuario= Auth::user();
+        $ticket= Ticket::find($idTicket);
+        $areas=Area::all();
+
+        if ($usuario->hasRole(['Administrador'])) {
+            return view('myViews.admin.tickets.reasignarTicket', compact('areas', 'ticket' ));
+        }
+        elseif($usuario->hasRole(['Jefe de área'])){
+            return view('myViews.jefeArea.reasignarTicket', compact('areas', 'ticket' ));
+        }
+    }
+
+    public function guardar_reasignacion(Request $request, $idTicket){
+
+        $request->validate([
+                'area' =>'required',
+                'tecnico' =>'required',
+            ],
+            [
+                'area.required' => 'El campo área es requerido',
+                'tecnico.required' => 'El campo técnico de soporte es requerido',
+            ]
+        );
+
+        $ticket=Ticket::find($idTicket);
+        $tecnico=User::find($request->tecnico);
+
+        $ticket->asignado_a=$tecnico->name;
+        $ticket->updated_at= Carbon::now();
+        $ticket->save();
+
+        return redirect()->back()->with('status', 'El ticket ha sido reasignado exitosamente!!');
+    }
+
+  
 
 
 

@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin\Analisis;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use App\Models\Ticket;
+use App\Models\Estado;
 
 class AnalisisController extends Controller
 {
@@ -14,72 +17,29 @@ class AnalisisController extends Controller
      */
     public function index()
     {
-        return view('myViews.Admin.analisis.index');
+        $cant_tkt_nuevos=Ticket::where('estado_id', 1)->count();
+        $cant_tkt_abiertos=Ticket::where('estado_id', 2)->count();
+        $cant_tkt_enEspera=Ticket::where('estado_id', 3)->count();
+        $cant_tkt_enRevision=Ticket::where('estado_id', 4)->count();
+        $cant_tkt_resueltos=Ticket::where('estado_id', 5)->count();
+        $cant_tkt_reAbiertos=Ticket::where('estado_id', 6)->count();
+        $cant_tkt_cerrados=Ticket::where('estado_id', 7)->count();
+
+        // Cantidad de tickets vencidos 
+        $estados = Estado::whereIn('nombre', ['Nuevo', 'Abierto', 'Reabierto'])->pluck('id');
+        $fecha_actual=Carbon::now();
+        $cant_tkt_vencidos = Ticket::whereIn('estado_id', $estados)->where('fecha_caducidad', '<', $fecha_actual)->count();
+        return view('myViews.Admin.analisis.index', compact('cant_tkt_nuevos',
+                                                            'cant_tkt_abiertos',
+                                                            'cant_tkt_enEspera',
+                                                            'cant_tkt_enRevision', 
+                                                            'cant_tkt_resueltos',
+                                                            'cant_tkt_reAbiertos',
+                                                            'cant_tkt_cerrados',
+                                                            'cant_tkt_vencidos' 
+                                                        ));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+ 
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

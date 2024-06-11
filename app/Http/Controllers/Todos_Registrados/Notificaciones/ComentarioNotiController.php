@@ -32,6 +32,6 @@ class ComentarioNotiController extends Controller
         $idComentario=$notification->data['comentario_id'];
         $comentario=Comentario::find($idComentario);
  
-        return view('myViews.tecnicoSop.comentarios', compact('idTicket', 'ticket', 'respuesta', 'comentario'));    
+        return view('myViews.tecnicoSop.comentariosNoti', compact('idTicket', 'ticket', 'respuesta', 'comentario'));    
     }
 }

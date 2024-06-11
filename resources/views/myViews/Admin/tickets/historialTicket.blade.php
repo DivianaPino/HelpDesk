@@ -113,42 +113,78 @@
 
                             @endforeach
 
-                            @if($soluciones)
-                                @foreach($soluciones as $solucion)
-                                    <hr style=" border:none; height: 3px; background-color:#76D7C4;">
+                            @if(count($soluciones) >= count($comentarios))
+                                @for ($i = 0; $i < count($soluciones); $i++)
+                                    <hr style="border:none; height: 3px; background-color:#76D7C4;">
                                     
                                     <div class="row">
                                         <div class="col-md-12 form-group mb-3">
-                                            <label for="mensaje" class="col-form-label titulo-resolucion">Resolución Nro: {{$contadorSolucion++}} del incidente</label>
-                                            <span style="display: block; font-size:14px;">{{Carbon\Carbon::parse($solucion->fecha)->format('d-m-Y H:i:s')}}</span>
-                                            <textarea class="form-control" name="mensaje" id="mensaje" cols="30" rows="4"  disabled>{{$solucion['mensaje']}}</textarea>
+                                            <label for="mensaje" class="col-form-label titulo-resolucion">Resolución Nro: {{ $i + 1 }} del incidente</label>
+                                            <span style="display: block; font-size:14px;">{{ Carbon\Carbon::parse($soluciones[$i]->fecha)->format('d-m-Y H:i:s') }}</span>
+                                            <textarea class="form-control" name="mensaje" id="mensaje" cols="30" rows="4" disabled>{{ $soluciones[$i]['mensaje'] }}</textarea>
                                         </div>
                                     </div>
                                     
-                                    @if(isset($solucion->imagen))
+                                    @if(isset($soluciones[$i]->imagen))
                                         <div class="row">
                                             <div class="col-md-12 form-group mb-3">
-                                                <img src="{{asset('images/respuestas/tickets/'.$solucion->imagen)}}"
-                                                    class="img-fluid img-rounded" width="120px"> 
-
-                                                <a href="{{ asset('images/respuestas/tickets/'.$solucion->imagen) }}" download>Descargar Imagen</a>   
+                                                <img src="{{ asset('images/respuestas/tickets/'. $soluciones[$i]->imagen) }}"
+                                                    class="img-fluid img-rounded" width="120px">
+                                                
+                                                <a href="{{ asset('images/respuestas/tickets/'. $soluciones[$i]->imagen) }}" download>Descargar Imagen</a>
                                             </div>
                                         </div>
                                     @else
                                         <div class="row">
                                             <div class="col-md-12 form-group mb-3">
-                                            <img src="{{asset('images/respuestas/tickets/'.$solucion->imagen)}}" 
-                                            class="img-fluid img-rounded" width="120px" hidden> 
-                                                <a href="{{ asset('images/respuestas/tickets/'.$solucion->imagen) }}" download hidden>Descargar Imagen</a>   
+                                                <img src="{{ asset('images/respuestas/tickets/'. $soluciones[$i]->imagen) }}"
+                                                    class="img-fluid img-rounded" width="120px" hidden>
+                                                
+                                                <a href="{{ asset('images/respuestas/tickets/'. $soluciones[$i]->imagen) }}" download hidden>Descargar Imagen</a>
                                             </div>
                                         </div>
-                                    @endif 
+                                    @endif
 
-                                    <hr style="border:none; height: 3px; background-color:#76D7C4;">
+                                    <!-- Comentarios -->
+                                    @if(isset($comentarios[$i]) && $comentarios[$i]!== null)
+                                        <div class="cuadro3">
+                                            COMENTARIO <i class="fa-solid fa-arrow-down iconoResponder"></i>
+                                        </div>
 
-                                @endforeach
+                                        <div class="row">
+                                            <div class="col-md-12 form-group mb-3">
+                                                <label for="fecha_comentario" class="col-form-label">Fecha:</label>
+                                                <input type="text" class="form-control" name="fecha_comentario" id="fecha_comentario" value="{{ $comentarios[$i]['created_at']->format('d-m-Y H:i:s') }}" disabled>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12 form-group mb-3">
+                                                <label for="mensaje" class="col-form-label">Mensaje:</label>
+                                                <textarea class="form-control" name="mensaje" id="mensaje" cols="30" rows="4" disabled>{{ $comentarios[$i]['mensaje'] }}</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12 form-group mb-3">
+                                                <label for="nivel_satisfaccion" class="col-form-label">Nivel de satisfacción:</label>
+                                                <textarea class="form-control" name="nivel_satisfaccion" id="nivel_satisfaccion" cols="30" rows="2" disabled>{{ $comentarios[$i]['nivel_satisfaccion'] }}</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12 form-group mb-3">
+                                                <label for="reabrir" class="col-form-label" style="color:#000;">¿Reabierto?:</label>
+                                                @if($comentarios[$i]['bool_reabrir'] == 1)
+                                                    <p style="display:inline-block; font-size:30px; color:#000;">Si</p>
+                                                @else
+                                                    <p style="display:inline-block; font-size:30px; color:#000;">NO</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endfor
                             @endif
-
                         </form>
                    </div>
                 </div>

@@ -292,14 +292,6 @@ return [
 
     'menu' => [
 
-// public function unreadNotifications(){
-//     return $this->notifications()->whereNull('read_at');
-// }
-
-// @if(count(auth()->user()->unreadNotificacion))
-// <span>{{count(auth()->user()->unreadNotificacion)}}</span>
-// @endif
-
         // Navbar items:
         [
             'type'         => 'navbar-search',
@@ -323,8 +315,8 @@ return [
             'dropdown_mode' => true,                  // Enables the dropdown mode (optional).
             'dropdown_flabel' => 'All notifications', // The label for the dropdown footer link (optional).
             'update_cfg' => [
-                'url' => 'notifications/get',         // The url to periodically fetch new data (optional).
-                'period' => 30,                       // The update period for get new data (in seconds, optional).
+                'url' => '/notificacion/{idNotificacion}/ticket/{idticket}, /notificacion/{idNotificacion}/ticket/{idticket}/respmasInfo',         // The url to periodically fetch new data (optional).
+                'period' => 10,                       // The update period for get new data (in seconds, optional).
             ],
             
         ],
@@ -526,38 +518,32 @@ return [
                     'icon_color'  => 'info',
                     // 'can'         => 'comments.index',
                 ],
-                [
-                    'text'        => 'Reasignar tickets ',
-                    'url'         => '/comments',
-                    'icon'        => 'fas fa-fw fa-exchange-alt',
-                    'icon_color'  => 'info',
+                // [
+                //     'text'        => 'Reasignar tickets ',
+                //     'url'         => '{{ $menuUrl }}',
+                //     'icon'        => 'fas fa-fw fa-exchange-alt',
+                //     'icon_color'  => 'info',
 
-                    // 'can'         => 'comments.index',
-                ],
+                //     // 'can'         => 'comments.index',
+                // ],
             ],
 
         ],
         [
-            'text'        => 'ASIGNAR ROLES',
-            'url'         => '/asignar_rol',
-            'icon'        => 'fas fa-fw fa-cogs',
-            // 'can'         => 'post.index',
-        ],
-        [
             'text'        => 'COMENTARIOS',
-            'url'         => '/myPosts',
+            'url'         => '/comentarios',
             'icon'        => 'fas fa-fw fa-comment',
             // 'can'         => 'myPosts.index',
         ],
         [
             'text'        => 'AGENTES TÉCNICOS',
-            'url'         => '/myPosts',
+            'url'         => '/agentes_tecnicos',
             'icon'        => 'fas fa-fw fa-wrench',
             // 'can'         => 'myPosts.index',
         ],
         [
             'text'        => 'ANÁLISIS',
-            'url'         => '/myPosts',
+            'url'         => '/analisis',
             'icon'        => 'fas fa-fw fa-search',
             // 'can'         => 'myPosts.index',
         ],

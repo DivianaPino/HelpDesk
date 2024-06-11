@@ -3,10 +3,11 @@
 @section('title', 'Análisis')
 
 @section('content_header')
-    <h1>Análisis</h1>
+    <h1></h1>
 @stop
 
 @section('content')
+
 <div class="wrapper">
   <!-- Main content -->
   <section class="content">
@@ -14,65 +15,128 @@
         <!-- Small boxes (Stat box) -->
         <div class="row">
             <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-info">
-                <div class="inner">
-                <h3>150</h3>
+                <!-- small box -->
+                <div class="small-box nuevo">
+                    <div class="inner">
+                    <h3>{{$cant_tkt_nuevos}}</h3>
 
-                <p>New Orders</p>
+                    <p>Tickets nuevos</p>
+                    </div>
+                    <div class="icon">
+                    <i class=""></i>
+                    </div>
+                    <a href="/noasignados" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box abierto">
+                <div class="inner">
+                <h3>{{$cant_tkt_abiertos}}</h3>
+
+                <p>Tickets abiertos</p>
                 </div>
                 <div class="icon">
-                <i class="ion ion-bag"></i>
+                <i class="fas fa-fw fa-unlock-alt"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="/abiertos" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
             </div>
             <!-- ./col -->
             <div class="col-lg-3 col-6">
             <!-- small box -->
-            <div class="small-box bg-success">
-                <div class="inner">
-                <h3>53<sup style="font-size: 20px">%</sup></h3>
-
-                <p>Bounce Rate</p>
+                <div class="small-box" style="background-color:#F6a700;">
+                    <div class="inner" style="color:#fff;">
+                        <h3>{{$cant_tkt_enEspera}}</h3>
+                        <p>Tickets en espera</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-fw fa-clock"></i>
+                    </div>
+                    <a href="enEspera" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
-                <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-            </div>
-            <!-- ./col -->
-            <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-warning">
-                <div class="inner">
-                <h3>44</h3>
-
-                <p>User Registrations</p>
-                </div>
-                <div class="icon">
-                <i class="ion ion-person-add"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
             </div>
             <!-- ./col -->
             <div class="col-lg-3 col-6">
             <!-- small box -->
-            <div class="small-box bg-danger">
-                <div class="inner">
-                <h3>65</h3>
-
-                <p>Unique Visitors</p>
+                <div class="small-box bg-danger enRevision">
+                    <div class="inner">
+                        <h3>{{$cant_tkt_enRevision}}</h3>
+                        <p>Tickets en revisión</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-fw fa-eye"></i>
+                    </div>
+                    <a href="enRevision" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
-                <div class="icon">
-                <i class="ion ion-pie-graph"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
             </div>
             <!-- ./col -->
+
+             <!-- small box -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info resuelto">
+                    <div class="inner">
+                        <h3>{{$cant_tkt_resueltos}}</h3>
+                        <p>Tickets resueltos</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-fw fa-check-circle"></i>
+                    </div>
+                    <a href="/resueltos" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+
+            <!-- small box -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info reAbierto">
+                    <div class="inner">
+                        <h3>{{$cant_tkt_reAbiertos}}</h3>
+                        <p>Tickets reabiertos</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-fw fa-redo"></i>
+                    </div>
+                    <a href="/reabiertos" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+
+             <!-- small box -->
+             <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info vencido">
+                    <div class="inner">
+                        <h3>{{$cant_tkt_vencidos}}</h3>
+                        <p>Tickets vencidos</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-fw fa-hourglass-end"></i>
+                    </div>
+                    <a href="/vencidos" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+
+            <!-- small box -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info cerrado">
+                    <div class="inner">
+                        <h3>{{$cant_tkt_cerrados}}</h3>
+                        <p>Tickets cerrados</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-fw fa-lock"></i>
+                    </div>
+                    <a href="/cerrados" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+
         </div>
 
         </div><!-- /.container-fluid -->
@@ -83,9 +147,9 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
+    <link rel="stylesheet" href="/css/styles.css">
 @stop
 
 @section('js')
-    <script> console.log('Hi!'); </script>
+    <script src="https://kit.fontawesome.com/6f3d5551a7.js" crossorigin="anonymous"></script>
 @stop

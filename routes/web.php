@@ -64,6 +64,10 @@ Route::middleware([
     Route::get('/asignar_area/{id}', [UsuariosController::class, 'asignar_area'] )->name('asignar_area');
     Route::put('/actualizar_area/{id}', [UsuariosController::class, 'actualizar_area'])->name('actualizar_area');
     Route::get('/area/{areaId}/tecnicos', [AreasController::class, 'area_tecnicos'] )->name('area_tecnicos');
+    Route::get('/comentarios', [ComentarioController::class, 'comentariosTodos'] )->name('comentariosTodos');
+    Route::get('/agentes_tecnicos', [TicketsController::class, 'todos_tecnicos'] )->name('todos_tecnicos');
+    Route::get('/reasignar/ticket/{idTicket}', [TicketsController::class, 'reasignar_ticket'] )->name('reasignar_ticket');
+    
 
     // Rol: Usuario estandar
     Route::resource('/usuario/tickets', TicketsUsuarioController::class)->names('usuarios_tickets');
@@ -72,7 +76,6 @@ Route::middleware([
     Route::post('/respuesta/mas_info/ticket/{idTicket}/{idMasInfo}', [TicketsUsuarioController::class, 'respMasInfo'] )->name('resp_masInfo');
     Route::get('/ticket/{idticket}/respuesta/{idrespuesta}', [TicketsUsuarioController::class, 'verRespuesta'])->name('ver_respuesta');
     Route::post('/comentar/respuesta/{idrespuesta}/ticket/{idTicket}', [TicketsUsuarioController::class, 'comentar_Respuesta'])->name('comentar_Respuesta');
-   
    
 
     // Rol: Técnico de soporte
@@ -85,6 +88,13 @@ Route::middleware([
     Route::get('/mis_tickets/resueltos', [MisTicketsController::class, 'tickets_resueltos'] )->name('misTickets_resueltos');
     Route::get('/mis_tickets/cerrados', [MisTicketsController::class, 'tickets_cerrados'] )->name('misTickets_cerrados');
     Route::get('/mis_tickets/reabiertos', [MisTicketsController::class, 'tickets_reAbiertos'] )->name('misTickets_reAbiertos');
+
+    // Rol: Jefe de area
+    Route::get('/comentarios/tickets/jefeArea', [ComentarioController::class, 'comentarios_tk_jefeArea'] )->name('comentarios_tk_jefeArea');
+
+    // Roles: Admin y jefe de area 
+    Route::get('/area/{idarea}/agentes', [TicketsController::class, 'agentes_area'] )->name('agentes_area');
+    Route::post('/guardar/reasignacion/ticket/{idTicket}', [TicketsController::class, 'guardar_reasignacion'] )->name('guardar_reasignacion');
 
     //  Roles: Admin, Jefe de área, soporte técnico 
     Route::get('/noasignados', [TicketsController::class, 'tickets_noasignados'] )->name('tickets_noasignados');
@@ -112,8 +122,7 @@ Route::middleware([
     
     Route::get('/ver/ticket/{idTicket}', [TicketsController::class, 'verTicket'] )->name('verTicket');
     Route::get('/historial/ticket/{ticket_id}', [TicketsController::class, 'historialTicket'] )->name('historial_ticket');
-
-    Route::resource('comentarios', ComentarioController::class);
+    Route::get('/comentario/{comentario_id}', [ComentarioController::class, 'ver_comentario'] )->name('ver_comentario');
     
     Route::get('/analisis', [AnalisisController::class, 'index'] )->name('index');
 

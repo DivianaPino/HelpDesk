@@ -13,7 +13,9 @@
               <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volverInfo">
               <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
           </div>
-          <h3 class="tituloRespuesta">Comentario de la respuesta del Ticket #{{$idTicket}} </h3>
+          <h3 class="tituloRespuesta">Comentario de la respuesta del Ticket #{{$idTicket}} 
+                <a  href="/historial/ticket/{{$ticket->id}}" class="btn btn-primary btn-historial">Historial</a>
+          </h3>
           
           @if(session('status'))
             <p class="alert alert-success">{{ Session('status') }}</p>
@@ -180,6 +182,8 @@
 <script src="https://kit.fontawesome.com/6f3d5551a7.js" crossorigin="anonymous"></script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script src="https://kit.fontawesome.com/6f3d5551a7.js" crossorigin="anonymous"></script>
 
 
 

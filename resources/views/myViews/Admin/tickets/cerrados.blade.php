@@ -56,6 +56,8 @@
                                 <td class="enEspera">{{$ticket->estado->nombre}}</td>
                              @elseif($ticket->estado->nombre == "Resuelto")
                                 <td class="resuelto">{{$ticket->estado->nombre}}</td>
+                             @elseif($ticket->estado->nombre == "Reabierto")
+                                <td class="reAbierto">{{$ticket->estado->nombre}}</td>
                              @elseif($ticket->estado->nombre == "Cerrado")
                                 <td class="cerrado">{{$ticket->estado->nombre}}</td>
                              @endif

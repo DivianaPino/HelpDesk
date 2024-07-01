@@ -21,7 +21,7 @@
                       <th>Prioridad</th>
                       <th>Estado</th>
                       <th>Creado</th>
-                      <th>Caducidad</th>
+                      <th>Cerrado</th>
                       <th>Acciones</th>
                    </tr>
                </thead>
@@ -64,7 +64,7 @@
 
                             <!-- Fecha de creación -->
                             <td>{{\Carbon\Carbon::parse($ticket->fecha_inicio)->format('d-m-Y')}}</td>
-                            <td>{{\Carbon\Carbon::parse($ticket->fecha_caducidad)}}</td>
+                            <td>{{\Carbon\Carbon::parse($ticket->updated_at)}}</td>
 
                              <td>
                                 <a class="btn btn-info" href="/detalles/{{$ticket->id}}" >Ver</a>

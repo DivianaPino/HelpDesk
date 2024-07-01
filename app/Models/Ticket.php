@@ -62,6 +62,20 @@ class Ticket extends Model
         return $this->hasMany('App\Models\Comentario');
     }
 
+    public function esCerradoPorTiempo()
+    {
+        // Verifica si el ticket fue creado hace más de una semana
+        $tiempoDesdeCreacion = Carbon::parse($this->created_at)->addWeeks(1);
+        if ($tiempoDesdeCreacion < now()) {
+            // Verifica si no tiene comentarios asociados
+            if (!$this->comments()->exists()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // public function notifications()
     // {
     //     return $this->hasMany(Notification::class);

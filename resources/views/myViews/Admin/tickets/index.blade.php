@@ -66,6 +66,8 @@
                               <td class="resuelto">{{$ticket->estado->nombre}}</td>
                             @elseif($ticket->estado->nombre == "Reabierto")
                               <td class="reAbierto">{{$ticket->estado->nombre}}</td>
+                            @elseif($ticket->estado->nombre == "Cerrado")
+                              <td class="cerrado">{{$ticket->estado->nombre}}</td>
                             @endif
 
                             <td>{{\Carbon\Carbon::parse($ticket->fecha_inicio)->format('d-m-Y')}}</td>

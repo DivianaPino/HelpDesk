@@ -549,7 +549,7 @@ return [
         ],
         [
             'text'        => 'GRÁFICO DE RENDIMIENTO ',
-            'url'         => '/myPosts',
+            'url'         => '/grafico_kpi',
             'icon'        => 'fas fa-fw fa-chart-bar',
             // 'can'         => 'myPosts.index',
         ],

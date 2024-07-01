@@ -391,12 +391,73 @@ class TicketsController extends Controller
     {
         $usuario= Auth::user();
         $areasUsuario=$usuario->areas()->pluck('area_id');
-        
-        $estadoCerrado = Estado::where('nombre', 'Cerrado')->first();
-        // Tickets que pertenecen a las areas del usuario auth con estado "Abierto"
-        $ticketsCerrado = Ticket::whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estadoCerrado->id)->get();
+        $estadoResuelto = Estado::where('nombre', 'Resuelto')->first();
 
-        return view('myViews.Admin.tickets.cerrados')->with('tickets', $ticketsCerrado) ;
+
+        // Filtrar los tickets que fueron creados hace exactamente una semana
+        $ticketsResueltos = Ticket::whereIn('clasificacion_id', $areasUsuario)
+                                  ->where('estado_id', $estadoResuelto->id)->get();
+        
+        //  dd($ticketsResueltos);
+            
+        $ticketsModificados=[];
+
+        // Verificar que $ticketsResueltos tenga datos 
+        if($ticketsResueltos->isNotEmpty()){
+            foreach($ticketsResueltos as $ticket){
+
+                $ticket=Ticket::find($ticket->id);
+                // dd($ticketOtro);
+                $createdAt = $ticket->created_at;
+    
+        
+                $carbonCreatedAt = Carbon::parse($createdAt);
+    
+                // Suma las horas de una semana
+                $newDate = $carbonCreatedAt->addWeek();
+    
+                if ($ticket->comments()->exists()) {
+                   $comentariosTicket=Comentario::where('ticket_id', $ticket->id)->get();
+                    foreach($comentariosTicket as $comentario){
+                        if($comentario->reabrir == 0){
+                            $ticket->estado_id= 7;
+                            $ticketsModificados[] = $ticket; 
+                            $ticket->save();
+                        }
+                    }
+                } else {
+                    if(Carbon::now() > $newDate){
+                        $ticket->estado_id= 7;
+                        $ticketsModificados[] = $ticket;
+                        $ticket->save();
+                    }
+                }
+               
+            }
+
+
+            $estadoCerrado= Estado::where('nombre', 'Cerrado')->first();
+
+            $ticketsCerrados = Ticket::whereIn('clasificacion_id', $areasUsuario)
+                                  ->where('estado_id', $estadoCerrado->id)->get();
+
+            return view('myViews.Admin.tickets.cerrados')->with('tickets', $ticketsCerrados) ;
+
+
+        }else{
+
+            $estadoCerrado= Estado::where('nombre', 'Cerrado')->first();
+
+            $ticketsCerrados = Ticket::whereIn('clasificacion_id', $areasUsuario)
+                                  ->where('estado_id', $estadoCerrado->id)->get();
+
+            return view('myViews.Admin.tickets.cerrados')->with('tickets', $ticketsCerrados) ;
+        }
+
+     
+        
+
+
     }
 
     public function tickets_reAbiertos()

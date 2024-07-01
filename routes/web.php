@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\Areas\AreasController;
 use App\Http\Controllers\Admin\Prioridades\PrioridadesController;
 use App\Http\Controllers\Admin\Analisis\AnalisisController;
 use App\Http\Controllers\Admin\Comentarios\ComentarioController;
+use App\Http\Controllers\Admin\Grafico\GraficoController;
 
 // Técnico de soporte
 use App\Http\Controllers\TecnicoSop\MisTickets\MisTicketsController;
@@ -124,7 +125,8 @@ Route::middleware([
     Route::get('/historial/ticket/{ticket_id}', [TicketsController::class, 'historialTicket'] )->name('historial_ticket');
     Route::get('/comentario/{comentario_id}', [ComentarioController::class, 'ver_comentario'] )->name('ver_comentario');
     
-    Route::get('/analisis', [AnalisisController::class, 'index'] )->name('index');
+    Route::get('/analisis', [AnalisisController::class, 'index'] )->name('indexAnalisis');
+    Route::get('/grafico_kpi', [GraficoController::class, 'index'] )->name('indexGrafico');
 
     // Roles: Todos
     Route::get('/notificacion/{idNotificacion}/ticket/{idticket}/resp/{idResp}', [ComentarioNotiController::class, 'marcar_como_leida'] )->name('c_marcar_como_leida');

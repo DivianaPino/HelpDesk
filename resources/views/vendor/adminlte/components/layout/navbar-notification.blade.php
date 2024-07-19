@@ -79,6 +79,8 @@
                         $usuario=App\Models\User::where('id',$ticket->user_id)->first();
                         $usuarioNombre=$usuario->name;
 
+                     
+
                         $url = url("/notificacion/{$notificacion->id}/ticket/{$notificacion->data['respMasInfo_ticketId']}/respmasInfo");
 
                     }elseif ($notificacion->type === 'App\Notifications\RespuestaNotification') {

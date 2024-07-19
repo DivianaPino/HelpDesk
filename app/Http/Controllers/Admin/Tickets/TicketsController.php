@@ -25,6 +25,13 @@ use App\Models\Comentario;
 
 class TicketsController extends Controller
 {
+    public function __construct(){
+
+        $this->middleware('can:tickets.index')->only('index');
+        $this->middleware('can:tickets.edit')->only('edit', 'update');
+        $this->middleware('can:todos_tecnicos');
+
+    }
     /**
      * Display a listing of the resource.
      *
@@ -704,6 +711,12 @@ class TicketsController extends Controller
         return redirect()->back()->with('status', 'El ticket ha sido reasignado exitosamente!!');
     }
 
+    public function mensajeReabierto($idTicket){
+        $mensaje= Comentario::where('ticket_id', $idTicket)->latest()->first();
+        return view('myViews.admin.tickets.mensajeReabierto', compact('mensaje', 'idTicket' ));
+
+    }
+
   
 
 
@@ -819,4 +832,7 @@ class TicketsController extends Controller
         return redirect()->route('tickets.index')->with('eliminar' , 'ok');
   
     }
+
+
+
 }

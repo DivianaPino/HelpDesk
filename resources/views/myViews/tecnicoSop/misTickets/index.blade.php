@@ -94,6 +94,8 @@
                                 <td class="resuelto">{{$ticket->estado->nombre}}</td>
                             @elseif($ticket->estado->nombre == "Reabierto")
                                 <td class="reAbierto">{{$ticket->estado->nombre}}</td>
+                            @elseif($ticket->estado->nombre == "Cerrado")
+                                <td class="cerrado">{{$ticket->estado->nombre}}</td>
                             @endif
 
                             <!-- fecha de inicio -->
@@ -133,8 +135,10 @@
                                         <a class="btn btn-info btn-verMsj" href="respuesta/{{$loop->iteration}}/mas_info/ticket/{{$ticket->id}}" >Respuesta</a>
                                         @endisset
                                     @endif
-                                @elseif($ticket->estado->nombre == "Resuelto")
+                                @elseif($ticket->estado->nombre == "Resuelto" || $ticket->estado->nombre == "Cerrado")
                                     <a class="btn btn-success" href="/historial/ticket/{{$ticket->id}}">Ver</a>
+                                @elseif($ticket->estado->nombre == "Reabierto")
+                                    <a class="btn btn-success" href="/mensaje/reabierto/ticket/{{$ticket->id}}">Ver</a>
                                 @endif 
                             </td>
                         </tr>

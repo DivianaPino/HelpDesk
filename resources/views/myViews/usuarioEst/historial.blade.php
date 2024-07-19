@@ -10,6 +10,9 @@
 <div class="content-tituloTR">
   <h1 class="titulo_prin">Historial de ticket #{{$idTicket}}</h1>
 </div>
+<div class="content-btnHistorial">
+    <a  href="/ticket/reportado/{{$idTicket}}" class="btn btn-primary btn-historial">Ver ticket reportado</a>
+</div>
 <div class="">
      <div  class="card"  >
         <div  class="card-body" >
@@ -74,7 +77,7 @@
                                             y califique.
                                         </td>
                                     @elseif($ticket->estado->nombre == "Reabierto")
-                                        <td>holaaa</td>
+                                        <td>Reabierto</td>
                                     @endif 
 
                                     <td>{{$ticket->updated_at}}</td>
@@ -96,9 +99,12 @@
                                     </td>
                                </tr> 
 
-                            @elseif($ticket->estado->nombre != "En espera")
-                            <tr>
+                            @elseif($ticket->estado->nombre != "En espera" && $ticket->estado->nombre != "Cerrado")
+                                <tr>
+                                
+                              
                                     <td>{{$ticket->ticket_id}}</td>
+                                
 
                                     @if($ticket->estado->nombre == "Nuevo")
                                         <td class="abierto">Abierto</td>
@@ -144,8 +150,10 @@
                                         <td></td>
                                     @endif 
 
-                                    <td>{{\Carbon\Carbon::parse($ticket->updated_at)->format('d-m-Y H:i:s')}}</td>
 
+                                   
+                                    <td>{{\Carbon\Carbon::parse($ticket->updated_at)->format('d-m-Y H:i:s')}}</td>
+                                  
                                    
 
 

@@ -18,8 +18,6 @@ class UsuariosController extends Controller
         $this->middleware('can:usuarios.index')->only('index');
         $this->middleware('can:usuarios.edit')->only('edit', 'update');
 
-    
-
     }
 
 

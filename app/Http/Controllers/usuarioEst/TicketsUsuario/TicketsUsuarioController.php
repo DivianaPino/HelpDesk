@@ -141,9 +141,6 @@ class TicketsUsuarioController extends Controller
        
         $mensajes=MasInformacion::where('ticket_id', $idTicket)->get();
 
-        // $idRespuesta =Ticket::find($idTicket)->respuestas()->get();
-        // $respuesta = TicketHistorial::where('ticket_id', $idTicket)->get()
-
         return view('myViews.usuarioEst.historial' , compact ('idTicket', 'tickets', 'mensajes'));
     }
 
@@ -318,6 +315,11 @@ class TicketsUsuarioController extends Controller
 
         return back()->with('status', 'Comentario enviado exitosamente :)');
        
+    }
+
+    public function ver_ticketReportado($idTicket){
+         $ticket= Ticket::find($idTicket);
+         return view('myViews.usuarioEst.ticketReportado')->with(['ticket'=> $ticket]);
     }
 
    

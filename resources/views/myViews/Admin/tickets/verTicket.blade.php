@@ -7,8 +7,14 @@
       <div class="container">
         <div class="row align-items-stretch no-gutters contact-wrap">
           <div class="col-md-12">
-            <div class="form h-100">
-              <h3>Detalles de ticket</h3>
+            <div class="form h-100">   
+               <div class="row content-row-ver" >
+                    <div class="col-md-4 form-group btnAsistencia" style="justify-content:end">
+                      <a href="javascript:history.back()" class="btnForm btn-dark btnVolver-verTicket"> <i class="fa-solid fa-arrow-left fa-lg"></i> VOLVER </a>
+                    </div>
+              </div>
+              <h3 class="titulo-detalles">Detalles de ticket</h3>
+          
               @if(session('status'))
                 <p class="alert alert-success">{{ Session('status') }}</p>
               @endif
@@ -72,11 +78,7 @@
                     </div>
                   @endif
                             
-                  <div class="row content-row-ver" >
-                    <div class="col-md-4 form-group btnAsistencia" style="justify-content:end">
-                      <a href="javascript:history.back()" class="btnForm btn-dark  btn_volver volver_detalles"> <i class="fa-solid fa-arrow-left fa-lg"></i> VOLVER </a>
-                    </div>
-                  </div>
+                
   
               </form>
             </div>

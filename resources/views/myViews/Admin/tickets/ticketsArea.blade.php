@@ -85,6 +85,8 @@
                             <td class="resuelto">{{$ticket->estado->nombre}}</td>
                         @elseif($ticket->estado->nombre == "Reabierto")
                             <td class="reAbierto">{{$ticket->estado->nombre}}</td>
+                        @elseif($ticket->estado->nombre == "Cerrado")
+                            <td class="cerrado">{{$ticket->estado->nombre}}</td>
                         @endif
 
                         <!-- Agente tecnico asignado -->
@@ -112,18 +114,28 @@
                                 <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
                             @elseif($ticket->estado->nombre == "Reabierto")
                                 <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
-                                <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                                @can('reasignar_ticket')
+                                    <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                                @endcan
                             @elseif($ticket->estado->nombre == "Resuelto")
-                                <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
+                                <a class="btn btn-info" href="/historial/ticket/{{$ticket->id}}">Ver</a>
                             @elseif($usuario->name == $ticket->asignado_a && $ticket->estado->nombre == "Abierto")
                                 <a href="/form/respuesta/{{$ticket->id}}"  id="btn-responder" class="btn btn-info btn-asignarTec">Ver</a>
-                                <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                                @can('reasignar_ticket')
+                                    <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                                @endcan
                             @elseif($usuario->name == $ticket->asignado_a && $ticket->estado->nombre == "Reabierto")
                                 <a href="/form/respuesta/{{$ticket->id}}"  id="btn-responder" class="btn btn-info btn-asignarTec">Ver</a>
-                                <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                                @can('reasignar_ticket')
+                                    <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                                @endcan
+                            @elseif($ticket->estado->nombre == "Cerrado")
+                                <a class="btn btn-info" href="/historial/ticket/{{$ticket->id}}" >Ver</a>
                             @else
                                 <a class="btn btn-info" href="/historial/ticket/{{$ticket->id}}" >Ver</a>
-                                <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                                @can('reasignar_ticket')
+                                    <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                                @endcan
                             @endif 
                         </td>
 

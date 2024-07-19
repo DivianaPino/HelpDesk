@@ -38,6 +38,6 @@ class RespMasInfoNotiMiddleware
 
  
         // return view('myViews.tecnicoSop.comentarios', compact('idTicket', 'ticket', 'respuesta', 'comentario'));  
-        return $next($request);return $next($request);
+        return $next($request);
     }
 }

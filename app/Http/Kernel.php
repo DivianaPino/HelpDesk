@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
         'masInfoNoti' => \App\Http\Middleware\MasInfoNotiMiddleware::class,
         'respMasInfoNoti' => \App\Http\Middleware\RespMasInfoNotiMiddleware::class,
         'respuestaNoti' => \App\Http\Middleware\RespuestaNotiMiddleware::class,
+        'ticketsNoComentados' => \App\Http\Middleware\TicketsNoComentadosMiddleware::class,
     ];
 }

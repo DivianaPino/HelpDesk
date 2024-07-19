@@ -314,10 +314,10 @@ return [
             'topnav_right' => true,                   // Or "topnav => true" to place on the left (required).
             'dropdown_mode' => true,                  // Enables the dropdown mode (optional).
             'dropdown_flabel' => 'All notifications', // The label for the dropdown footer link (optional).
-            'update_cfg' => [
-                'url' => '/notificacion/{idNotificacion}/ticket/{idticket}, /notificacion/{idNotificacion}/ticket/{idticket}/respmasInfo',         // The url to periodically fetch new data (optional).
-                'period' => 10,                       // The update period for get new data (in seconds, optional).
-            ],
+            // 'update_cfg' => [
+            //     'url' => '/notificacion/{idNotificacion}/ticket/{idticket}, /notificacion/{idNotificacion}/ticket/{idticket}/respmasInfo',         // The url to periodically fetch new data (optional).
+            //     'period' => 10,                       // The update period for get new data (in seconds, optional).
+            // ],
             
         ],
 
@@ -393,6 +393,7 @@ return [
             'text'        => 'GESTIONAR',
             'text_color'  => 'primary',
             'icon'        => 'fas fa-fw fa-cog',
+            'can'         => 'usuarios.index',
             'submenu' => [
 
                 [
@@ -407,21 +408,21 @@ return [
                     'url'         => '/tickets',
                     'icon'        => 'fas fa-fw fa-tags',
                     'icon_color'  => 'info',
-                    // 'can'         => 'comments.index',
+                    'can'         => 'tickets.index',
                 ],
                 [
                     'text'        => 'Áreas',
                     'url'         => '/areas',
                     'icon'        => 'fas fa-fw fa-map-marker',
                     'icon_color'  => 'info',
-                    // 'can'         => 'comments.index',
+                    'can'         => 'areas.index',
                 ],
                 [
                     'text'        => 'Prioridades',
                     'url'         => '/prioridades',
                     'icon'        => 'fas fa-fw fa-bars',
                     'icon_color'  => 'info',
-                    // 'can'         => 'comments.index',
+                    'can'         => 'prioridades.index',
                 ],
             ],
 
@@ -438,42 +439,42 @@ return [
                     'url'         => '/usuario/tickets/create',
                     'icon'        => 'fas fa-fw fa-plus-circle',
                     'icon_color'  => 'info',
-                    //  'can'         => 'consultarTickets.index',
+                     'can'         => 'usuarios_tickets.create',
                 ],
                 [
                     'text'        => 'CONSULTAR TICKETS',
                     'url'         => '/usuario/tickets',
                     'icon'        => 'fas fa-fw  fa-search',
                     'icon_color'  => 'info',
-                    // 'can'         => 'consultarTickets.index',
+                    'can'         => 'usuarios_tickets.index',
                 ],
                 [
                     'text'        => 'TICKETS AREA',
                     'url'         => '/area_usuario/tickets',
                     'icon'        => 'fas fa-fw fa-map-marker',
                     'icon_color'  => 'info',
-                    // 'can'         => 'consultarTickets.index',
+                    'can'         => 'areaUsuario_tickets',
                 ],
                 [
                     'text'        => 'Mis tickets',
                     'url'         => '/misTickets',
                     'icon'        => 'fas fa-fw fa-tags',
                     'icon_color'  => 'info',
-                    // 'can'         => 'post.index',
+                    'can'         => 'misTickets',
                 ],
                 [
                     'text'        => 'Tickets no asignados',
                     'url'         => '/noasignados',
                     'icon'        => 'fas fa-fw fa-user-times',
                     'icon_color'  => 'info',
-                    // 'can'         => 'myPosts.index',
+                    'can'         => 'tickets_noasignados',
                 ],
                 [
                     'text'        => 'Tickets abiertos',
                     'url'         => '/abiertos',
                     'icon'        => 'fas fa-fw fa-unlock-alt',
                     'icon_color'  => 'info',
-                    // 'can'         => 'comments.index',
+                    'can'         => 'tickets_abiertos',
                 ],
 
                 [
@@ -481,51 +482,44 @@ return [
                     'url'         => '/enEspera',
                     'icon'        => 'fas fa-fw fa-clock',
                     'icon_color'  => 'info',
-                    // 'can'         => 'myPosts.index',
+                    'can'         => 'tickets_enEspera',
                 ],
                 [
                     'text'        => 'Tickets en revisión',
                     'url'         => '/enRevision',
                     'icon'        => 'fas fa-fw fa-eye',
                     'icon_color'  => 'info',
-                    // 'can'         => 'myPosts.index',
+                    'can'         => 'tickets_enRevision',
                 ],
                 [
                     'text'        => 'Tickets resueltos',
                     'url'         => '/resueltos',
                     'icon'        => 'fas fa-fw fa-check-circle',
                     'icon_color'  => 'info',
-                    // 'can'         => 'comments.index',
+                    'can'         => 'tickets_resueltos',
                 ],
                 [
                     'text'        => 'Tickets reabiertos',
                     'url'         => '/reabiertos',
                     'icon'        => 'fas fa-fw fa-redo',
                     'icon_color'  => 'info',
-                    // 'can'         => 'comments.index',
+                    'can'         => 'tickets_reabiertos',
                 ],
                 [
                     'text'        => 'Tickets cerrados',
                     'url'         => '/cerrados',
                     'icon'        => 'fas fa-fw fa-lock',
                     'icon_color'  => 'info',
-                    // 'can'         => 'comments.index',
+                    'can'         => 'tickets_cerrados',
                 ],
                 [
                     'text'        => 'Tickets vencidos',
                     'url'         => '/vencidos',
                     'icon'        => 'fas fa-fw fa-hourglass-end',
                     'icon_color'  => 'info',
-                    // 'can'         => 'comments.index',
+                    'can'         => 'tickets_vencidos',
                 ],
-                // [
-                //     'text'        => 'Reasignar tickets ',
-                //     'url'         => '{{ $menuUrl }}',
-                //     'icon'        => 'fas fa-fw fa-exchange-alt',
-                //     'icon_color'  => 'info',
-
-                //     // 'can'         => 'comments.index',
-                // ],
+                
             ],
 
         ],
@@ -533,25 +527,25 @@ return [
             'text'        => 'COMENTARIOS',
             'url'         => '/comentarios',
             'icon'        => 'fas fa-fw fa-comment',
-            // 'can'         => 'myPosts.index',
+            'can'         => 'comentariosTodos',
         ],
         [
             'text'        => 'AGENTES TÉCNICOS',
             'url'         => '/agentes_tecnicos',
             'icon'        => 'fas fa-fw fa-wrench',
-            // 'can'         => 'myPosts.index',
+            'can'         => 'todos_tecnicos',
         ],
         [
             'text'        => 'ANÁLISIS',
             'url'         => '/analisis',
             'icon'        => 'fas fa-fw fa-search',
-            // 'can'         => 'myPosts.index',
+            'can'         => 'indexAnalisis',
         ],
         [
             'text'        => 'GRÁFICO DE RENDIMIENTO ',
             'url'         => '/grafico_kpi',
             'icon'        => 'fas fa-fw fa-chart-bar',
-            // 'can'         => 'myPosts.index',
+            'can'         => 'indexGrafico',
         ],
     ],
 

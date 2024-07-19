@@ -13,7 +13,7 @@
                 <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volverInfo">
                 <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
               </div>
-              <h3>Detalles de ticket</h3>
+              <h3>Ticket ID: {{$ticket->id}} </h3>
               @if(session('status'))
                 <p class="alert alert-success">{{ Session('status') }}</p>
               @elseif(session('error'))
@@ -94,17 +94,6 @@
                    </div>
                   @endif
                   
-
-                  @if($usuario->name == $ticket->asignado_a && $ticket->estado->nombre == "Resuelto")
-                    <div class="col-md-4 form-group btnAsistencia" >
-                        <a href="/form/respuesta/{{$ticket->id}}"  id="btn-responder" class="btn btn-info btn-asignarTec" hidden>RESPONDER</a>
-                    </div>
-                  @elseif($usuario->name == $ticket->asignado_a && $ticket->estado->nombre == "Abierto")
-                    <div class="col-md-4 form-group btnAsistencia" >
-                        <a href="/form/respuesta/{{$ticket->id}}"  id="btn-responder" class="btn btn-info btn-asignarTec">RESPONDER</a>
-                    </div>
-                  @endif
-
               </form>
             </div>
           </div>
@@ -121,12 +110,5 @@
 
 @section('js')
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://kit.fontawesome.com/6f3d5551a7.js" crossorigin="anonymous"></script>
-    <!-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="../../js/jquery-3.3.1.min.js"></script> -->
-    <!-- <script src="../../js/popper.min.js"></script> -->
-    <!-- <script src="../../js/bootstrap.min.js"></script> -->
-    <!-- <script src="../../js/jquery.validate.min.js"></script>
-    <script src="../../js/main.js"></script> -->
-    
+  <script src="https://kit.fontawesome.com/6f3d5551a7.js" crossorigin="anonymous"></script>    
 @stop

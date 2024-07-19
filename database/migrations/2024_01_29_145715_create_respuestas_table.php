@@ -16,7 +16,6 @@ class CreateRespuestasTable extends Migration
         Schema::create('respuestas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('ticket_id');
-            $table->unsignedBigInteger('comentario_id')->nullable();
             $table->text('mensaje');
             $table->text('imagen')->nullable();
             $table->dateTime('fecha');
@@ -24,8 +23,6 @@ class CreateRespuestasTable extends Migration
 
 
             $table->foreign('ticket_id')->references('id')->on('tickets')->onDelete('cascade');
-            $table->foreign('comentario_id')->references('id')->on('comentarios')->onDelete('cascade');
-
 
         });
     }

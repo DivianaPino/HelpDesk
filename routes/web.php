@@ -52,6 +52,7 @@ Route::middleware([
     'masInfoNoti',
     'respMasInfoNoti',
     'respuestaNoti',
+    'ticketsNoComentados',
 ])->group(function () {
 
 
@@ -62,12 +63,13 @@ Route::middleware([
     Route::resource('/tickets', TicketsController::class)->names('tickets');  
     Route::resource('/areas', AreasController::class)->names('areas');
     Route::resource('/prioridades', PrioridadesController::class)->names('prioridades');
+    Route::get('/misTickets', [MisTicketsController::class, 'misTickets_agenteTecnico'] )->name('misTickets');
     Route::get('/asignar_area/{id}', [UsuariosController::class, 'asignar_area'] )->name('asignar_area');
     Route::put('/actualizar_area/{id}', [UsuariosController::class, 'actualizar_area'])->name('actualizar_area');
     Route::get('/area/{areaId}/tecnicos', [AreasController::class, 'area_tecnicos'] )->name('area_tecnicos');
     Route::get('/comentarios', [ComentarioController::class, 'comentariosTodos'] )->name('comentariosTodos');
-    Route::get('/agentes_tecnicos', [TicketsController::class, 'todos_tecnicos'] )->name('todos_tecnicos');
-    Route::get('/reasignar/ticket/{idTicket}', [TicketsController::class, 'reasignar_ticket'] )->name('reasignar_ticket');
+    Route::get('/analisis', [AnalisisController::class, 'index'] )->name('indexAnalisis');
+    Route::get('/grafico_kpi', [GraficoController::class, 'index'] )->name('indexGrafico');
     
 
     // Rol: Usuario estandar
@@ -77,11 +79,13 @@ Route::middleware([
     Route::post('/respuesta/mas_info/ticket/{idTicket}/{idMasInfo}', [TicketsUsuarioController::class, 'respMasInfo'] )->name('resp_masInfo');
     Route::get('/ticket/{idticket}/respuesta/{idrespuesta}', [TicketsUsuarioController::class, 'verRespuesta'])->name('ver_respuesta');
     Route::post('/comentar/respuesta/{idrespuesta}/ticket/{idTicket}', [TicketsUsuarioController::class, 'comentar_Respuesta'])->name('comentar_Respuesta');
+    Route::get('/ticket/reportado/{idTicket}', [TicketsUsuarioController::class, 'ver_ticketReportado'])->name(' ver_ticketReportado');
+
+   
    
 
     // Rol: Técnico de soporte
     Route::get('/area_usuario/tickets', [TicketsController::class, 'area_tickets'] )->name('areaUsuario_tickets');
-    Route::get('/misTickets', [MisTicketsController::class, 'misTickets_agenteTecnico'] )->name('misTickets');
     Route::get('/mis_tickets/abiertos', [MisTicketsController::class, 'tickets_abiertos'] )->name('misTickets_abiertos');
     Route::get('/mis_tickets/enEspera', [MisTicketsController::class, 'tickets_enEspera'] )->name('misTickets_enEspera');
     Route::get('/mis_tickets/enRevision', [MisTicketsController::class, 'tickets_enRevision'] )->name('misTickets_enRevision');
@@ -95,6 +99,7 @@ Route::middleware([
 
     // Roles: Admin y jefe de area 
     Route::get('/area/{idarea}/agentes', [TicketsController::class, 'agentes_area'] )->name('agentes_area');
+    Route::get('/reasignar/ticket/{idTicket}', [TicketsController::class, 'reasignar_ticket'] )->name('reasignar_ticket');
     Route::post('/guardar/reasignacion/ticket/{idTicket}', [TicketsController::class, 'guardar_reasignacion'] )->name('guardar_reasignacion');
 
     //  Roles: Admin, Jefe de área, soporte técnico 
@@ -124,9 +129,11 @@ Route::middleware([
     Route::get('/ver/ticket/{idTicket}', [TicketsController::class, 'verTicket'] )->name('verTicket');
     Route::get('/historial/ticket/{ticket_id}', [TicketsController::class, 'historialTicket'] )->name('historial_ticket');
     Route::get('/comentario/{comentario_id}', [ComentarioController::class, 'ver_comentario'] )->name('ver_comentario');
+
+    Route::get('/agentes_tecnicos', [TicketsController::class, 'todos_tecnicos'] )->name('todos_tecnicos');
+
+    Route::get('/mensaje/reabierto/ticket/{idTicket}', [TicketsController::class, 'mensajeReabierto'] )->name('mensajeReabierto');
     
-    Route::get('/analisis', [AnalisisController::class, 'index'] )->name('indexAnalisis');
-    Route::get('/grafico_kpi', [GraficoController::class, 'index'] )->name('indexGrafico');
 
     // Roles: Todos
     Route::get('/notificacion/{idNotificacion}/ticket/{idticket}/resp/{idResp}', [ComentarioNotiController::class, 'marcar_como_leida'] )->name('c_marcar_como_leida');

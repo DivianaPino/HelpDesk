@@ -47,75 +47,104 @@ class RoleSeeder extends Seeder
         $permission = Permission::create(['name' => 'asignar_area'])->syncRoles([$role1]);
         $permission = Permission::create(['name' => 'actualizar_area'])->syncRoles([$role1]);
 
-        //4) Ver todos los tickets reportados por los clientes
+        //5) Ver todos los tickets reportados por los clientes
         $permission = Permission::create(['name' => 'tickets.index'])->syncRoles([$role1]);
 
-        //5) Ver todos los comentarios de los clientes
+        //6) Ver los técnicos de cada área (desde la vista de "areas")
+        $permission = Permission::create(['name' => 'area_tecnicos'])->syncRoles([$role1]);
 
-        //6) Analisis de tickets
+        //8) Analisis de tickets
+        $permission = Permission::create(['name' => 'indexAnalisis'])->syncRoles([$role1]);
 
-        //7) Grafico de rendimientos
+        //9) Grafico de rendimientos
+        $permission = Permission::create(['name' => 'indexGrafico'])->syncRoles([$role1]);
 
  
         //*----------------------MODO ADMINISTRADOR Y JEFE DE AREA--------------------------------------
-        //1) Asignar ticket a un tecnico 
-        $permission = Permission::create(['name' => 'asignar_tecnico_ticket'])->syncRoles([$role1,$role2]);
+        
+        //1) Agentes de area donde pertenece el admin o jefe de área 
+        $permission = Permission::create(['name' => 'agentes_area'])->syncRoles([$role1,$role2]);
+        
+        //2) Asignar ticket a un técnico 
+        $permission = Permission::create(['name' => 'reasignar_ticket'])->syncRoles([$role1,$role2]);
+
+        //3) Ver tickets desde la vista de los ticket asignados a los tecnicos(abiertos, en espera) 
+        $permission = Permission::create(['name' => 'verTicket'])->syncRoles([$role1,$role2]);
+
+        //4) Tickets que tienen asignado cada técnico
+        $permission = Permission::create(['name' => 'tecnicos_tktAsignados'])->syncRoles([$role1,$role2]);
+
+        //5) Ticket abiertos que tiene cada técnico
+        $permission = Permission::create(['name' => 'tkt_abierto_tecnico'])->syncRoles([$role1,$role2]);
+
+        //6) Ticket en espera que tiene cada técnico
+        $permission = Permission::create(['name' => 'tkt_enEspera_tecnico'])->syncRoles([$role1,$role2]);
+
+        //7) ver todos los tecnicos y los ticket que tienen asignado
+        $permission = Permission::create(['name' => 'tecnicos_tkt_asignados'])->syncRoles([$role1,$role2]);
 
 
+       
         //*--------------MODO TECNICO ADMINISTRADOR, JEFE DE AREA Y TECNICO DE SOPORTE-------------------
-        //1)ver los tickets asignados  
+        //1) Ver los tickets asignados  
         $permission = Permission::create(['name' => 'misTickets'])->syncRoles([$role1,$role2,$role3]);
 
         //2) Ver detalles de los ticket asignados
         $permission = Permission::create(['name' => 'detalles_ticket'])->syncRoles([$role1,$role2,$role3]);
 
-        //3) Respuesta de ticket
+        //3) Ver los tickets no asignados
+        $permission = Permission::create(['name' => 'tickets_noasignados'])->syncRoles([$role1,$role2,$role3]);
+
+        //4) Ver los ticket abiertos
+        $permission = Permission::create(['name' => 'tickets_abiertos'])->syncRoles([$role1,$role2,$role3]);
+      
+        //5) Formulario - Respuesta de ticket
         $permission = Permission::create(['name' => 'form_Respuestaticket'])->syncRoles([$role1,$role2,$role3]);
-        $permission = Permission::create(['name' => 'guardar_respuestaTicket'])->syncRoles([$role1,$role2,$role3]);
 
-        //4) Pedir mas información del ticket
+        //6) Pedir mas información del ticket
         $permission = Permission::create(['name' => 'masInfo'])->syncRoles([$role1,$role2,$role3]);
-        $permission = Permission::create(['name' => 'guardar_masInfo'])->syncRoles([$role1,$role2,$role3]);
 
+        //7) Ver los ticket en Espera
+        $permission = Permission::create(['name' => 'tickets_enEspera'])->syncRoles([$role1,$role2,$role3]);
 
+        //8) Ver los ticket en Revisión 
+        $permission = Permission::create(['name' => 'tickets_enRevision'])->syncRoles([$role1,$role2,$role3]);
+
+        //9) Ver los ticket en vencidos
+        $permission = Permission::create(['name' => 'tickets_vencidos'])->syncRoles([$role1,$role2,$role3]);
+
+        //9) Ver los ticket en resueltos
+        $permission = Permission::create(['name' => 'tickets_resueltos'])->syncRoles([$role1,$role2,$role3]);
+
+        //10) Ver los ticket en reabietos
+        $permission = Permission::create(['name' => 'tickets_reabiertos'])->syncRoles([$role1,$role2,$role3]);
+
+        //11) Ver los ticket en cerrados
+        $permission = Permission::create(['name' => 'tickets_cerrados'])->syncRoles([$role1,$role2,$role3]);
+
+        //12) Mas información del ticket enviada por cliente
+        $permission = Permission::create(['name' => 'verRespCliente_masInfo'])->syncRoles([$role1,$role2,$role3]);
+        
+        //13) Historial del ticket
+        $permission = Permission::create(['name' => 'historialTicket'])->syncRoles([$role1,$role2,$role3]);
+
+        //14) Ver comentario de un ticket
+        $permission = Permission::create(['name' => 'ver_comentario'])->syncRoles([$role1,$role2,$role3]);
+
+        //15) Ver todos los comentarios de los clientes
+        $permission = Permission::create(['name' => 'todos_tecnicos'])->syncRoles([$role1,$role2,$role3]);
+
+        
 
         //*----------------------MODO JEFE DE AREA Y TECNICO DE SOPORTE----------------------------------
         // 1) Ver los ticket de su area 
         $permission = Permission::create(['name' => 'areaUsuario_tickets'])->syncRoles([$role2,$role3]);
 
         //2) Elegir un ticket de area que esta sin asignar
-         $permission = Permission::create(['name' => 'asignar_ticket'])->syncRoles([$role2,$role3]);
+        $permission = Permission::create(['name' => 'asignar_ticket'])->syncRoles([$role2,$role3]);
 
-        //3) Ver los tickets de area no asignados  
-        $permission = Permission::create(['name' => 'tickets_noasignados'])->syncRoles([$role2,$role3]);
 
-        //4) Ver los tickets de area abiertos 
-        $permission = Permission::create(['name' => 'tickets_abiertos'])->syncRoles([$role2,$role3]);
 
-        //5) Ver los tickets de area en espera
-        $permission = Permission::create(['name' => 'tickets_enEspera'])->syncRoles([$role2,$role3]);
-
-        //6) Ver los tickets de area resueltos
-        $permission = Permission::create(['name' => 'tickets_resueltos'])->syncRoles([$role2,$role3]);
-
-        //7) Ver los tickets de area cerrados
-
-        //8) Ver los tecnicos y sus ticket asignados (abiertos, en espera) 
-        $permission = Permission::create(['name' => 'tecnicos_tktAsignados'])->syncRoles([$role2,$role3]);
-
-       
-        //*------------------------------- MODO JEFE DE AREA-----------------------------------------------
-        //1)Permiso para cambiar tickets asignado a un tecnico a otro
-
-        //2)Ver los tickets asignados a los tecnicos de su area 
-       
-
-        //3)Ver los comentarios de los clientes referentes a la atencion de sus incidencias
-        
-        //4) Ver todos los agentes tecnicos que pertenecen a su area
-        $permission = Permission::create(['name' => 'area_tecnicos'])->syncRoles([$role2]);
-
-        
         //*------------------------MODO ADMINISTRADOR Y USUARIO ESTANDAR (CLIENTES)-----------------------
         //1)Crear Tickets
         $permission = Permission::create(['name' => 'usuarios_tickets.create'])->syncRoles([$role1,$role4]);
@@ -123,6 +152,12 @@ class RoleSeeder extends Seeder
 
         //2)Consultas sus tickets reportados
         $permission = Permission::create(['name' => 'usuarios_tickets.index'])->syncRoles([$role1,$role4]);
+
+
+        //*------------------------MODO TODOS LOS ROLES-----------------------
+
+        //1) Ver comentarios
+        $permission = Permission::create(['name' => 'comentariosTodos'])->syncRoles([$role1,$role2,$role3,$role4]);
 
 
 

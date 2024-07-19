@@ -10,6 +10,12 @@ use App\Models\Estado;
 
 class AnalisisController extends Controller
 {
+
+    public function __construct(){
+
+        $this->middleware('can:indexAnalisis');
+    
+    }
     /**
      * Display a listing of the resource.
      *

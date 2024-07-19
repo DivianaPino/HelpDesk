@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Grafico;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Area;
@@ -13,6 +14,12 @@ use App\Models\Comentario;
 
 class GraficoController extends Controller
 {
+
+    public function __construct(){
+
+        $this->middleware('can:indexGrafico');
+    
+    }
     public function index(){
 
         $areas = Area::all();
@@ -20,7 +27,7 @@ class GraficoController extends Controller
         $datosGrafico=[];
 
         foreach ($areas as $area) {
-           
+
             $ticketsPorArea = Ticket::where('clasificacion_id', $area->id)->has('comments')->get();
     
             foreach ($ticketsPorArea as $ticket) {
@@ -41,12 +48,19 @@ class GraficoController extends Controller
             }
         }
 
+          
+     
+
 
         // Convertir el array asociativo a una colección para facilitar el manejo
         $comentTicketAll = collect($comentTicketAll);
 
         $datosDrilldown = [];
 
+        $ticketsAreaArray=[];
+
+
+      
         foreach($comentTicketAll as $claveArea => $valorArea) {
             $ticketsAreaAll = Ticket::where('clasificacion_id', $claveArea)->get();
             $ticketsAreaArray[] = $ticketsAreaAll;
@@ -55,23 +69,23 @@ class GraficoController extends Controller
             $area = Area::find($claveArea);
             // contamos los ticket con comentarios satisfactorios que tiene cada area, los cuales estan en un array
             $cantidadComentario = count($valorArea);
-        
+
             foreach($ticketsAreaArray as $ticket) {
                 $cantidadTickets = count($ticket);
-                $porcentaje = ($cantidadComentario / $cantidadTickets) * 100;
+                $porcentaje = ($cantidadComentario  / $cantidadTickets) * 100;
             }
         
             // Datos para el gráfico (Área y % de satisfacción)
             $datosGrafico[] = ['name' => $area->nombre, 'y' => floatval($porcentaje), 'drilldown' => $area->nombre];
           
         
-            // Inicializa un nuevo arreglo para los datos de drilldown por área
+            //arreglo para los datos de drilldown por área
             $datosDrilldown[$claveArea] = ['name' => $area->nombre, 'id' => $area->nombre, 'data' => []];
         
             $areaNombre= $area->nombre;
 
             $tecnicosArea = User::whereHas('roles', function ($query) {
-                $query->whereIn('name', ['Jefe de área', 'Técnico de soporte']);
+                $query->whereIn('name', ['Administrador','Jefe de área', 'Técnico de soporte']);
             })->whereHas('areas', function ($query) use ($areaNombre) {
                 $query->where('nombre', $areaNombre);
             })->get();
@@ -98,6 +112,9 @@ class GraficoController extends Controller
                 $datosDrilldown[$claveArea]['data'][] = ['name' => $tecnico->name, 'y' => $porcentajeTicketTecnico];
             }
         }
+     
+
+     
         
      
         // $jsonData = json_encode($datosDrilldown, JSON_PRETTY_PRINT);

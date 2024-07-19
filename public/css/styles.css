@@ -1343,6 +1343,10 @@ table{
   white-space: nowrap;
 }
 
+#tabla_misTickets .btn-historial{
+ height: 35px !important;
+}
+
 @media(max-width: 2560px){
   
   #tabla_misTickets th {
@@ -1376,7 +1380,7 @@ table{
     margin-top: 4px !important;
   }
 
-  .btn-success{
+  #tabla_misTickets .btn-success{
     width: 90px !important;
     font-size: 12px !important;
     padding: 2px !important;
@@ -1418,13 +1422,17 @@ table{
     margin-top: 4px !important;
   }
 
-  .btn-success{
+  #tabla_misTickets .btn-success{
     width: 70px !important;
     font-size: 12px !important;
     padding: 4px !important;
     margin-bottom: 2px !important;
     margin-top: 4px !important;
   }
+
+  #tabla_misTickets .btn-historial{
+    height: 30px !important;
+   }
 
 }
 
@@ -1453,13 +1461,18 @@ table{
     margin-top: 4px !important;
   }
 
-  .btn-success{
+  #tabla_misTickets .btn-success{
     width: 60px !important;
     font-size: 8px !important;
     padding: 2px !important;
     margin-bottom: 2px !important;
     margin-top: 4px !important;
   }
+
+  #tabla_misTickets .btn-historial{
+    height: 20px !important;
+   }
+
 }
 
 @media(max-width: 1024px){
@@ -1487,7 +1500,7 @@ table{
     margin-top: 4px !important;
   }
 
-  .btn-success{
+  #tabla_misTickets .btn-success{
     width: 40px !important;
     font-size: 8px !important;
     padding: 2px !important;
@@ -1496,6 +1509,15 @@ table{
   }
 
 
+}
+
+@media(max-width:712px){
+  #tabla_misTickets .btn-historial{
+    height: 18px !important;
+    font-size: 8px !important;
+    padding: 0px !important;
+    padding-top: 2px!important;
+   }
 }
 
 
@@ -1524,7 +1546,7 @@ table{
     margin-top: 4px !important;
   }
 
-  .btn-success{
+  #tabla_misTickets .btn-success{
     width: 30px !important;
     font-size: 6px !important;
     padding: 2px !important;
@@ -1532,7 +1554,15 @@ table{
     margin-top: 4px !important;
   }
 
+  #tabla_misTickets .btn-historial{
+    height: 15px !important;
+    font-size: 6px !important;
+    padding: 0px !important;
+    padding-top: 2px!important;
+   }
 }
+
+
 
 @media(max-width: 425px){
 
@@ -1558,21 +1588,35 @@ table{
   }
 
   #tabla_misTickets .btn-ver{
-    width: 15px !important;
+    width: 20px !important;
     font-size: 4px !important;
     padding: 2px !important;
     margin-bottom: 2px !important;
     margin-top: 4px !important;
   }
 
-  .btn-success{
+  #tabla_misTickets .btn-success{
     width: 20px !important;
     font-size: 3.5px !important;
     padding: 2px !important;
     margin-bottom: 2px !important;
     margin-top: 4px !important;
   }
+
+  #tabla_misTickets .btn-historial{
+    height: 10px !important;
   
+   }
+  
+}
+
+@media(max-width: 375px){
+
+  #tabla_misTickets .btn-historial{
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+
+  }
 }
 
 @media(max-width: 325px){
@@ -1607,6 +1651,14 @@ table{
     padding: 2px !important;
     margin-bottom: 2px !important;
     margin-top: 4px !important;
+  }
+
+  #tabla_misTickets .btn-historial{
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    margin-right: 0px !important;
+    margin-left: 0px !important;
+  
   }
   
 }

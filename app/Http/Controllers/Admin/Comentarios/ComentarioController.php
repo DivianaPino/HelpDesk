@@ -20,6 +20,7 @@ class ComentarioController extends Controller
     public function comentariosTodos(){
 
         $usuario= Auth::user();
+        $allComentarios = [];
 
         if ($usuario->hasRole(['Administrador'])) {
             $comentarios=Comentario::all();
@@ -81,8 +82,7 @@ class ComentarioController extends Controller
         $idTicket=$comentario->ticket_id;
         $ticket= Ticket::find($idTicket);
         $respuesta=Respuesta::where('ticket_id', $idTicket)->first();
-        $comentario= Comentario::find($idComentario);
-
+    
         return view('myViews.Admin.tickets.comentario', compact('idTicket', 'ticket', 'respuesta', 'comentario'));
     }
 

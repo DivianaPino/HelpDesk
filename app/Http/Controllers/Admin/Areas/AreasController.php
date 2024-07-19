@@ -11,6 +11,13 @@ use App\Models\Clasificacion;
 
 class AreasController extends Controller
 {
+
+    public function __construct(){
+
+        $this->middleware('can:areas.index')->only('index');
+        $this->middleware('can:areas.edit')->only('edit', 'update');
+
+    }
     /**
      * Display a listing of the resource.
      *

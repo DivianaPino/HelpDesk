@@ -32,7 +32,7 @@
                <tbody>
                     @foreach ($tickets as $ticket )
                         <tr>
-                            <td>TK-{{$ticket->id}}</td>
+                            <td>{{$ticket->id}}</td>
                             <td>{{$ticket->user->name}}</td>
                             <td>{{$ticket->clasificacion->nombre}}</td>
 
@@ -87,7 +87,7 @@
                             <td class="content-btnOpciones" >
                               @if($ticket->estado->nombre == "Nuevo")
                                 <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
-                              @elseif($ticket->estado->nombre == "Abierto" ||$ticket->estado->nombre == "En espera" || $ticket->estado->nombre == "Reabierto")
+                              @elseif($ticket->estado->nombre == "Abierto" ||$ticket->estado->nombre == "En espera" || $ticket->estado->nombre == "Reabierto" || $ticket->estado->nombre == "En revisión" )
                                 <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
                                 <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
                               @else
@@ -202,7 +202,7 @@ $(document).ready(function() {
             "infoFiltered":"",
         },
 
-        "order": [[7, 'desc']],
+        "order": [[0, 'asc']],
         "columnDefs": [
             {
                 "targets": [7,8], 

@@ -32,61 +32,64 @@
 
                <tbody>
                  
-               @foreach ($tickets as $ticket )
-   
-                          <tr>
-                           
-                             <td>TK-{{$ticket->id}}</td>
-                             <td>{{$ticket->user->name}}</td>
-                             <td>{{$ticket->clasificacion->nombre}}</td>
+                  @foreach ($tickets as $ticket )
 
-                             @if($ticket->prioridad->nombre == "Urgente")
-                               <td class="prd_urgente">{{$ticket->prioridad->nombre}}</td>
-                             @elseif($ticket->prioridad->nombre == "Alta")
-                               <td class="prd_alta">{{$ticket->prioridad->nombre}}</td>
-                             @elseif($ticket->prioridad->nombre == "Media")
-                               <td class="prd_media">{{$ticket->prioridad->nombre}}</td>
-                             @elseif($ticket->prioridad->nombre == "Baja")
-                               <td class="prd_baja">{{$ticket->prioridad->nombre}}</td>
-                             @endif
+                    
+   
+                      <tr>
+                           
+                        <td>TK-{{$ticket->id}}</td>
+                        <td>{{$ticket->user->name}}</td>
+                        <td>{{$ticket->clasificacion->nombre}}</td>
+
+                        @if($ticket->prioridad->nombre == "Urgente")
+                          <td class="prd_urgente">{{$ticket->prioridad->nombre}}</td>
+                        @elseif($ticket->prioridad->nombre == "Alta")
+                          <td class="prd_alta">{{$ticket->prioridad->nombre}}</td>
+                        @elseif($ticket->prioridad->nombre == "Media")
+                          <td class="prd_media">{{$ticket->prioridad->nombre}}</td>
+                        @elseif($ticket->prioridad->nombre == "Baja")
+                          <td class="prd_baja">{{$ticket->prioridad->nombre}}</td>
+                        @endif
     
-                             <td class="td-fecha_inicio">{{\Carbon\Carbon::parse($ticket->created_at)->format('d-m-Y')}}</td>
+                        <td class="td-fecha_inicio">{{\Carbon\Carbon::parse($ticket->created_at)->format('d-m-Y')}}</td>
                         
 
-                             @if($ticket->estado->nombre == "Nuevo")
-                               <td class="abierto">Abierto</td>
-                             @elseif($ticket->estado->nombre == "Abierto")
-                               <td class="abierto">{{$ticket->estado->nombre}}</td>
-                             @elseif($ticket->estado->nombre == "En espera")
-                                @php
-                                    $ultimoMsj = $ticket->masInformacions->last();
-                                    $ultimaResp = $ticket->respMasInfo->last();
-                                @endphp
+                        @if($ticket->estado->nombre == "Nuevo")
+                          <td class="abierto">Abierto</td>
+                        @elseif($ticket->estado->nombre == "Abierto")
+                          <td class="abierto">{{$ticket->estado->nombre}}</td>
+                        @elseif($ticket->estado->nombre == "En espera")
+                          @php
+                              $ultimoMsj = $ticket->masInformacions->last();
+                              $ultimaResp = $ticket->respMasInfo->last();
+                          @endphp
 
-                                @if(isset($ultimoMsj))
-                                   @if($ultimoMsj['id'] == $ultimaResp['id'])
-                                        <td class="enEspera">{{$ticket->estado->nombre}}<br>(mensaje respondido)</td>
-                                    @else
-                                        <td class="enEspera">{{$ticket->estado->nombre}} <br><span class="text-EsperandoResp">(Esperando su respuesta)</span></td>
-                                    @endif
-                                @endif
-                             @elseif($ticket->estado->nombre == "En revisión")
-                                   <td class="enRevision">{{$ticket->estado->nombre}}</td>
-                             @elseif($ticket->estado->nombre == "Resuelto")
-                               <td class="resuelto">{{$ticket->estado->nombre}}</td>
-                             @elseif($ticket->estado->nombre == "Reabierto")
-                                <td class="reAbierto">{{$ticket->estado->nombre}}</td>
-                             @endif
+                          @if(isset($ultimoMsj))
+                              @if($ultimoMsj['id'] == $ultimaResp['id'])
+                                  <td class="enEspera">{{$ticket->estado->nombre}}<br>(mensaje respondido)</td>
+                              @else
+                                  <td class="enEspera">{{$ticket->estado->nombre}} <br><span class="text-EsperandoResp">(Esperando su respuesta)</span></td>
+                              @endif
+                          @endif
+                        @elseif($ticket->estado->nombre == "En revisión")
+                              <td class="enRevision">{{$ticket->estado->nombre}}</td>
+                        @elseif($ticket->estado->nombre == "Resuelto")
+                          <td class="resuelto">{{$ticket->estado->nombre}}</td>
+                        @elseif($ticket->estado->nombre == "Reabierto")
+                          <td class="reAbierto">{{$ticket->estado->nombre}}</td>
+                        @elseif($ticket->estado->nombre == "Cerrado")
+                          <td class="resuelto">Resuelto</td>
+                        @endif
 
-                             <td>{{ \Carbon\Carbon::parse($ticket->respuestas->last()['updated_at']) }}</td>
+                        <td>{{ \Carbon\Carbon::parse($ticket->respuestas->last()['updated_at']) }}</td>
                           
-                             <td class="content-btnInfo">
-                                 <a class="btn btn-info" href="/ticket/{{$ticket->id}}/historial" >Ver</a>
-                             </td>
+                        <td class="content-btnInfo">
+                            <a class="btn btn-info" href="/ticket/{{$ticket->id}}/historial" >Ver</a>
+                        </td>
 
-                         </tr>
-
-    
+                      </tr>
+                  
 
                   @endforeach
 

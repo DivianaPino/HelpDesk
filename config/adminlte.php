@@ -64,7 +64,7 @@ return [
     */
 
     'logo' => '<b>Help</b>Desk',
-    'logo_img' => 'vendor/adminlte/dist/img/Logo.png',
+    'logo_img' => 'vendor/adminlte/dist/img/Logo1.png',
     'logo_img_class' => 'brand-image ',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
@@ -109,11 +109,11 @@ return [
     'preloader' => [
         'enabled' => true,
         'img' => [
-            'path' => 'vendor/adminlte/dist/img/Logo.png',
+            'path' => 'vendor/adminlte/dist/img/Logo2.png',
             'alt' => 'AdminLTE Preloader Image',
             'effect' => 'animation__shake',
-            'width' => 60,
-            'height' => 60,
+            'width' => 80,
+            'height' => 80,
         ],
     ],
 
@@ -324,7 +324,7 @@ return [
         // Sidebar items:
         [
             'type' => 'sidebar-menu-search',
-            'text' => 'search',
+            'text' => 'Buscar...',
         ],
         [
             'text' => 'blog',

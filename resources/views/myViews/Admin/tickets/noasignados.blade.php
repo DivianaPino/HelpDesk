@@ -29,7 +29,7 @@
                <tbody>
                    @foreach ($tickets as $ticket )
                        <tr>
-                            <td>TK-{{$ticket->id}}</td>
+                            <td>{{$ticket->id}}</td>
                             <td>{{$ticket->user->name}}</td>
                             <td>{{$ticket->clasificacion->nombre}}</td>
                             <td>{{$ticket->asunto}}</td>

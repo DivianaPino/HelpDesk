@@ -24,20 +24,21 @@ class ComentarioNotiMiddleware
 
         if (Auth::check()) { // Verificar si el usuario está autenticado
             try {
-                // Llamar al método marcar_como_leida
-                ComentarioNotiController::marcar_como_leida($request->idNotificacion, $request->idTicket, $request->idRespuesta);
+                // instancia del controlador
+                $controller = new ComentarioNotiController;
+                
+                // Llamar al método marcar_como_leida usando la instancia
+                $controller->marcar_como_leida($request->idNotificacion, $request->idTicket, $request->idRespuesta);
             } catch (\Exception $e) {
-                //Manejar la excepción si algo sale mal
+                // Manejar la excepción si algo sale mal
                 Log::error("Error marcando notificación como leída: ". $e->getMessage(), [
                     'exception' => $e,
                 ]);
             }
         }
-    
+
         view()->share('notificacionesNoLeidas', $notificacionesNoLeidas);
 
- 
-        // return view('myViews.tecnicoSop.comentarios', compact('idTicket', 'ticket', 'respuesta', 'comentario'));  
         return $next($request);
-    }
+        }
 }

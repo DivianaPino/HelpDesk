@@ -2,16 +2,14 @@
     {{ config('adminlte.classes_topnav_nav', 'navbar-expand-md') }}
     {{ config('adminlte.classes_topnav', 'navbar-white navbar-light') }}">
 
-   
-
     <div class="{{ config('adminlte.classes_topnav_container', 'container') }}">
+
         {{-- Navbar brand logo --}}
         @if(config('adminlte.logo_img_xl'))
             @include('adminlte::partials.common.brand-logo-xl')
         @else
             @include('adminlte::partials.common.brand-logo-xs')
         @endif
-       
 
         {{-- Navbar toggler button --}}
         <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse"

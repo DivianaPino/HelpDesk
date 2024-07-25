@@ -1674,8 +1674,6 @@ pre code {
   margin-bottom: 1rem;
   color: #212529;
   background-color: transparent;
-  overflow-x: scroll !important;
-  overflow-y: scroll !important;
 }
 
 .table th,
@@ -15402,7 +15400,6 @@ body.text-sm .control-sidebar {
   color: #6c757d;
 }
 
-
 @media (min-width: 576px) {
   .navbar-nav > .user-menu > .dropdown-menu > .user-footer .btn-default:hover {
     background-color: #f8f9fa;
@@ -15423,7 +15420,7 @@ body.text-sm .control-sidebar {
     float: none;
     line-height: 10px;
     margin-right: .4rem;
-    margin-top: -15px;
+    margin-top: -8px;
   }
 }
 

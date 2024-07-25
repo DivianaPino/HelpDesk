@@ -8,7 +8,7 @@
             isset($item['icon_color']) ? 'text-'.$item['icon_color'] : ''
         }}"></i>
 
-        <p >
+        <p>
             {{ $item['text'] }}
             <i class="fas fa-angle-left right"></i>
 

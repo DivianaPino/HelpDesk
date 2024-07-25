@@ -53,7 +53,7 @@
 
                     @foreach ($tickets as $ticket )
                         <tr>
-                            <td>TK-{{$ticket->id}}</td>
+                            <td>{{$ticket->id}}</td>
                             <td>{{$ticket->user->name}}</td>
                             <td>{{$ticket->clasificacion->nombre}}</td>
                             <td>{{$ticket->asunto}}</td>
@@ -81,11 +81,11 @@
                                     $ultimaResp = $ticket->respMasInfo->last();
                                 @endphp
 
-                                @if(isset($ultimoMsj))
-                                   @if($ultimoMsj['id'] == $ultimaResp['id'])
-                                        <td class="enRevision">En revisión<br>(El cliente ha respondido)</td>
-                                    @else
+                                @if(isset($ultimoMsj) && !isset($ultimaResp))
                                         <td class="enEspera">{{$ticket->estado->nombre}}<br>(Esperando respuesta del cliente)</td>
+                                @else
+                                    @if($ultimoMsj['id'] == $ultimaResp['id'])
+                                        <td class="enRevision">En revisión<br>(El cliente ha respondido)</td>      
                                     @endif
                                 @endif
                             @elseif($ticket->estado->nombre == "En revisión")

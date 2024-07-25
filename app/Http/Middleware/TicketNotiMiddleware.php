@@ -24,9 +24,12 @@ class TicketNotiMiddleware
 
         if (Auth::check()) { // Verificar si el usuario está autenticado
             try {
+
+                // instancia del controlador
+                $controller = new TicketNotiController;
                 // Llamar al método marcar_como_leida
                 // NOTA: los parametros extraidos del $request deben estar escritos igual que en la ruta que ejecuta este metodo
-                TicketNotiController::marcar_como_leida($request->idNotificacion, $request->idticket);
+                $controller->marcar_como_leida($request->idNotificacion, $request->idticket);
             } catch (\Exception $e) {
                 //Manejar la excepción si algo sale mal
                 Log::error("Error marcando notificación como leída: ". $e->getMessage(), [

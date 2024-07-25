@@ -38,7 +38,7 @@
    
                       <tr>
                            
-                        <td>TK-{{$ticket->id}}</td>
+                        <td>{{$ticket->id}}</td>
                         <td>{{$ticket->user->name}}</td>
                         <td>{{$ticket->clasificacion->nombre}}</td>
 
@@ -65,13 +65,15 @@
                               $ultimaResp = $ticket->respMasInfo->last();
                           @endphp
 
-                          @if(isset($ultimoMsj))
-                              @if($ultimoMsj['id'] == $ultimaResp['id'])
-                                  <td class="enEspera">{{$ticket->estado->nombre}}<br>(mensaje respondido)</td>
-                              @else
-                                  <td class="enEspera">{{$ticket->estado->nombre}} <br><span class="text-EsperandoResp">(Esperando su respuesta)</span></td>
-                              @endif
+                    
+                          @if(isset($ultimoMsj) && !isset($ultimaResp))
+                                <td class="enEspera">{{$ticket->estado->nombre}} <br><span class="text-EsperandoResp">(Esperando su respuesta)</span></td>
+                          @else
+                                @if($ultimoMsj['id'] == $ultimaResp['id'])
+                                  <td class="enEspera">{{$ticket->estado->nombre}}<br>(mensaje respondido)</td>   
+                                @endif
                           @endif
+
                         @elseif($ticket->estado->nombre == "En revisión")
                               <td class="enRevision">{{$ticket->estado->nombre}}</td>
                         @elseif($ticket->estado->nombre == "Resuelto")
@@ -82,7 +84,11 @@
                           <td class="resuelto">Resuelto</td>
                         @endif
 
-                        <td>{{ \Carbon\Carbon::parse($ticket->respuestas->last()['updated_at']) }}</td>
+                        @if($ticket->respuestas->last() !== null)
+                            <td>{{ \Carbon\Carbon::parse($ticket->respuestas->last()->updated_at) }}</td>
+                        @else
+                            <td></td>
+                        @endif
                           
                         <td class="content-btnInfo">
                             <a class="btn btn-info" href="/ticket/{{$ticket->id}}/historial" >Ver</a>
@@ -156,12 +162,16 @@ $(document).ready(function() {
             "infoFiltered":"",
         },
 
-        "order": [[6, 'desc']],
+        "order": [[0, 'asc']],
         "columnDefs": [
             {
                 "targets": 6, 
                 "type": "date",
                 "render": function (data, type, row) {
+                    if (!data || data.trim() === '') {
+                        // Si 'data' no tiene contenido, retorna un string vacío
+                        return '---';
+                    }
                     // Asegurar de que 'data' esté en el formato 'YYYY-MM-DD'
                     // y luego convertirlo al formato 'DD-MM-YYYY' para la visualización
                     if (type === 'display') {

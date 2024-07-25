@@ -24,8 +24,9 @@ class RespMasInfoNotiMiddleware
 
         if (Auth::check()) { // Verificar si el usuario está autenticado
             try {
+                $controller = new RespMasInfoNotiController;
                 // Llamar al método marcar_como_leida
-                RespMasInfoNotiController::marcar_como_leida($request->idNotificacion, $request->idTicket);
+                $controller->marcar_como_leida($request->idNotificacion, $request->idTicket);
             } catch (\Exception $e) {
                 //Manejar la excepción si algo sale mal
                 Log::error("Error marcando notificación como leída: ". $e->getMessage(), [

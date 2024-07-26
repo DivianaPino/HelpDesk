@@ -44,7 +44,7 @@ class Ticket extends Model
 
     public function respMasInfo()
     {
-        return $this->hasMany('App\Models\RespMasinfo');
+        return $this->hasMany('App\Models\RespMasInfo');
     }
 
     public function ultimaRespuesta()

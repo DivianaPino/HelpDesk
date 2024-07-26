@@ -67,7 +67,7 @@
                             <td>{{\Carbon\Carbon::parse($ticket->updated_at)}}</td>
 
                              <td>
-                                <a class="btn btn-info" href="/detalles/{{$ticket->id}}" >Ver</a>
+                                <a class="btn btn-info" href="/historial/ticket/{{$ticket->id}}" >Ver</a>
                              </td>
 
                         </tr>

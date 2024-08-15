@@ -547,6 +547,12 @@ return [
             'icon'        => 'fas fa-fw fa-chart-bar',
             'can'         => 'indexGrafico',
         ],
+        [
+            'text'        => 'REPORTES',
+            'url'         => '/reporte/tickets',
+            'icon'        => 'fas fa-fw fa-file-pdf',
+            'can'         => 'indexGrafico',
+        ],
     ],
 
     /*

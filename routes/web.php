@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\Prioridades\PrioridadesController;
 use App\Http\Controllers\Admin\Analisis\AnalisisController;
 use App\Http\Controllers\Admin\Comentarios\ComentarioController;
 use App\Http\Controllers\Admin\Grafico\GraficoController;
+use App\Http\Controllers\Admin\Reportes\ReporteController;
 
 // Técnico de soporte
 use App\Http\Controllers\TecnicoSop\MisTickets\MisTicketsController;
@@ -70,6 +71,10 @@ Route::middleware([
     Route::get('/comentarios', [ComentarioController::class, 'comentariosTodos'] )->name('comentariosTodos');
     Route::get('/analisis', [AnalisisController::class, 'index'] )->name('indexAnalisis');
     Route::get('/grafico_kpi', [GraficoController::class, 'index'] )->name('indexGrafico');
+    Route::get('/reporte/tickets', [ReporteController::class, 'reporte'] )->name('reporteTickets');
+    Route::post('/tickets/filtrados', [ReporteController::class, 'reporteFiltrados'] )->name('reporteFiltrados');
+    Route::post('/reporte-pdf',  [ReporteController::class, 'reporteCompletoPDF'] )->name('reporteCompletoPDF');
+    Route::post('/reporteRango-pdf',  [ReporteController::class, 'reporteRangoPDF'] )->name('reporteRangoPDF');
     
 
     // Rol: Usuario estandar

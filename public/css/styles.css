@@ -3298,6 +3298,179 @@ table{
 
 /* ---------------------------------------------- */
 
+
+/*----------- REPORTES-------------------------- */
+.admin-reporte{
+  display: flex;
+  justify-content:center;
+  background-color: #74a4d6b3;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  margin-bottom: 40px;
+  
+}
+
+.admin-reporte .fechasReporte{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.admin-reporte .btn-adminReporte{
+  height: 38px !important;
+  margin-top: 32px ;
+  background-color: #0c55a3;
+  color: aliceblue;
+}
+
+.admin-reporte .btn-adminReporte:hover{
+  background-color: #093363;
+}
+
+.admin-reporte .fechasReporte .fecha-inicial{
+  margin-right: 20px;
+}
+.form_reporteCompleto{
+  display:flex; 
+  justify-content:center;
+  margin-bottom: 20px;
+}
+
+ .admin-reporte .btn-adminReporteRango{
+   width: 80px;
+   height: 38px;
+   margin-top: 32px;
+   margin-right: 20px;
+   margin-left: 20px;
+}
+
+
+
+@media(max-width: 767px){
+  .tituloReporte{
+    font-size: 30px !important;
+  }
+ .admin-reporte{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 14px;
+ }
+
+ .admin-reporte .fechasReporte{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .admin-reporte .fechasReporte{
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .admin-reporte .fecha-inicial{
+     margin-right: 20px !important;
+  }
+  
+ }
+
+ @media(max-width: 560px){
+  .tituloReporte{
+    font-size: 20px !important;
+  }
+
+ .admin-reporte{
+    font-size: 12px;
+  }
+
+  .admin-reporte .btn-adminReporte{
+    height: 35px !important;
+    margin-top: 25px ;
+    font-size: 12px ;
+  }
+ 
+ .admin-reporte .fecha-inicial input, .admin-reporte .fecha-fin input{
+   width: 120px;
+   font-size: 12px;
+   height: 35px;
+ }
+
+ .form_reporteCompleto .formulario-filtrar .btn-adminReporteCompleto{
+   font-size: 12px;
+   height:35px;
+  }
+
+  .admin-reporte .btn-adminReporteRango{
+    font-size: 12px;
+    width: 60px;
+    height: 30px;
+    margin-top: 10px;
+  }
+
+  .admin-reporte .btn-adminReporte{
+    font-size: 12px;
+    width: 180px;
+    height: 30px;
+    margin-top: 10px;
+  }
+
+
+ }
+
+@media(max-width: 375px){
+  .tituloReporte{
+    font-size: 15px !important;
+  }
+
+ .admin-reporte{
+    font-size: 10px;
+  }
+
+  .admin-reporte .btn-adminReporte{
+    height: 30px !important;
+    margin-top: 20px ;
+    font-size: 10px ;
+  }
+ 
+ .admin-reporte .fecha-inicial input, .admin-reporte .fecha-fin input{
+   width: 100px;
+   font-size: 10px;
+   height: 30px;
+ }
+
+ .form_reporteCompleto .formulario-filtrar .btn-adminReporteCompleto{
+   font-size: 10px;
+   height:30px;
+  }
+
+  .admin-reporte .btn-adminReporteRango{
+    font-size: 10px;
+    width: 60px;
+    height: 30px;
+    margin-top: 10px;
+  }
+
+  .admin-reporte .btn-adminReporte{
+    font-size: 10px;
+    width: 160px;
+    height: 25px;
+    margin-top: 10px;
+  }
+
+
+}
+
+@media(max-width: 320px){
+  .admin-reporte .btn-adminReporteRango{
+    font-size: 10px !important;
+    width: 60px !important;
+  }
+}
+
+/* ---------------------------------------------- */
+
+
 .leyenda_tktArea{
   display: flex;
   justify-content: space-evenly;
@@ -3306,6 +3479,7 @@ table{
 .leyenda_tktArea a{
   text-decoration:underline;
 }
+
 
 .nuevo{
   background-color:#09ac17 !important;

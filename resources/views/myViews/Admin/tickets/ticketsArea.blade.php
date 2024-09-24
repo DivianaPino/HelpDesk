@@ -15,20 +15,19 @@
             <table id="tabla_tktArea" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap"  collspacing="0" style="max-width: 1200px ; width:100%; font-size:14px;"  >
                 <div class="leyenda_tktArea">
                     <div class="col-leyenda">
-                        <p>Tickets nuevos:<a href="/noasignados"> {{$cant_tkt_nuevos}}</a></p>
-                        <p>Tickets abiertos:<a href="/abiertos"> {{$cant_tkt_abiertos}}</a></p>
+                        <p>Nuevos:<a href="/noasignados"> {{$cant_tkt_nuevos}}</a></p>
+                        <p>Abiertos:<a href="/abiertos"> {{$cant_tkt_abiertos}}</a></p>
                     </div>
                     <div class="col-leyenda">
-                        <p>Tickets en espera:<a href="/enEspera"> {{$cant_tkt_enEspera}}</a></p>
-                        <p>Tickets en revisión:<a href="/enRevision"> {{$cant_tkt_enRevision}}</a></p>
+                        <p>En espera:<a href="/enEspera"> {{$cant_tkt_enEspera}}</a></p>
+                        <p>Resueltos:<a href="/resueltos"> {{$cant_tkt_resueltos}}</a></p>
                     </div>
                     <div class="col-leyenda"> 
-                        <p>Tickets resueltos:<a href="/resueltos"> {{$cant_tkt_resueltos}}</a></p>
-                        <p>Tickets reabiertos:<a href="/reabiertos"> {{$cant_tkt_reAbiertos}}</a></p>
+                        <p>Reabiertos:<a href="/reabiertos"> {{$cant_tkt_reAbiertos}}</a></p>
+                        <p>Cerrados:<a href="/cerrados"> {{$cant_tkt_cerrados}}</a></p>
                     </div>
                     <div class="col-leyenda">
-                        <p>Tickets cerrados:<a href="/cerrados"> {{$cant_tkt_cerrados}}</a></p>
-                        <p>Tickets vencidos:<a href="/vencidos"> {{$cant_tkt_vencidos}}</a></p>
+                        <p>Vencidos:<a href="/vencidos"> {{$cant_tkt_vencidos}}</a></p>
                     </div>
                 </div>
                <thead class=" bg-dark text-white" >
@@ -72,15 +71,7 @@
                         @elseif($ticket->estado->nombre == "Abierto")
                             <td class="abierto">{{$ticket->estado->nombre}}</td>
                         @elseif($ticket->estado->nombre == "En espera")
-                            @forelse($ticket->respMasInfo as $respuesta)
-                                @isset($respuesta->mensaje)
-                                    <td class="enEspera">{{$ticket->estado->nombre}}<br>(El cliente ha respondido)</td>
-                                @endisset
-                            @empty
-                                <td class="enEspera">{{$ticket->estado->nombre}}</td>
-                            @endforelse
-                        @elseif($ticket->estado->nombre == "En revisión")
-                            <td class="enRevision">{{$ticket->estado->nombre}} <br>(El cliente ha respondido)</td>
+                             <td class="enEspera">{{$ticket->estado->nombre}}</td>
                         @elseif($ticket->estado->nombre == "Resuelto")
                             <td class="resuelto">{{$ticket->estado->nombre}}</td>
                         @elseif($ticket->estado->nombre == "Reabierto")
@@ -102,8 +93,9 @@
                         @endif
 
                         <!-- Fecha de respuesta -->
-                        @if ($ticket->respuestas->count() > 0)
-                        <td>{{\Carbon\Carbon::parse($ticket->ultimaRespuesta['fecha'])->format('d-m-Y')}}</td>
+                        @if ($ticket->mensajes->count() > 0)
+                        
+                        <td></td>
                         @else
                         <td>---</td>
                         @endif
@@ -112,31 +104,26 @@
                         <td class="content-btnOpciones" >
                             @if($ticket->estado->nombre == "Nuevo") 
                                 <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
-                            @elseif($ticket->estado->nombre == "Reabierto")
-                                <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
+
+                            @elseif($ticket->estado->nombre == "Abierto" || $ticket->estado->nombre == "En espera" || $ticket->estado->nombre == "Reabierto")
+                                @if($usuario->name == $ticket->asignado_a )
+                                    <a class="btn btn-info" href="/form/mensaje/tec/ticket/{{$ticket->id}}">Ver</a>
+                                @else
+                                    <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
+                                @endif
+
                                 @can('reasignar_ticket')
                                     <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
                                 @endcan
-                            @elseif($ticket->estado->nombre == "Resuelto")
-                                <a class="btn btn-info" href="/historial/ticket/{{$ticket->id}}">Ver</a>
-                            @elseif($usuario->name == $ticket->asignado_a && $ticket->estado->nombre == "Abierto")
-                                <a href="/form/respuesta/{{$ticket->id}}"  id="btn-responder" class="btn btn-info btn-asignarTec">Ver</a>
-                                @can('reasignar_ticket')
-                                    <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
-                                @endcan
-                            @elseif($usuario->name == $ticket->asignado_a && $ticket->estado->nombre == "Reabierto")
-                                <a href="/form/respuesta/{{$ticket->id}}"  id="btn-responder" class="btn btn-info btn-asignarTec">Ver</a>
-                                @can('reasignar_ticket')
-                                    <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
-                                @endcan
-                            @elseif($ticket->estado->nombre == "Cerrado")
-                                <a class="btn btn-info" href="/historial/ticket/{{$ticket->id}}" >Ver</a>
-                            @else
-                                <a class="btn btn-info" href="/historial/ticket/{{$ticket->id}}" >Ver</a>
-                                @can('reasignar_ticket')
-                                    <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
-                                @endcan
-                            @endif 
+                             
+                            @elseif( $ticket->estado->nombre == "Resuelto" || $ticket->estado->nombre == "Cerrado")
+                                @if($usuario->name == $ticket->asignado_a )
+                                    <a class="btn btn-info" href="/form/mensaje/tec/ticket/{{$ticket->id}}">Ver</a>
+                                @else
+                                    <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
+                                @endif
+                            @endif
+
                         </td>
 
                     </tr>

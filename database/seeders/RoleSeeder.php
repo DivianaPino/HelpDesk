@@ -59,6 +59,10 @@ class RoleSeeder extends Seeder
         //9) Grafico de rendimientos
         $permission = Permission::create(['name' => 'indexGrafico'])->syncRoles([$role1]);
 
+        //9) Reportes
+        $permission = Permission::create(['name' => 'reporteTickets'])->syncRoles([$role1]);
+
+
  
         //*----------------------MODO ADMINISTRADOR Y JEFE DE AREA--------------------------------------
         
@@ -131,7 +135,7 @@ class RoleSeeder extends Seeder
         //14) Ver comentario de un ticket
         $permission = Permission::create(['name' => 'ver_comentario'])->syncRoles([$role1,$role2,$role3]);
 
-        //15) Ver todos los comentarios de los clientes
+        //15) Ver los técnicos que pertenecen al área del técnico autenticado 
         $permission = Permission::create(['name' => 'todos_tecnicos'])->syncRoles([$role1,$role2,$role3]);
 
         
@@ -156,8 +160,8 @@ class RoleSeeder extends Seeder
 
         //*------------------------MODO TODOS LOS ROLES-----------------------
 
-        //1) Ver comentarios
-        $permission = Permission::create(['name' => 'comentariosTodos'])->syncRoles([$role1,$role2,$role3,$role4]);
+        //1) Ver calificaciones de las asistencias
+        $permission = Permission::create(['name' => 'calificaciones'])->syncRoles([$role1,$role2,$role3,$role4]);
 
 
 

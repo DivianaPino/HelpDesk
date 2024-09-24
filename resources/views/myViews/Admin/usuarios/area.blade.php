@@ -33,7 +33,7 @@
 
                 {!!Form::submit('Asignar área', ['class'=>'btn btn-primary mt-2'])!!}
                 <div style="display:inline-block; margin-left:20px;">
-                     <a style="margin-top:8px;" href="/usuarios" class="btn btn-dark btn-volverInfo">Volver</a>
+                     <a style="margin-top:8px;" href="/usuarios" class="btn btn-dark btn-volver">Volver</a>
                 </div>
           {!!Form::close()!!}
       </div>

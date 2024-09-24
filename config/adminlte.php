@@ -15,7 +15,7 @@ return [
     */
 
     'title' => '', 
-    'title_prefix' => 'Help Desk | ',
+    'title_prefix' => 'LEMA | ',
     'title_postfix' => '',
 
     /*
@@ -63,7 +63,7 @@ return [
     |
     */
 
-    'logo' => '<b>Help</b>Desk',
+    'logo' => '<b>LE</b>MA',
     'logo_img' => 'vendor/adminlte/dist/img/Logo1.png',
     'logo_img_class' => 'brand-image ',
     'logo_img_xl' => null,
@@ -193,7 +193,7 @@ return [
     'classes_content_wrapper' => '',
     'classes_content_header' => '',
     'classes_content' => '',
-    'classes_sidebar' => 'sidebar-dark-primary elevation-4',
+    'classes_sidebar' => 'sidebar-estilo elevation-4', //este
     'classes_sidebar_nav' => '',
     'classes_topnav' => 'navbar-white navbar-light',
     'classes_topnav_nav' => 'navbar-expand bg-primary',
@@ -485,13 +485,6 @@ return [
                     'can'         => 'tickets_enEspera',
                 ],
                 [
-                    'text'        => 'Tickets en revisión',
-                    'url'         => '/enRevision',
-                    'icon'        => 'fas fa-fw fa-eye',
-                    'icon_color'  => 'info',
-                    'can'         => 'tickets_enRevision',
-                ],
-                [
                     'text'        => 'Tickets resueltos',
                     'url'         => '/resueltos',
                     'icon'        => 'fas fa-fw fa-check-circle',
@@ -524,10 +517,10 @@ return [
 
         ],
         [
-            'text'        => 'COMENTARIOS',
-            'url'         => '/comentarios',
-            'icon'        => 'fas fa-fw fa-comment',
-            'can'         => 'comentariosTodos',
+            'text'        => 'CALIFICACIONES',
+            'url'         => '/calificaciones',
+            'icon'        => 'fas fa-fw fa-star',
+            'can'         => 'calificaciones',
         ],
         [
             'text'        => 'AGENTES TÉCNICOS',
@@ -551,7 +544,7 @@ return [
             'text'        => 'REPORTES',
             'url'         => '/reporte/tickets',
             'icon'        => 'fas fa-fw fa-file-pdf',
-            'can'         => 'indexGrafico',
+            'can'         => 'reporteTickets',
         ],
     ],
 

@@ -32,22 +32,24 @@
                   </div>
                   
                   <div class="row">
-                    <div class="col-md-4 form-group mb-3">
-                        <label for="clasificacion_id" class="col-form-label">Clasificación:</label>
-                        <select class="custom-select" id="clasificacion_id" name="clasificacion_id"  value="{{old('clasificacion_id')}}" disabled >
-                            <option value="">{{ $ticket->clasificacion->nombre }}</option>
-                        </select>
+                    <div class="col-md-3 form-group mb-3">
+                      <label for="clasificacion_id" class="col-form-label">Clasificación:</label>
+                      <input type="text" class="form-control" name="clasificacion_id" id="clasificacion_id" value="{{ $ticket->clasificacion->nombre }}" disabled>
                     </div>
-                    <div class="col-md-4 form-group mb-3">
+                    
+                    <div class="col-md-3 form-group mb-3">
                       <label for="prioridad_id" class="col-form-label">Prioridad:</label>
-                      <select class="custom-select" id="prioridad_id" name="prioridad_id"  disabled>
-                          <option value="">{{ $ticket->prioridad->nombre }}</option>
-                      </select>
+                      <input type="text" class="form-control" name="prioridad_id" id="prioridad_id" value="{{ $ticket->prioridad->nombre }}" disabled>
                     </div>
 
-                    <div class="col-md-4 form-group mb-3">
+                    <div class="col-md-3 form-group mb-3">
                       <label for="estado_id" class="col-form-label">Estado:</label>
                       <input type="text" class="form-control" name="estado_id" id="estado_id" value="{{$ticket->estado->nombre}}" disabled>
+                    </div>
+
+                    <div class="col-md-3 form-group mb-3">
+                      <label for="asignado_a" class="col-form-label">Técnico asignado:</label>
+                      <input type="text" class="form-control" name="asignado_a" id="asignado_a" value="{{$ticket->asignado_a}}" disabled>
                     </div>
                 
                   </div>

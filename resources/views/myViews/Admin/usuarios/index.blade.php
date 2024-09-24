@@ -54,7 +54,7 @@
 @stop
 
 @section('css')
-<link rel="stylesheet" href="/css/styles.css">
+
 
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.min.css">
 

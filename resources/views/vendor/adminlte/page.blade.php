@@ -6,6 +6,8 @@
 @section('adminlte_css')
     @stack('css')
     @yield('css')
+    <link rel="stylesheet" href="/css/general.css">
+    <link rel="stylesheet" href="/css/styles.css">
 @stop
 
 @section('classes_body', $layoutHelper->makeBodyClasses())
@@ -55,4 +57,10 @@
 @section('adminlte_js')
     @stack('js')
     @yield('js')
+
+    
+    
+
+    
+
 @stop

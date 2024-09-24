@@ -27,7 +27,7 @@ class TicketHistorial extends Model
 
     public function respuesta()
     {
-        return $this->belongsTo('App\Models\Respuesta');
+        return $this->belongsTo('App\Models\Mensaje');
     }
 
 

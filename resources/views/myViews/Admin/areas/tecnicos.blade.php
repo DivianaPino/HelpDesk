@@ -8,7 +8,7 @@
 
 @section('content') 
 <div class="content-btnVolver btnVolver_TecArea">
-    <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volverInfo">
+    <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volver">
     <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
 </div>
 
@@ -51,8 +51,6 @@
 @stop
 
 @section('css')
-<link rel="stylesheet" href="/css/styles.css">
-
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.min.css">
 
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.bootstrap5.css">

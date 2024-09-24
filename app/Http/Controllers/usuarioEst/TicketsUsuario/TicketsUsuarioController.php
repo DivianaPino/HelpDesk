@@ -7,10 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
-use App\Notifications\ComentarioNotification;
-use App\Events\ComentarioEvent;
+use App\Notifications\CalificacionNotification;
+use App\Events\CalificacionEvent;
 use App\Events\TicketEvent;
-use App\Events\RespMasInfoEvent;
+use App\Events\MensajeClienteEvent;
 use Carbon\Carbon;
 use App\Models\Ticket;
 use App\Models\User;
@@ -19,10 +19,8 @@ use App\Models\Clasificacion;
 use App\Models\Prioridad;
 use App\Models\Estado;
 use App\Models\TicketHistorial;
-use App\Models\MasInformacion;
-use App\Models\RespMasInfo;
-use App\Models\Respuesta;
-use App\Models\Comentario;
+use App\Models\Mensaje;
+use App\Models\Calificacion;
 
 
 class TicketsUsuarioController extends Controller
@@ -134,193 +132,249 @@ class TicketsUsuarioController extends Controller
 
     }
 
-    public function historial($idTicket){
+    // public function historial($idTicket){
         
-        //Historial del ticket que viene por parametro
-        $tickets = TicketHistorial::where('ticket_id', $idTicket)->get();
+    //     //Historial del ticket que viene por parametro
+    //     $tickets = TicketHistorial::where('ticket_id', $idTicket)->get();
        
-        $mensajes=MasInformacion::where('ticket_id', $idTicket)->get();
+    //     $mensajes=MasInformacion::where('ticket_id', $idTicket)->get();
 
-        return view('myViews.usuarioEst.historial' , compact ('idTicket', 'tickets', 'mensajes'));
-    }
+    //     return view('myViews.usuarioEst.historial' , compact ('idTicket', 'tickets', 'mensajes'));
+    // }
 
-    public function verMensaje($idTicket, $idMensaje){
-
-        // Mensaje (mas informacion) enviado por el Agente T. al cliente
-        $mensaje=MasInformacion::where('ticket_id', $idTicket)->where('id', $idMensaje)->first();
-
-        // Respuesta del usuario 
-        $respuesta=RespMasInfo::where('masInfo_id', $idMensaje)->first();
-      
-        if (RespMasInfo::where('masInfo_id', $idMensaje)->exists()) {
-            return view('myViews.usuarioEst.mensajeRespuesta', compact('idTicket','mensaje','idMensaje', 'respuesta'));
-                                                                      
-        } else {
-            return view('myViews.usuarioEst.verMensaje', compact('idTicket', 'mensaje', 'idMensaje'));
-        }
-
-    }
-
-
-    public function respMasInfo(Request $request, $idTicket, $idMasInfo){
-
-        $request->validate([
-                'mensaje' =>'required',
-                'imagen' => 'image',
-            ],
-            [
-                'mensaje.required' => 'El campo mensaje es requerido',
-                'imagen.image' => 'El archivo debe ser una imagen',
-            ]
-        );
-
-        
-        if($request->hasFile('imagen')){
-
-            $file = $request->file('imagen'); // obtenemos el archivo
-            $random_name = time(); // le colocamos a la imagen un nombre random y con el tiempo y fecha actual 
-            $destinationPath = 'images/respMasInfo/tickets/'; // path de destino donde estaran las imagenes subidas 
-            $extension = $file->getClientOriginalExtension();
-            $filename = $random_name.'-'.$file->getClientOriginalName(); //concatemos el nombre random creado anteriormente con el nombre original de la imagen (para evitar nombres repetidos)
-            $uploadSuccess = $request->file('imagen')->move($destinationPath, $filename); //subimos y lo enviamos al path de Destin
-
-
-            $respuesta=new RespMasInfo();
-            $respuesta->ticket_id=$idTicket;   
-            $respuesta->masInfo_id=$idMasInfo;   
-            $respuesta->mensaje=$request->mensaje;
-            $respuesta->imagen=$filename;
-            $respuesta->fecha=Carbon::now();
-            $respuesta->save();
-
-          
-            // cambiar estado a "En revision"
-            $ticket=Ticket::find($idTicket);
-            $fechaInicioTicket= Carbon::parse($ticket->fecha_inicio);
-            $fechaCaducidadCarbon = Carbon::parse($ticket->fecha_caducidad);
- 
-            $diferenciaDias = Carbon::now()->diffInDays($fechaInicioTicket);
-            $newfechaCaduc = $fechaCaducidadCarbon->addDays($diferenciaDias); 
-   
-            $ticket->fecha_caducidad = $newfechaCaduc;
-            $ticket->estado_id= 4;
-            $ticket->save();
-
-            $historial= new TicketHistorial();
-            $historial->ticket_id= $idTicket;
-            $historial->estado_id=4;
-            $historial->updated_at= Carbon::now();
-            $historial->save();
-
-             // Enviamos $respuesta al event (RespMasInfoEvent),para luego crear la notitificación
-             event(new RespMasInfoEvent($respuesta));
-
-
-        }else{
-
-            $respuesta=new RespMasInfo();
-            $respuesta->ticket_id=$idTicket;  
-            $respuesta->masInfo_id=$idMasInfo;  
-            $respuesta->mensaje=$request->mensaje;
-            $respuesta->fecha=Carbon::now();
-            $respuesta->save();
-
-            // cambiar estado a "En revision"
-            $ticket=Ticket::find($idTicket);
-            $fechaInicioTicket= Carbon::parse($ticket->fecha_inicio);
-            $fechaCaducidadCarbon = Carbon::parse($ticket->fecha_caducidad);
- 
-            $diferenciaDias = Carbon::now()->diffInDays($fechaInicioTicket);
-            $newfechaCaduc = $fechaCaducidadCarbon->addDays($diferenciaDias); 
-   
-            $ticket->fecha_caducidad = $newfechaCaduc;
-            $ticket->estado_id= 4;
-            $ticket->save();
-
-            $historial= new TicketHistorial();
-            $historial->ticket_id= $idTicket;
-            $historial->estado_id=4;
-            $historial->updated_at= Carbon::now();
-            $historial->save();
-
-            // Enviamos $respuesta al event (RespMasInfoEvent),para luego crear la notitificación
-            event(new RespMasInfoEvent($respuesta));
-
-        }
-
-        return back()->with('status', 'Respuesta enviada exitosamente :)');
-    }
-
-    public function verRespuesta($idTicket, $idRespuesta){
-      
-        $ticket=Ticket::find($idTicket);
-
-        $ticketResueltos=TicketHistorial::where('ticket_id', $idTicket)->where('estado_id', 5)->get();
-
-        // Obtener el ticket basado en la posición
-        $registroRespuesta = $ticketResueltos->skip($idRespuesta - 1)->first();
-                          
-        $idResp= $registroRespuesta->respuesta_id;
-   
-        $respuestaTicket= Respuesta::find($idResp);
-     
-        return view('myViews.usuarioEst.respuesta')->with(['idTicket'=>$idTicket, 'ticket'=> $ticket,'respuesta' => $respuestaTicket]);
-    }
-
-    public function comentar_Respuesta(Request $request,$idRespuesta, $idTicket){
-
-        $request->validate([
-            'mensaje' =>'required',
-            'opcion' => 'required',
-        ],
-        [
-            'mensaje.required' => 'El campo mensaje es requerido',
-            'opcion.required' => 'Debe seleccionar una opción',
-        ]);
-
-        $usuarioId=auth()->user()->id;
-   
-        $comentario=new Comentario();
-        $comentario->respuesta_id=$idRespuesta;   
-        $comentario->ticket_id=$idTicket;   
-        $comentario->mensaje=$request->mensaje;
-        $comentario->nivel_satisfaccion=$request->opcion;
-        $comentario->bool_reabrir=$request->has('reabrir')? true : false;;
-        $comentario->save();
-
-     
-       
-        if($comentario->bool_reabrir){
-            $ticket= Ticket::find($idTicket);
-            $ticket->estado_id=6;
-            $ticket->save();
-        }
-
-        $historial= new TicketHistorial();
-        $historial->ticket_id= $idTicket;
-        $historial->estado_id=6;
-        $historial->updated_at= Carbon::now();
-        $historial->save();
-
-        //*NOTIFICACION A LOS USUARIOS AL COMENTAR
-        // User::all()
-        //     ->except($usuarioId)
-        //     ->each(function(User $user) use ($comentario){
-        //         $user->notify(new ComentarioNotification($comentario));
-        //     });
-
-        //* NOTIFICACION A LOS USUARIOS PERO UTILIZANDO EVENT Y LISTENER (más simplificado)
-        // Enviamos el comentario al event,para luego crear la notificación
-        event(new ComentarioEvent($comentario));
-
-        return back()->with('status', 'Comentario enviado exitosamente :)');
-       
-    }
 
     public function ver_ticketReportado($idTicket){
-         $ticket= Ticket::find($idTicket);
-         return view('myViews.usuarioEst.ticketReportado')->with(['ticket'=> $ticket]);
+        $ticket= Ticket::find($idTicket);
+        return view('myViews.usuarioEst.ticketReportado')->with(['ticket'=> $ticket, 'idTicket' => $idTicket]);
     }
+
+    public function guardar_mensajeCliente(Request $request, $idTicket){
+
+       $tick=Ticket::find($idTicket);
+       $estadoTick=$tick->estado->nombre;
+
+
+       if($estadoTick == "Resuelto"){
+
+         try{
+
+            $validator = $request->validate([
+                    'opcion' =>'required',
+                    'accion' => 'required'
+                    
+                ],
+                [
+                    'opcion.required' => 'El campo nivel de satisfacción es requerido.',
+                    'accion.required' => 'Debes indicar que quieres hacer con el ticket.',
+                ]
+            
+            );
+
+              $accionSelect=$request->input('accion_seleccionada');
+
+                $calificacion= new Calificacion();
+                $calificacion->ticket_id = $idTicket;
+                $calificacion->nivel_satisfaccion = $request->opcion;
+                $calificacion->comentario=$request->comentario; 
+                $calificacion->accion =  $request->input('accion_seleccionada');
+                $calificacion->save();
+
+               
+                if ($accionSelect === 'Reabrirlo') {
+                     $estadoReabierto =Estado::where('nombre', 'Reabierto')->first();
+                     $tick->estado_id= $estadoReabierto->id;
+                     $tick->save();
+                } elseif ($accionSelect === 'Cerrarlo') {
+                    $estadoCerrado =Estado::where('nombre', 'Cerrado')->first();
+                    $tick->estado_id= $estadoCerrado->id;
+                    $tick->save();
+                }
+
+        
+                event(new CalificacionEvent($calificacion));
+
+
+                return response()->json([
+                    'nivel_satisfaccion' => $request->opcion,
+                    'comentario' => $request->comentario,
+                    'accion' => $request->input('accion_seleccionada'),
+                    'status' => 'success',
+                    'msjSuccess'  => 'Calificación enviada exitosamente.',
+                
+                ]);
+
+           
+            }catch (\Illuminate\Validation\ValidationException $e) {
+                return response()->json([
+                    'errors' => $e->validator->errors()->toArray(),
+                ], 422);
+            }
+
+            
+       }else{
+
+            $esTecnico = false; 
+            $usuario = Auth::user();
+            $roles = $usuario->roles()->get();
+            foreach ($roles as $role) {
+                if ($role->name == "Administrador" || $role->name == "Jefe de área" || $role->name == "Técnico de soporte") {
+                    $esTecnico = true;
+                    break;
+                }
+            }
+        
+            try{
+                        $validator = $request->validate([
+                                'mensaje' =>'required',
+                                'imagen' => 'image',
+                            ],
+                            [
+                                'mensaje.required' => 'El campo mensaje es requerido',
+                                'imagen.image' => 'El archivo debe ser una imagen',
+                            ]
+                        );
+
+
+                    if($request->hasFile('imagen')){
+
+                        $file = $request->file('imagen'); // obtenemos el archivo
+                        $random_name = time(); // le colocamos a la imagen un nombre random y con el tiempo y fecha actual 
+                        $destinationPath = 'images/msjCliente/'; // path de destino donde estaran las imagenes subidas 
+                        $extension = $file->getClientOriginalExtension();
+                        $filename = $random_name.'-'.$file->getClientOriginalName(); //concatemos el nombre random creado anteriormente con el nombre original de la imagen (para evitar nombres repetidos)
+                        $uploadSuccess = $request->file('imagen')->move($destinationPath, $filename); //subimos y lo enviamos al path de Destin
+
+                        $mensaje= new Mensaje();
+                        $mensaje->user_id = Auth::user()->id;
+                        $mensaje->ticket_id = $idTicket;
+                        $mensaje->mensaje=$request->mensaje;
+                        $mensaje->imagen=$filename;
+                        $mensaje->save();
+
+                        event(new MensajeClienteEvent($mensaje));
+
+                        return response()->json([
+                            'mensaje' => $request->mensaje,
+                            'imagen' => $filename,
+                            'esTecnico' => $esTecnico,
+                            'status' => 'success',
+                            'msjSuccess'  => 'Mensaje enviado exitosamente.',
+                        
+                        ]);
+
+                    }else{  
+
+                        $mensaje= new Mensaje();
+                        $mensaje->user_id =  Auth::user()->id;
+                        $mensaje->ticket_id = $idTicket;
+                        $mensaje->mensaje=$request->mensaje;
+                        $mensaje->save();
+
+                        event(new MensajeClienteEvent($mensaje));
+
+                        
+                        return response()->json([
+                            'mensaje' => $request->mensaje,
+                            'esTecnico' => $esTecnico,
+                            'status' => 'success',
+                            'msjSuccess'  => 'Mensaje enviado exitosamente.',
+                        ]);
+
+                    }
+                
+
+                }catch (\Illuminate\Validation\ValidationException $e) {
+                    return response()->json([
+                        'errors' => $e->validator->errors()->toArray(),
+                    ], 422);
+                }
+        }
+             
+        // return back()->with('status', 'Mensaje enviado exitosamente :)');
+    }
+
+
+
+    public function ticketEstado($ticketId){
+        $ticket = Ticket::find($ticketId);
+        
+        return ['estado' => $ticket ? $ticket->estado->nombre : null];
+    }
+
+    
+
+
+
+
+    // public function verRespuesta($idTicket, $idMensaje){
+      
+    //     $ticket=Ticket::find($idTicket);
+       
+
+    //     $ticketResueltos=TicketHistorial::where('ticket_id', $idTicket)->where('estado_id', 5)->get();
+
+    //     // Obtener el ticket basado en la posición
+    //     $registroMensaje = $ticketResueltos->skip($idMensaje - 1)->first();
+                        
+    //     $idMsj= $registroMensaje->mensaje_id;
+    // dd($registroMensaje);  
+    //     $respuestaTicket= Mensaje::find($idResp);
+     
+    //     return view('myViews.usuarioEst.respuesta')->with(['idTicket'=>$idTicket, 'ticket'=> $ticket,'respuesta' => $respuestaTicket]);
+    // }
+
+
+    // public function comentar_Respuesta(Request $request,$idRespuesta, $idTicket){
+
+    //     $request->validate([
+    //         'mensaje' =>'required',
+    //         'opcion' => 'required',
+    //     ],
+    //     [
+    //         'mensaje.required' => 'El campo mensaje es requerido',
+    //         'opcion.required' => 'Debe seleccionar una opción',
+    //     ]);
+
+    //     $usuarioId=auth()->user()->id;
+   
+    //     $comentario=new Comentario();
+    //     $comentario->respuesta_id=$idRespuesta;   
+    //     $comentario->ticket_id=$idTicket;   
+    //     $comentario->mensaje=$request->mensaje;
+    //     $comentario->nivel_satisfaccion=$request->opcion;
+    //     $comentario->bool_reabrir=$request->has('reabrir')? true : false;;
+    //     $comentario->save();
+
+     
+       
+    //     if($comentario->bool_reabrir){
+    //         $ticket= Ticket::find($idTicket);
+    //         $ticket->estado_id=6;
+    //         $ticket->save();
+    //     }
+
+    //     $historial= new TicketHistorial();
+    //     $historial->ticket_id= $idTicket;
+    //     $historial->estado_id=6;
+    //     $historial->updated_at= Carbon::now();
+    //     $historial->save();
+
+    //     //*NOTIFICACION A LOS USUARIOS AL COMENTAR
+    //     // User::all()
+    //     //     ->except($usuarioId)
+    //     //     ->each(function(User $user) use ($comentario){
+    //     //         $user->notify(new ComentarioNotification($comentario));
+    //     //     });
+
+    //     //* NOTIFICACION A LOS USUARIOS PERO UTILIZANDO EVENT Y LISTENER (más simplificado)
+    //     // Enviamos el comentario al event,para luego crear la notificación
+    //     event(new ComentarioEvent($comentario));
+
+    //     return back()->with('status', 'Comentario enviado exitosamente :)');
+       
+    // }
+
+
 
    
 

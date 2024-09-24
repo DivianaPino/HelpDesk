@@ -27,10 +27,6 @@ class EstatusSeeder extends Seeder
         ]);
 
         Estado::create([
-            'nombre'=> "En revisión",
-        ]);
-
-        Estado::create([
             'nombre'=> "Resuelto"
         ]);
 

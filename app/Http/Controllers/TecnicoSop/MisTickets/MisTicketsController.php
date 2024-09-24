@@ -28,10 +28,9 @@ class MisTicketsController extends Controller
         // Cantidad de tickets por estados
         $cant_tkt_abiertos=$tickets->where('estado_id', 2 )->count();
         $cant_tkt_enEspera=$tickets->where('estado_id', 3 )->count();
-        $cant_tkt_enRevision=$tickets->where('estado_id', 4)->count();
-        $cant_tkt_resueltos=$tickets->where('estado_id', 5)->count();
-        $cant_tkt_reAbiertos=$tickets->where('estado_id', 6)->count();
-        $cant_tkt_cerrados=$tickets->where('estado_id', 7)->count();
+        $cant_tkt_resueltos=$tickets->where('estado_id', 4)->count();
+        $cant_tkt_reAbiertos=$tickets->where('estado_id', 5)->count();
+        $cant_tkt_cerrados=$tickets->where('estado_id', 6)->count();
 
    
          // Cantidad de tickets vencidos que estan asignados al técnico autenticado
@@ -41,7 +40,6 @@ class MisTicketsController extends Controller
       
         return view('myViews.tecnicoSop.misTickets.index',compact('tickets',  'cant_tkt_abiertos',
                                                                               'cant_tkt_enEspera',
-                                                                              'cant_tkt_enRevision', 
                                                                               'cant_tkt_resueltos',
                                                                               'cant_tkt_reAbiertos',
                                                                               'cant_tkt_cerrados',

@@ -9,49 +9,71 @@
         <div class="row align-items-stretch no-gutters contact-wrap">
           <div class="col-md-12">
             <div class="form h-100">
-              <div class="content-btnVolver">
-                <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volverInfo">
-                <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
+              @if(!is_null($ticket->asignado_a) && $ticket->estado->nombre == "Abierto" )
+                <div class="row  trueAsignado d-flex align-items-center">
+                  <i class="fa-solid fa-triangle-exclamation fa-bounce fa-lg" style="color: #d71204;"></i>
+                  <p>El ticket ya ha sido asignado</p>
+                </div>
+              @endif
+          
+              <div style="display:flex; justify-content:space-between;">
+                  <h3>Detalles de ticket</h3>
+                  <div class="content-btnVolver">
+                      <a style="margin-top:8px;" href="#" class="btn btn-dark btn-volver" onclick="return cargarPaginaAnterior();">
+                          <i class="fa-solid fa-arrow-left fa-lg"></i>Volver
+                      </a>
+                  </div>
               </div>
-              <h3>Detalles de ticket</h3>
+
               @if(session('status'))
                 <p class="alert alert-success">{{ Session('status') }}</p>
               @elseif(session('error'))
                 <p class="alert alert-danger">{{ Session('error') }}</p>
               @endif
-              <form action="/asignarTicket/{{$ticket->id}}" class="mb-5" method="post" id="contactForm" name="contactForm">
+              <form action="/asignarTicket/{{$ticket->id}}" class="mb-5" method="post" id="contactForm" name="contactForm" >
                 @csrf
                 @method('PUT')
-                  <div class="row">
-                    <div class="col-md-8 form-group mb-3">
+                <div class="container">
+                  <div class="row" >
+                    <div class="col-8 form-group mb-3">
                       <label for="user_id" class="col-form-label">Usuario:</label>
                       <input type="text" class="form-control" name="user_id" id="user_id"   value="{{$ticket->user->name}}" disabled >
                     </div>
-                    <div class="col-md-4 form-group mb-3 ml-auto">
+                    <div class="col-4 form-group mb-3 ml-auto">
                       <label for="fecha_inicio" class="col-form-label">Fecha:</label>
                       <input type="text" class="form-control" name="fecha_inicio" id="fecha_inicio" value="{{$ticket->fecha_inicio}}"  disabled>
                     </div>
                   </div>
+          
                   
                   <div class="row">
-                    <div class="col-md-4 form-group mb-3">
-                        <label for="clasificacion_id" class="col-form-label">Clasificación:</label>
-                        <select class="custom-select" id="clasificacion_id" name="clasificacion_id"  value="{{old('clasificacion_id')}}" disabled >
-                            <option value="">{{ $ticket->clasificacion->nombre }}</option>
-                        </select>
-
+                    <div class="col-md-3 form-group mb-3">
+                      <label for="clasificacion_id" class="col-form-label">Clasificación:</label>
+                      <input type="text" class="form-control" name="clasificacion_id" id="clasificacion_id" value="{{ $ticket->clasificacion->nombre }}" disabled>
                     </div>
-                    <div class="col-md-4 form-group mb-3">
+
+                    <div class="col-md-3 form-group mb-3">
                       <label for="prioridad_id" class="col-form-label">Prioridad:</label>
-                      <select class="custom-select" id="prioridad_id" name="prioridad_id"  disabled>
-                          <option value="">{{ $ticket->prioridad->nombre }}</option>
-                      </select>
+                      <input type="text" class="form-control" name="prioridad_id" id="prioridad_id" value="{{ $ticket->prioridad->nombre }}" disabled>
                     </div>
 
-                    <div class="col-md-4 form-group mb-3">
+                    <div class="col-md-3 form-group mb-3">
                       <label for="estado_id" class="col-form-label">Estado:</label>
                       <input type="text" class="form-control" name="estado_id" id="estado_id" value="{{$ticket->estado->nombre}}" disabled>
                     </div>
+
+                    @if(is_null($ticket->asignado_a))
+                      <div class="col-md-3 form-group mb-3">
+                        <label for="asignado_a" class="col-form-label">Técnico asignado:</label>
+                        <input type="text" class="form-control" name="asignado_a" id="asignado_a" value="No asignado" disabled>
+                      </div>
+                    @else
+                     <div class="col-md-3 form-group mb-3">
+                        <label for="asignado_a" class="col-form-label">Técnico asignado:</label>
+                        <input type="text" class="form-control" name="asignado_a" id="asignado_a" value="{{$ticket->asignado_a}}" disabled>
+                      </div>
+
+                    @endif
                 
                   </div>
                 
@@ -97,13 +119,15 @@
 
                   @if($usuario->name == $ticket->asignado_a && $ticket->estado->nombre == "Resuelto")
                     <div class="col-md-4 form-group btnAsistencia" >
-                        <a href="/form/respuesta/{{$ticket->id}}"  id="btn-responder" class="btn btn-info btn-asignarTec" hidden>RESPONDER</a>
+                        <a href="/form/mensaje/tec/ticket/{{$ticket->id}}"  id="btn-responder" class="btn btn-info btn-asignarTec" hidden>RESPONDER</a>
                     </div>
                   @elseif($usuario->name == $ticket->asignado_a && $ticket->estado->nombre == "Abierto")
                     <div class="col-md-4 form-group btnAsistencia" >
-                        <a href="/form/respuesta/{{$ticket->id}}"  id="btn-responder" class="btn btn-info btn-asignarTec">RESPONDER</a>
+                        <a href="/form/mensaje/tec/ticket/{{$ticket->id}}"  id="btn-responder" class="btn btn-info btn-asignarTec">RESPONDER</a>
                     </div>
                   @endif
+
+                </div>
 
               </form>
             </div>
@@ -128,5 +152,12 @@
     <!-- <script src="../../js/bootstrap.min.js"></script> -->
     <!-- <script src="../../js/jquery.validate.min.js"></script>
     <script src="../../js/main.js"></script> -->
+
+<script>
+    function cargarPaginaAnterior() {
+        window.location.href = document.referrer;
+        return false;
+    }
+</script>
     
 @stop

@@ -28,15 +28,15 @@ class TicketNotiController extends Controller
         $notificationUser->markAsRead();
 
         //* Todas las notificaciones de tipo TicketNotification
-        $notificationsAll=Notification::where('type', 'App\Notifications\TicketNotification')->get();
+        // $notificationsAll=Notification::where('type', 'App\Notifications\TicketNotification')->get();
 
         //* Marcar cada una como leida
-        foreach ($notificationsAll as $notification) {
-            // Acceder a los datos de cada notificación individualmente
-            if($notification->data['ticket_id'] == $idTicket){
-                $notification->markAsRead();
-            }
-        }
+        // foreach ($notificationsAll as $notification) {
+        //     // Acceder a los datos de cada notificación individualmente
+        //     if($notification->data['ticket_id'] == $idTicket){
+        //         $notification->markAsRead();
+        //     }
+        // }
  
         return view('myViews.Admin.tickets.detalles', compact('ticket', 'usuario'));    
     }

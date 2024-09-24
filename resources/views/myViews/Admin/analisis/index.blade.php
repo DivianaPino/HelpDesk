@@ -7,7 +7,7 @@
 @stop
 
 @section('content')
-
+<div class="titulo_prin  titulo_analisis">Análisis de tickets</div>
 <div class="wrapper">
   <!-- Main content -->
   <section class="content">
@@ -18,12 +18,12 @@
                 <!-- small box -->
                 <div class="small-box nuevo">
                     <div class="inner">
-                    <h3>{{$cant_tkt_nuevos}}</h3>
+                        <h3>{{$cant_tkt_nuevos}}</h3>
 
-                    <p>Tickets nuevos</p>
+                        <p class="estados_analisis">Nuevos</p>
                     </div>
                     <div class="icon">
-                    <i class=""></i>
+                        <i class="fas fa-fw fa-plus-square"></i>
                     </div>
                     <a href="/noasignados" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
@@ -35,7 +35,7 @@
                 <div class="inner">
                 <h3>{{$cant_tkt_abiertos}}</h3>
 
-                <p>Tickets abiertos</p>
+                <p class="estados_analisis">Abiertos</p>
                 </div>
                 <div class="icon">
                 <i class="fas fa-fw fa-unlock-alt"></i>
@@ -49,7 +49,7 @@
                 <div class="small-box" style="background-color:#F6a700;">
                     <div class="inner" style="color:#fff;">
                         <h3>{{$cant_tkt_enEspera}}</h3>
-                        <p>Tickets en espera</p>
+                        <p  class="estados_analisis">En espera</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-fw fa-clock"></i>
@@ -58,19 +58,19 @@
                 </div>
             </div>
             <!-- ./col -->
-            <div class="col-lg-3 col-6">
+            <!-- <div class="col-lg-3 col-6"> -->
             <!-- small box -->
-                <div class="small-box bg-danger enRevision">
+            <!-- <div class="small-box bg-danger enRevision">
                     <div class="inner">
                         <h3>{{$cant_tkt_enRevision}}</h3>
-                        <p>Tickets en revisión</p>
+                        <p class="estados_analisis">En revisión</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-fw fa-eye"></i>
                     </div>
                     <a href="enRevision" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
-            </div>
+            </div> -->
             <!-- ./col -->
 
              <!-- small box -->
@@ -79,7 +79,7 @@
                 <div class="small-box bg-info resuelto">
                     <div class="inner">
                         <h3>{{$cant_tkt_resueltos}}</h3>
-                        <p>Tickets resueltos</p>
+                        <p class="estados_analisis">Resueltos</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-fw fa-check-circle"></i>
@@ -95,7 +95,7 @@
                 <div class="small-box bg-info reAbierto">
                     <div class="inner">
                         <h3>{{$cant_tkt_reAbiertos}}</h3>
-                        <p>Tickets reabiertos</p>
+                        <p class="estados_analisis">Reabiertos</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-fw fa-redo"></i>
@@ -111,7 +111,7 @@
                 <div class="small-box bg-info vencido">
                     <div class="inner">
                         <h3>{{$cant_tkt_vencidos}}</h3>
-                        <p>Tickets vencidos</p>
+                        <p class="estados_analisis">Vencidos</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-fw fa-hourglass-end"></i>
@@ -127,7 +127,7 @@
                 <div class="small-box bg-info cerrado">
                     <div class="inner">
                         <h3>{{$cant_tkt_cerrados}}</h3>
-                        <p>Tickets cerrados</p>
+                        <p class="estados_analisis">Cerrados</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-fw fa-lock"></i>
@@ -147,7 +147,7 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/styles.css">
+
 @stop
 
 @section('js')

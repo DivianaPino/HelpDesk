@@ -32,25 +32,34 @@ class Ticket extends Model
       return $this->belongsTo('App\Models\Prioridad');
     } 
 
-    public function respuestas() 
+    public function mensajes() 
     {
-        return $this->hasMany('App\Models\Respuesta');
+        return $this->hasMany('App\Models\Mensaje');
     }
 
-    public function masInformacions()
+    // public function masInformacions()
+    // {
+    //   return $this->hasMany('App\Models\MasInformacion');
+    // }
+
+    // public function respMasInfo()
+    // {
+    //     return $this->hasMany('App\Models\RespMasInfo');
+    // }
+
+    public function calificaciones() 
     {
-      return $this->hasMany('App\Models\MasInformacion');
+        return $this->hasMany('App\Models\Calificacion');
     }
 
-    public function respMasInfo()
+    public function ultimaCalificacion()
     {
-        return $this->hasMany('App\Models\RespMasInfo');
+      return $this->hasOne('App\Models\Calificacion')->latest();
     }
 
-    public function ultimaRespuesta()
-    {
-      return $this->hasOne('App\Models\Respuesta')->latest();
-    }
+   
+
+
 
     public function ticketHistorials()
     {

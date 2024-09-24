@@ -1,0 +1,96 @@
+.sidebar-estilo{
+    /* background-color: rgb(4, 12, 68); */
+    background-color: rgb(30, 26, 230);
+    color: #fff;
+}
+.nav-link p{
+    color: #fff;
+}
+
+.nav-item .nav-link i{
+    color: rgb(4, 19, 67);
+}
+
+.nav-link:hover i{
+    color:rgb(105, 220, 255);
+}
+
+.nav-treeview .nav-item .nav-link i::before{
+    color: rgb(168, 168, 169);
+}
+
+.nav-treeview .nav-item .nav-link:hover i::before{
+    color: rgb(105, 220, 255);
+}
+
+.nav-link .fa-bars, .nav-link .fa-expand-arrows-alt{
+    color: rgb(22, 90, 163) !important;
+}
+
+.nav-link:hover .fa-bars, .nav-link:hover .fa-expand-arrows-alt{
+    color: rgb(105, 220, 255) !important;
+}
+
+.nav-link:hover .fa-bars, .nav-link:hover .fa-expand-arrows-alt{
+    color: rgb(105, 220, 255) !important;
+}
+
+.nav-item:hover .nav-link[data-widget="pushmenu"]:hover,
+.nav-item:hover .nav-link[data-widget="fullscreen"]:hover , 
+.nav-item:hover .nav-link[data-toggle="dropdown"]:hover {
+    background-color: #0f02024a; /* Color de fondo al mantener el cursor sobre el enlace */
+}
+
+.nav-item:hover .nav-link[data-toggle="dropdown"]:hover{
+    color: aliceblue;
+}
+
+.main-header{
+    background:linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(249,249,249,1) 55%, rgba(211,214,254,1) 100%);
+}
+
+.brand-text{
+    color: rgb(105, 220, 255);
+    font-size: 30px;
+    font-weight: bold !important;
+}
+
+.brand-link img{
+    margin-top: 5px !important;
+    margin-right: 25px !important;
+}
+
+.nav-item:hover{
+    background-color: rgba(13, 27, 82, 0.686);
+}
+
+.img-circle {
+  align-items: center;
+  margin-top: -5px !important;
+}
+
+.input-group .form-control-sidebar:focus{
+    background-color: rgba(44, 82, 220, 0.303);
+    color: beige;
+}
+
+
+.search-title{
+    color: black;
+}
+
+.search-title strong.text-light{
+    color: rgb(16, 84, 187) !important;
+}
+
+.user-header{
+    background-color: rgb(30, 26, 230) !important;
+}
+
+.btn-sidebar{
+    background-color: rgb(37, 49, 140) !important;
+}
+
+.btn-sidebar .fa-search, .btn-sidebar .fa-times{
+    color: rgb(179, 181, 182);
+}

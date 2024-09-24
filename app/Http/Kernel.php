@@ -63,11 +63,11 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'comentarioNoti' => \App\Http\Middleware\ComentarioNotiMiddleware::class,
         'ticketNoti' => \App\Http\Middleware\TicketNotiMiddleware::class,
-        'masInfoNoti' => \App\Http\Middleware\MasInfoNotiMiddleware::class,
-        'respMasInfoNoti' => \App\Http\Middleware\RespMasInfoNotiMiddleware::class,
-        'respuestaNoti' => \App\Http\Middleware\RespuestaNotiMiddleware::class,
+        'mensajeTecnicoNoti' => \App\Http\Middleware\MensajeTecnicoNotiMiddleware::class,
+        'mensajeClienteNoti' => \App\Http\Middleware\MensajeClienteNotiMiddleware::class, 
+        'calificacionNoti' => \App\Http\Middleware\CalificacionNotiMiddleware::class,
         'ticketsNoComentados' => \App\Http\Middleware\TicketsNoComentadosMiddleware::class,
+        
     ];
 }

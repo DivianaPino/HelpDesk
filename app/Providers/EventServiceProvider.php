@@ -6,16 +6,14 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
-use App\Events\ComentarioEvent;
-use App\Listeners\ComentarioListener;
 use App\Events\TicketEvent;
 use App\Listeners\TicketListener;
-use App\Events\MasInfoEvent;
-use App\Listeners\MasInfoListener;
-use App\Events\RespMasInfoEvent;
-use App\Listeners\RespMasInfoListener;
-use App\Events\RespuestaEvent;
-use App\Listeners\RespuestaListener;
+use App\Events\MensajeTecnicoEvent;
+use App\Listeners\MensajeTecnicoListener;
+use App\Events\MensajeClienteEvent;
+use App\Listeners\MensajeClienteListener;
+use App\Events\CalificacionEvent;
+use App\Listeners\CalificacionListener;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -31,20 +29,17 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             'App\Listeners\RegisteredEvent',
         ],
-        ComentarioEvent::class => [
-            ComentarioListener::class,
-        ],
         TicketEvent::class => [
             TicketListener::class,
         ],
-        MasInfoEvent::class => [
-            MasInfoListener::class,
+        MensajeTecnicoEvent::class => [
+            MensajeTecnicoListener::class,
         ],
-        RespMasInfoEvent::class => [
-            RespMasInfoListener::class,
-        ],
-        RespuestaEvent::class => [
-            RespuestaListener::class,
+        MensajeClienteEvent::class => [
+            MensajeClienteListener::class,
+        ], 
+        CalificacionEvent::class => [
+            CalificacionListener::class,
         ],
 
 

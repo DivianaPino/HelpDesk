@@ -12,7 +12,7 @@
     <div class="card">
         <div class="card-body car-body-reasignar"> 
             <div class="content-btnVolver volver-Reasignar">
-              <a style="margin-top:8px;" href="/area_usuario/tickets" class="btn btn-dark btn-volverInfo">
+              <a style="margin-top:8px;" href="/area_usuario/tickets" class="btn btn-dark btn-volver">
               <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
           </div>
             <h3 class="titulo_prin" style="margin:0px; padding:0px;">Reasignar ticket #{{$ticket->id}}</h3>

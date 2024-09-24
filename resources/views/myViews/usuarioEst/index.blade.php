@@ -60,22 +60,7 @@
                         @elseif($ticket->estado->nombre == "Abierto")
                           <td class="abierto">{{$ticket->estado->nombre}}</td>
                         @elseif($ticket->estado->nombre == "En espera")
-                          @php
-                              $ultimoMsj = $ticket->masInformacions->last();
-                              $ultimaResp = $ticket->respMasInfo->last();
-                          @endphp
-
-                    
-                          @if(isset($ultimoMsj) && !isset($ultimaResp))
-                                <td class="enEspera">{{$ticket->estado->nombre}} <br><span class="text-EsperandoResp">(Esperando su respuesta)</span></td>
-                          @else
-                                @if($ultimoMsj['id'] == $ultimaResp['id'])
-                                  <td class="enEspera">{{$ticket->estado->nombre}}<br>(mensaje respondido)</td>   
-                                @endif
-                          @endif
-
-                        @elseif($ticket->estado->nombre == "En revisión")
-                              <td class="enRevision">{{$ticket->estado->nombre}}</td>
+                        <td class="enEspera">{{$ticket->estado->nombre}}</td>
                         @elseif($ticket->estado->nombre == "Resuelto")
                           <td class="resuelto">{{$ticket->estado->nombre}}</td>
                         @elseif($ticket->estado->nombre == "Reabierto")
@@ -84,16 +69,16 @@
                           <td class="resuelto">Resuelto</td>
                         @endif
 
-                        @if($ticket->respuestas->last() !== null)
-                            <td>{{ \Carbon\Carbon::parse($ticket->respuestas->last()->updated_at) }}</td>
+                        @if($ticket->mensajes->last() !== null)
+                            <td>{{ \Carbon\Carbon::parse($ticket->mensajes->last()->updated_at) }}</td>
                         @else
                             <td></td>
                         @endif
-                          
-                        <td class="content-btnInfo">
-                            <a class="btn btn-info" href="/ticket/{{$ticket->id}}/historial" >Ver</a>
-                        </td>
 
+                        <td class="content-btnInfo">
+                            <a class="btn btn-info" href="/ticket/reportado/{{$ticket->id}}" >Ver</a>
+                        </td>
+                        
                       </tr>
                   
 
@@ -108,8 +93,6 @@
 @stop
 
 @section('css')
-<link rel="stylesheet" href="/css/styles.css">
-
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.min.css">
 
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.bootstrap5.css">
@@ -188,4 +171,21 @@ $(document).ready(function() {
         });
 });
 </script>
+
+<!-- <script>
+$(document).ready(function() {
+    $.ajax({
+       
+        success: function(response) {
+            console.log(response);
+            // Aquí puedes procesar la respuesta según sea necesario
+        },
+        error: function(xhr, status, error) {
+            console.error('Error al obtener la calificación del ticket:', status, error);
+            // Aquí puedes agregar más detalles de error si es necesario
+        }
+    });
+});
+</script> -->
+
 @stop

@@ -1,12 +1,16 @@
 <style>   
     .dropdown-menu {
         max-width: 50px; /* Ajusta este valor según sea necesario */
+        max-height: 500px;
+        overflow-y: auto;
     }
+    
    .dropdown-item {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         width: 100%; /* Asegura que el elemento ocupe todo el ancho disponible */
+        border-bottom: solid 2px #f2f4f5;
     }
    .dropdown-item i,.dropdown-item span {
         display: block; /* Hace que el ícono y la fecha sean bloques para aplicarles el ancho */
@@ -14,6 +18,27 @@
         white-space: nowrap; /* Evita que el texto se envuelva */
         overflow: hidden; /* Oculta cualquier contenido que exceda el ancho definido */
         text-overflow: ellipsis; /* Muestra puntos suspensivos si el contenido excede el ancho */
+    }
+
+    .dropdown-item i{
+        width: 10% !important;
+    }
+
+
+    .iconStyle{
+        margin-bottom:10px;
+      
+    }
+    .titleNoti{
+        font-size: 14px !important;
+        font-family: Georgia, 'Times New Roman', Times, serif; 
+        font-weight: 600;
+    }
+
+    .msjStyle{
+        color: #5f5d5d !important;
+        font-weight: 600;
+        font-size: 15px !important;
     }
 </style>
 
@@ -24,20 +49,22 @@
 
     {{-- Link --}}
     <a @if($enableDropdownMode) href="" @endif {{ $attributes->merge($makeAnchorDefaultAttrs()) }}>
-
         {{-- Icon --}}
         <i class="{{ $makeIconClass() }}"></i>
 
         {{-- Badge --}}
-        <span class="{{ $makeBadgeClass() }}"> 
-            @if(auth()->check() && auth()->user()->unreadNotifications->isNotEmpty())
-                {{ $notificacionesNoLeidas->count() }}
+        <span id="badge" class="{{ $makeBadgeClass() }}">
+            @if(auth()->check())
+                <span id="notificationCount">{{ $notificacionesNoLeidas->count() }}</span>
             @else
-            <span>0</span>
+                0
             @endif
         </span>
-
     </a>
+
+
+
+   
 
     {{-- Dropdown Menu --}}
     @if($enableDropdownMode)
@@ -50,14 +77,15 @@
                 <!-- Determinar el tipo de notificacion, y dependiendo de este mostrar su url correspondiente -->
                 @php
                     $url = '';
-                    if ($notificacion->type === 'App\Notifications\ComentarioNotification') {
+                    if ($notificacion->type === 'App\Notifications\CalificacionNotification') {
 
-                        $ticket=App\Models\Ticket::where('id',$notificacion->data['comentario_ticketId'])->first();
+                        $ticket=App\Models\Ticket::where('id',$notificacion->data['calificacion_idTicket'])->first();
                         $id_usuario_Ticket=$ticket->user_id;
                         $usuario=App\Models\User::where('id',$id_usuario_Ticket)->first();
                         $usuarioNombre=$usuario->name;
 
-                        $url = url("/notificacion/{$notificacion->id}/ticket/{$notificacion->data['comentario_ticketId']}/resp/{$notificacion->data['comentario_respuestaId']}");
+
+                        $url = url("/notificacion/{$notificacion->id}/ticket/{$notificacion->data['calificacion_idTicket']}/mensajeTecnico");
                     
                     } elseif ($notificacion->type === 'App\Notifications\TicketNotification') {
 
@@ -65,30 +93,22 @@
                         $usuarioNombre=$usuario->name;
 
                         $url = url("/notificacion/{$notificacion->id}/ticket/{$notificacion->data['ticket_id']}");
-
-                    }elseif ($notificacion->type === 'App\Notifications\MasInfoNotification') {
-
-                        $ticket=App\Models\Ticket::where('id',$notificacion->data['masInfo_ticketId'])->first();
-                        $tecnicoSop=$ticket->asignado_a;
-                       
-                        $url = url("/notificacion/{$notificacion->id}/ticket/{$notificacion->data['masInfo_ticketId']}/masInfo");
                         
-                    }elseif ($notificacion->type === 'App\Notifications\RespMasInfoNotification') {
+                    }elseif ($notificacion->type === 'App\Notifications\MensajeClienteNotification') {
 
-                        $ticket=App\Models\Ticket::where('id',$notificacion->data['respMasInfo_ticketId'])->first();
+                        $ticket=App\Models\Ticket::where('id',$notificacion->data['mensaje_ticketId'])->first();
                         $usuario=App\Models\User::where('id',$ticket->user_id)->first();
                         $usuarioNombre=$usuario->name;
 
-                     
+                        $url = url("/notificacion/{$notificacion->id}/ticket/{$notificacion->data['mensaje_ticketId']}/mensajeTecnico");
 
-                        $url = url("/notificacion/{$notificacion->id}/ticket/{$notificacion->data['respMasInfo_ticketId']}/respmasInfo");
 
-                    }elseif ($notificacion->type === 'App\Notifications\RespuestaNotification') {
+                    }elseif ($notificacion->type === 'App\Notifications\MensajeTecnicoNotification') {
 
-                        $ticket=App\Models\Ticket::where('id',$notificacion->data['respuesta_ticketId'])->first();
+                        $ticket=App\Models\Ticket::where('id',$notificacion->data['mensaje_ticketId'])->first();
                         $tecnicoSop=$ticket->asignado_a;
 
-                        $url = url("/notificacion/{$notificacion->id}/ticket/{$notificacion->data['respuesta_ticketId']}/respuesta");
+                        $url = url("/notificacion/{$notificacion->id}/ticket/{$notificacion->data['mensaje_ticketId']}/mensajeCliente");
                     }
 
 
@@ -98,28 +118,37 @@
 
                 <a href="{{ $url }}" class="dropdown-item" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 
-                        @if($notificacion->type ==='App\Notifications\ComentarioNotification')
-                            <i class="fas fa-envelope mr-4"></i>{{ $notificacion->data['comentario_mensaje'] }}
+                        @if($notificacion->type ==='App\Notifications\CalificacionNotification')
+                            <i class="fas fa-star mr-4  iconStyle "> Calificación - Ticket #{{ $notificacion->data['calificacion_idTicket'] }} </i>
+                            <span class="float-right text-muted text-sm">{{ $notificacion->data['calificacion_satisfaccion'] }}</span>
                             <span class="float-right text-muted text-sm">Usuario: {{ $usuarioNombre }}</span>
                             <span class="float-right text-muted text-sm">{{ $notificacion->created_at->diffForHumans() }}</span>
-
+        
                         @elseif($notificacion->type ==='App\Notifications\TicketNotification')
-                            <i class="fas fa-ticket-alt mr-4"></i> {{ $notificacion->data['ticket_asunto'] }}
-                            <span class="float-right text-muted text-sm">Usuario: {{ $usuarioNombre }}</span>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-ticket-alt  iconStyle"></i>
+                                <h6 class="titleNoti">Nuevo Ticket</h6>
+                            </div>
+                            <span class="float-right text-muted text-sm">{{ $notificacion->data['ticket_asunto'] }}</span>
+                            <span class="float-right text-muted text-sm">Cliente: {{ $usuarioNombre }}</span>
                             <span class="float-right text-muted text-sm">{{ $notificacion->created_at->diffForHumans() }}</span>
 
-                        @elseif($notificacion->type ==='App\Notifications\MasInfoNotification')
-                            <i class="fas fa-info-circle mr-4"></i>  {{ $notificacion->data['masInfo_mensaje'] }}
-                            <span class="float-right text-muted text-sm">Técnico de soporte: {{ $tecnicoSop }}</span>
+                        @elseif($notificacion->type ==='App\Notifications\MensajeClienteNotification')
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-envelope iconStyle"></i>
+                                <h6 class="titleNoti">Mensaje cliente - Ticket #{{ $notificacion->data['mensaje_ticketId'] }}</h6>
+                            </div>
+                            <span class="float-right text-muted text-sm msjStyle">{{ $notificacion->data['mensaje_mensaje'] }}</span>
+                            <span class="float-right text-muted text-sm">Cliente: {{ $usuarioNombre }}</span>
                             <span class="float-right text-muted text-sm">{{ $notificacion->created_at->diffForHumans() }}</span>
 
-                        @elseif($notificacion->type ==='App\Notifications\RespMasInfoNotification')
-                            <i class="fas fa-info-circle mr-4"></i>  {{ $notificacion->data['respMasInfo_mensaje'] }}
-                            <span class="float-right text-muted text-sm">Usuario: {{ $usuarioNombre }}</span>
-                            <span class="float-right text-muted text-sm">{{ $notificacion->created_at->diffForHumans() }}</span>
+                        @elseif($notificacion->type ==='App\Notifications\MensajeTecnicoNotification')
 
-                        @elseif($notificacion->type ==='App\Notifications\RespuestaNotification')
-                            <i class="fas fa-check mr-4"></i>  {{ $notificacion->data['respuesta_mensaje'] }}
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-envelope iconStyle"></i>
+                                <h6 class="titleNoti">Mensaje técnico - Ticket #{{ $notificacion->data['mensaje_ticketId'] }}</h6>
+                            </div>
+                            <span class="float-right text-muted text-sm msjStyle">{{ $notificacion->data['mensaje_mensaje'] }}</span>
                             <span class="float-right text-muted text-sm">Técnico de soporte: {{ $tecnicoSop }}</span>
                             <span class="float-right text-muted text-sm">{{ $notificacion->created_at->diffForHumans() }}</span>
                         
@@ -158,6 +187,63 @@
 
 @if (! is_null($makeUpdateUrl()) && $makeUpdatePeriod() > 0)
 @push('js')
+
+
+
+
+
+<!-- <script>
+$(document).ready(function() {
+    $.ajax({
+       
+        success: function(response) {
+            console.log(response);
+            // Aquí puedes procesar la respuesta según sea necesario
+        },
+        error: function(xhr, status, error) {
+            console.error('Error al obtener la calificación del ticket:', status, error);
+            // Aquí puedes agregar más detalles de error si es necesario
+        }
+    });
+});
+</script> -->
+<!-- <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const badgeElement = document.getElementById('badge');
+    const originalCount = parseInt(badgeElement.textContent);
+
+    function updateBadge(count) {
+        badgeElement.textContent = count;
+    }
+
+    // Event listener para actualizar el contador cuando se marca una notificación como leída
+    window.addEventListener('message', function(event) {
+        if (event.data.type === 'notificationRead') {
+            updateBadge(originalCount - 1);
+        }
+    });
+});
+</script> -->
+
+<!-- <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    updateNotificationCount();
+
+    // Actualiza cada 30 segundos
+    setInterval(updateNotificationCount, 30000);
+});
+
+function updateNotificationCount() {
+    fetch('mensajeClienteNoti')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('badge').textContent = data.count;
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+</script> -->
+
 <script>
 
     $(() => {

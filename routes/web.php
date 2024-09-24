@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 // General
 use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Todos_Registrados\Notificaciones\NotificationController;
 
 // Admin
 use App\Http\Controllers\Admin\Tickets\TicketsController;
@@ -12,7 +13,6 @@ use App\Http\Controllers\Admin\Usuarios\UsuariosController;
 use App\Http\Controllers\Admin\Areas\AreasController;
 use App\Http\Controllers\Admin\Prioridades\PrioridadesController;
 use App\Http\Controllers\Admin\Analisis\AnalisisController;
-use App\Http\Controllers\Admin\Comentarios\ComentarioController;
 use App\Http\Controllers\Admin\Grafico\GraficoController;
 use App\Http\Controllers\Admin\Reportes\ReporteController;
 
@@ -23,11 +23,11 @@ use App\Http\Controllers\TecnicoSop\MisTickets\MisTicketsController;
 use App\Http\Controllers\usuarioEst\TicketsUsuario\TicketsUsuarioController;
 
 // -Todos los Usuarios registrados
-use App\Http\Controllers\Todos_Registrados\Notificaciones\ComentarioNotiController;
+use App\Http\Controllers\Todos_Registrados\Notificaciones\CalificacionNotiController;
 use App\Http\Controllers\Todos_Registrados\Notificaciones\TicketNotiController;
-use App\Http\Controllers\Todos_Registrados\Notificaciones\MasInfoNotiController;
-use App\Http\Controllers\Todos_Registrados\Notificaciones\RespMasInfoNotiController;
-use App\Http\Controllers\Todos_Registrados\Notificaciones\RespuestaNotiController;
+use App\Http\Controllers\Todos_Registrados\Notificaciones\MensajeTecnicoNotiController;
+use App\Http\Controllers\Todos_Registrados\Notificaciones\MensajeClienteNotiController;
+use App\Http\Controllers\Admin\Calificaciones\CalificacionController;
 
 
 /*
@@ -42,21 +42,24 @@ use App\Http\Controllers\Todos_Registrados\Notificaciones\RespuestaNotiControlle
 */
 
 Route::get('/', [HomeController::class, 'index'] )->name('/');
+Route::get('ticketEstado/{idTicket}', [TicketsUsuarioController::class, 'ticketEstado'])->name('ticketEstado');
+Route::get('nivelSatisfaccion/{idTicket}', [CalificacionController::class, 'nivel_satisfaccion'] )->name('nivelSatisfaccion');
+
+
 
 
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified', 
-    'comentarioNoti',
     'ticketNoti',
-    'masInfoNoti',
-    'respMasInfoNoti',
-    'respuestaNoti',
-    'ticketsNoComentados',
+    'mensajeClienteNoti',
+    'mensajeTecnicoNoti',    
+    'calificacionNoti',
+    'ticketsNoComentados'
 ])->group(function () {
 
-
+    
     Route::get('/dashboard', [DashboardController::class, 'index'] )->name('dashboard');
 
     // Rol: Admin
@@ -68,7 +71,6 @@ Route::middleware([
     Route::get('/asignar_area/{id}', [UsuariosController::class, 'asignar_area'] )->name('asignar_area');
     Route::put('/actualizar_area/{id}', [UsuariosController::class, 'actualizar_area'])->name('actualizar_area');
     Route::get('/area/{areaId}/tecnicos', [AreasController::class, 'area_tecnicos'] )->name('area_tecnicos');
-    Route::get('/comentarios', [ComentarioController::class, 'comentariosTodos'] )->name('comentariosTodos');
     Route::get('/analisis', [AnalisisController::class, 'index'] )->name('indexAnalisis');
     Route::get('/grafico_kpi', [GraficoController::class, 'index'] )->name('indexGrafico');
     Route::get('/reporte/tickets', [ReporteController::class, 'reporte'] )->name('reporteTickets');
@@ -79,14 +81,13 @@ Route::middleware([
 
     // Rol: Usuario estandar
     Route::resource('/usuario/tickets', TicketsUsuarioController::class)->names('usuarios_tickets');
-    Route::get('/ticket/{idticket}/historial', [TicketsUsuarioController::class, 'historial'])->name('historial');
-    Route::get('/ticket/{idticket}/mensaje/{idmensaje}', [TicketsUsuarioController::class, 'verMensaje'])->name('ver_mensaje');
-    Route::post('/respuesta/mas_info/ticket/{idTicket}/{idMasInfo}', [TicketsUsuarioController::class, 'respMasInfo'] )->name('resp_masInfo');
-    Route::get('/ticket/{idticket}/respuesta/{idrespuesta}', [TicketsUsuarioController::class, 'verRespuesta'])->name('ver_respuesta');
-    Route::post('/comentar/respuesta/{idrespuesta}/ticket/{idTicket}', [TicketsUsuarioController::class, 'comentar_Respuesta'])->name('comentar_Respuesta');
+    // Route::get('/ticket/{idticket}/historial', [TicketsUsuarioController::class, 'historial'])->name('historial');
+    // Route::get('/ticket/{idticket}/mensaje/{idmensaje}', [TicketsUsuarioController::class, 'verMensaje'])->name('ver_mensaje');
+    // Route::get('/ticket/{idticket}/respuesta/{idrespuesta}', [TicketsUsuarioController::class, 'verRespuesta'])->name('ver_respuesta');
     Route::get('/ticket/reportado/{idTicket}', [TicketsUsuarioController::class, 'ver_ticketReportado'])->name(' ver_ticketReportado');
+    Route::post('/mensaje/cliente/ticket/{idTicket}', [TicketsUsuarioController::class, 'guardar_mensajeCliente'] )->name('guardar_mensajeCliente');
+    Route::post('/comentar/respuesta/{idrespuesta}/ticket/{idTicket}', [TicketsUsuarioController::class, 'comentar_Respuesta'])->name('comentar_Respuesta');
 
-   
    
 
     // Rol: Técnico de soporte
@@ -100,7 +101,7 @@ Route::middleware([
     Route::get('/mis_tickets/reabiertos', [MisTicketsController::class, 'tickets_reAbiertos'] )->name('misTickets_reAbiertos');
 
     // Rol: Jefe de area
-    Route::get('/comentarios/tickets/jefeArea', [ComentarioController::class, 'comentarios_tk_jefeArea'] )->name('comentarios_tk_jefeArea');
+    Route::get('/calificaciones/tickets/jefeArea', [CalificacionController::class, 'calificaciones_tk_jefeArea'] )->name('calificaciones_tk_jefeArea');
 
     // Roles: Admin y jefe de area 
     Route::get('/area/{idarea}/agentes', [TicketsController::class, 'agentes_area'] )->name('agentes_area');
@@ -112,9 +113,9 @@ Route::middleware([
     Route::get('/detalles/{idTicket}', [TicketsController::class, 'detalles_ticket'] )->name('detalles_ticket');
     Route::put('/asignarTicket/{idTicket}', [TicketsController::class, 'asignar_ticket'] )->name('asignar_ticket');
     Route::get('/abiertos', [TicketsController::class, 'tickets_abiertos'] )->name('tickets_abiertos');
-    Route::get('/form/respuesta/{idTicket}', [TicketsController::class, 'form_Respuestaticket'] )->name('form_Respuestaticket');
-    Route::get('/respuesta/ticket/{idTicket}', [TicketsController::class, 'form_Respuestaticket'] )->name('form_Respuestaticket');
-    Route::post('/respuesta/ticket/{idTicket}', [TicketsController::class, 'guardar_respuestaTicket'] )->name('guardar_respuestaTicket');
+    Route::get('/form/mensaje/tec/ticket/{idTicket}', [TicketsController::class, 'form_msjTecnico'] )->name('form_msjTecnico');
+    //Route::get('/respuesta/ticket/{idTicket}', [TicketsController::class, 'form_Respuestaticket'] )->name('form_Respuestaticket');
+    Route::post('/mensaje/tecnico/ticket/{idTicket}', [TicketsController::class, 'guardar_mensajeTecnico'] )->name('guardar_mensajeTecnico');
     Route::get('/masInformación/{idTicket}', [TicketsController::class, 'masInfo'] )->name('masInfo');
     Route::post('/masInformacion/ticket/{idTicket}', [TicketsController::class, 'guardar_masInfo'] )->name('guardar_masInfo');
     Route::get('/enEspera', [TicketsController::class, 'tickets_enEspera'] )->name('tickets_enEspera');
@@ -129,11 +130,11 @@ Route::middleware([
     Route::get('/tickets/abiertos/tecnico/{user}', [TicketsController::class, 'tkt_abierto_tecnico'] )->name('tkt_abierto_tecnico');
     Route::get('/tickets/enEspera/tecnico/{user}', [TicketsController::class, 'tkt_enEspera_tecnico'] )->name('tkt_enEspera_tecnico');
 
-    Route::get('/respuesta/{idmensaje}/mas_info/ticket/{idTicket}', [TicketsController::class, 'verRespCliente_masInfo'] )->name('verRespCliente_masInfo');
+    //Route::get('/respuesta/{idmensaje}/mas_info/ticket/{idTicket}', [TicketsController::class, 'verRespCliente_masInfo'] )->name('verRespCliente_masInfo');
     
     Route::get('/ver/ticket/{idTicket}', [TicketsController::class, 'verTicket'] )->name('verTicket');
     Route::get('/historial/ticket/{ticket_id}', [TicketsController::class, 'historialTicket'] )->name('historial_ticket');
-    Route::get('/comentario/{comentario_id}', [ComentarioController::class, 'ver_comentario'] )->name('ver_comentario');
+    Route::get('/comentario/{comentario_id}', [CalificacionController::class, 'ver_comentario'] )->name('ver_comentario');
 
     Route::get('/agentes_tecnicos', [TicketsController::class, 'todos_tecnicos'] )->name('todos_tecnicos');
 
@@ -141,10 +142,36 @@ Route::middleware([
     
 
     // Roles: Todos
-    Route::get('/notificacion/{idNotificacion}/ticket/{idticket}/resp/{idResp}', [ComentarioNotiController::class, 'marcar_como_leida'] )->name('c_marcar_como_leida');
-    Route::get('/notificacion/{idNotificacion}/ticket/{idticket}', [TicketNotiController::class, 'marcar_como_leida'] )->name('t_marcar_como_leida');
-    Route::get('/notificacion/{idNotificacion}/ticket/{idticket}/masInfo', [MasInfoNotiController::class, 'marcar_como_leida'] )->name('mi_marcar_como_leida');
-    Route::get('/notificacion/{idNotificacion}/ticket/{idticket}/respmasInfo', [RespMasInfoNotiController::class, 'marcar_como_leida'] )->name('rmi_marcar_como_leida');
-    Route::get('/notificacion/{idNotificacion}/ticket/{idticket}/respuesta', [RespuestaNotiController::class, 'marcar_como_leida'] )->name('resp_marcar_como_leida');
 
-});
+    Route::get('/calificaciones', [CalificacionController::class, 'calificaciones'] )->name('calificaciones');
+
+    
+    Route::get('/calificaciones/ticket/{idTicket}', [CalificacionController::class, 'calificaciones_ticketCliente'] )->name('calificacionesTicket');
+    // Route::get('/calificacion_ticketCliente/{idCalificacion}', [CalificacionController::class, 'calificacion_ticketCliente'] )->name('calificacion');
+   
+    Route::get('/notificacion/{idNotificacion}/ticket/{idticket}', [CalificacionNotiController::class, 'marcar_como_leida'] )->name('c_marcar_como_leida');
+    Route::get('/notificacion/{idNotificacion}/ticket/{idticket}', [TicketNotiController::class, 'marcar_como_leida'] )->name('t_marcar_como_leida');
+    Route::get('/notificacion/{idNotificacion}/ticket/{idticket}/mensajeTecnico', [MensajeTecnicoNotiController::class, 'marcar_como_leida'] )->name('msjTecnico_marcar_como_leida');
+    Route::get('/notificacion/{idNotificacion}/ticket/{idticket}/mensajeCliente', [MensajeClienteNotiController::class, 'marcar_como_leida'] )->name('msjCliente_marcar_como_leida');
+
+
+    Route::post('/actualizar-notificaciones', [NotificationController::class, 'actualizarContador']);
+    Route::get('/obtener-notificaciones', [NotificationController::class, 'obtenerNotificaciones']);
+
+  });
+
+
+//   Route::middleware([
+//     'auth:sanctum',
+//     config('jetstream.auth_session'),
+//     'verified', 
+//     'mensajeClienteNoti',
+// ])->group(function () {
+
+//     Route::resource('/usuario/tickets', TicketsUsuarioController::class)->names('usuarios_tickets');
+   
+
+
+
+//   });
+

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>UNEG - HELPDESK</title>
+    <title>UNEG - LEMA</title>
 
      <!-- Font Awesome -->
      <script src="https://kit.fontawesome.com/6f3d5551a7.js" crossorigin="anonymous"></script>
@@ -54,7 +54,7 @@
         <div class="contenedor-nosotros  contenedor">
             <div class="texto-nosotros ">
                 <!--** SOLO DEBE HABER UN SOLO H1 POR PAGINA (TITULO PRINCIPAL)  -->
-                <h1 class="titulo-principal">HELP DESK</h1>
+                <h1 class="titulo-principal">LEMA</h1>
                 <p class="content"> Asistencia técnica para las Tecnologías de Información (TI) de la 
                     Universidad Nacional Experimental de Guayana (UNEG).
                 <br>
@@ -109,7 +109,7 @@
     </div>
     <!-- FOOTER -->
     <footer class="footer">
-        <p>&copy; {{ \Carbon\Carbon::now()->format('Y') }} - Universidad Nacional Experimental de Guayana - Help Desk - Todos los derechos reservados   </p>
+        <p>&copy; {{ \Carbon\Carbon::now()->format('Y') }} - Universidad Nacional Experimental de Guayana - LEMA - Todos los derechos reservados   </p>
     </footer>
     <!-- FIN FOOTER -->
 

@@ -13,7 +13,7 @@
         <div  class="card-body" >
             <table id="tabla_tktVencidos" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap" style="width:100%;" >
                <div class="content-btnVolver">
-                    <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volverInfo">
+                    <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volver">
                     <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
                 </div>
                <thead class="text-center bg-dark text-white">

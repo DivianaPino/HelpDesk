@@ -72,8 +72,8 @@
 
                             <td>{{\Carbon\Carbon::parse($ticket->fecha_inicio)->format('d-m-Y')}}</td>
 
-                            @if ($ticket->respuestas->count() > 0)
-                              <td>{{ \Carbon\Carbon::parse($ticket->respuestas->last()['updated_at']) }}</td>
+                            @if ($ticket->mensajes->count() > 0)
+                              <td>{{ \Carbon\Carbon::parse($ticket->mensajes->last()['updated_at']) }}</td>
                             @else
                               <td>---</td>
                             @endif
@@ -112,7 +112,7 @@
 @stop
 
 @section('css')
-<link rel="stylesheet" href="/css/styles.css">
+
 
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.min.css">
 

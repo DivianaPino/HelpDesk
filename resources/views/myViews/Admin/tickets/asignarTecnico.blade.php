@@ -13,7 +13,7 @@
         <div class="card-body">
             <div style="margin-bottom:30px;">
                 <div class="content-btnVolver">
-                    <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volverInfo">
+                    <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volver">
                     <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
                 </div>
                 <h3 class="titulo_prin" style="margin:0px; padding:0px;">Asignar técnico</h3>

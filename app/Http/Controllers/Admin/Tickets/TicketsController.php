@@ -9,18 +9,16 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use App\Events\MasInfoEvent;
-use App\Events\RespuestaEvent;
+use App\Events\MensajeTecnicoEvent;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Ticket;
 use App\Models\Area;
 use App\Models\Estado;
-use App\Models\Respuesta;
-use App\Models\MasInformacion;
-use App\Models\RespMasInfo;
+use App\Models\Mensaje;
 use App\Models\TicketHistorial;
-use App\Models\Comentario;
+use App\Models\Calificacion;
 
 
 class TicketsController extends Controller
@@ -65,10 +63,9 @@ class TicketsController extends Controller
             $cant_tkt_nuevos=$tickets->where('estado_id', 1 )->count();
             $cant_tkt_abiertos=$tickets->where('estado_id', 2 )->count();
             $cant_tkt_enEspera=$tickets->where('estado_id', 3 )->count();
-            $cant_tkt_enRevision=$tickets->where('estado_id', 4)->count();
-            $cant_tkt_resueltos=$tickets->where('estado_id', 5)->count();
-            $cant_tkt_reAbiertos=$tickets->where('estado_id', 6)->count();
-            $cant_tkt_cerrados=$tickets->where('estado_id', 7)->count();
+            $cant_tkt_resueltos=$tickets->where('estado_id', 4)->count();
+            $cant_tkt_reAbiertos=$tickets->where('estado_id', 5)->count();
+            $cant_tkt_cerrados=$tickets->where('estado_id', 6)->count();
 
             // Canti
             $estados = Estado::whereIn('nombre', ['Nuevo', 'Abierto', 'Reabierto'])->pluck('id');
@@ -79,7 +76,6 @@ class TicketsController extends Controller
             return view('myViews.Admin.tickets.ticketsArea' ,  compact('tickets', 'cant_tkt_nuevos', 
                                                                                  'cant_tkt_abiertos',
                                                                                  'cant_tkt_enEspera',
-                                                                                 'cant_tkt_enRevision', 
                                                                                  'cant_tkt_resueltos',
                                                                                  'cant_tkt_reAbiertos',
                                                                                  'cant_tkt_cerrados',
@@ -150,196 +146,314 @@ class TicketsController extends Controller
         // Tickets que pertenecen a las areas del usuario auth con estado "Abierto"
         $ticketsAbiertos = Ticket::whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estadoAbierto->id)->get();
 
-
         return view('myViews.Admin.tickets.abiertos')->with('tickets', $ticketsAbiertos) ;
     }
 
-    public function form_RespuestaRespondido($idTicket){
-        $ticket=Ticket::find($idTicket);
-        $ticket->estado_id = 5;
-        $ticket->save();
-        $respTkt=Respuesta::orderBy('fecha', 'desc')->where('ticket_id', $idTicket)->first();
-        return view('myViews.Admin.tickets.form_TktRespondido')->with(['ticket'=> $ticket,'respuesta'=> $respTkt, 'idTicket' => $idTicket]);
-    }
+    // public function form_RespuestaRespondido($idTicket){
+    //     $ticket=Ticket::find($idTicket);
+    //     $ticket->estado_id = 5;
+    //     $ticket->save();
+    //     $respTkt=Mensaje::orderBy('fecha', 'desc')->where('ticket_id', $idTicket)->first();
+    //     return view('myViews.Admin.tickets.form_TktRespondido')->with(['ticket'=> $ticket,'respuesta'=> $respTkt, 'idTicket' => $idTicket]);
+    // }
 
-    public function form_Respuestaticket($idTicket){
+    public function form_msjTecnico($idTicket){
 
         $ticket=Ticket::find($idTicket);
         session(['previous_url' => url()->previous()]);
-  
-        if (Respuesta::where('ticket_id', $idTicket)->exists() && $ticket->estado->nombre == "Reabierto") {
-            return view('myViews.Admin.tickets.form_respuesta')->with(['ticket'=> $ticket, 'idTicket' => $idTicket]);
-        }
-        elseif (Respuesta::where('ticket_id', $idTicket)->exists()) {
-            // $ticket->estado_id = 5;
-            // $ticket->save();
-            $respTkt=Respuesta::orderBy('fecha', 'desc')->where('ticket_id', $idTicket)->first();
-            return view('myViews.Admin.tickets.form_TktRespondido')->with(['ticket'=> $ticket,'respuesta'=> $respTkt, 'idTicket' => $idTicket]);
 
-        }else {
-            return view('myViews.Admin.tickets.form_respuesta')->with(['ticket'=> $ticket, 'idTicket' => $idTicket]);
-        }
+        
+
+        return view('myViews.Admin.tickets.form_msjTecnico')->with(['ticket'=> $ticket, 'idTicket' => $idTicket]);
+  
+        // if (Mensaje::where('ticket_id', $idTicket)->exists()) {
+        //     return view('myViews.Admin.tickets.form_respuesta')->with(['ticket'=> $ticket, 'idTicket' => $idTicket]);
+        // }
+        // elseif (Mensaje::where('ticket_id', $idTicket)->exists()) {
+        //     // $ticket->estado_id = 5;
+        //     // $ticket->save();
+        //     $msjTkt=Mensaje::orderBy('fecha', 'desc')->where('ticket_id', $idTicket)->first();
+        //     return view('myViews.Admin.tickets.form_TktRespondido')->with(['ticket'=> $ticket,'mensaje'=> $msjTkt, 'idTicket' => $idTicket]);
+
+        // }else {
+        //     return view('myViews.Admin.tickets.form_respuesta')->with(['ticket'=> $ticket, 'idTicket' => $idTicket]);
+        // }
     }
     
-    public function guardar_respuestaTicket(Request $request, $idTicket){
+    public function guardar_mensajeTecnico(Request $request, $idTicket){
 
-        $request->validate([
-            'mensaje' =>'required',
-            'imagen' => 'image',
-        ],
-        [
-            'mensaje.required' => 'El campo mensaje es requerido',
-            'imagen.image' => 'El archivo debe ser una imagen',
-        ]
-    );
+        $esTecnico = false; 
+        $usuario = Auth::user();
+        $roles = $usuario->roles()->get();
+        foreach ($roles as $role) {
+            if ($role->name == "Administrador" || $role->name == "Jefe de área" || $role->name == "Técnico de soporte") {
+                $esTecnico = true;
+                break;
+            }
+        }
 
 
-        if($request->hasFile('imagen')){
+        if($request->input('resuelto') === 'on') {
 
-            $file = $request->file('imagen'); // obtenemos el archivo
-            $random_name = time(); // le colocamos a la imagen un nombre random y con el tiempo y fecha actual 
-            $destinationPath = 'images/respuestas/tickets/'; // path de destino donde estaran las imagenes subidas 
-            $extension = $file->getClientOriginalExtension();
-            $filename = $random_name.'-'.$file->getClientOriginalName(); //concatemos el nombre random creado anteriormente con el nombre original de la imagen (para evitar nombres repetidos)
-            $uploadSuccess = $request->file('imagen')->move($destinationPath, $filename); //subimos y lo enviamos al path de Destin
+            try{
+                    $validator = $request->validate([
+                        'imagen' => 'image',
+                    ],
+                    [
+                        'imagen.image' => 'El archivo debe ser una imagen',
+                    ]
+                );
 
-            $respuesta= new Respuesta();
-            $respuesta->ticket_id = $idTicket;
-            $respuesta->mensaje=$request->mensaje;
-            $respuesta->imagen=$filename;
-            $respuesta->fecha=Carbon::now();
-            $respuesta->save();
 
+                if($request->hasFile('imagen')){
+
+                    $file = $request->file('imagen'); // obtenemos el archivo
+                    $random_name = time(); // le colocamos a la imagen un nombre random y con el tiempo y fecha actual 
+                    $destinationPath = 'images/msjTecnico/'; // path de destino donde estaran las imagenes subidas 
+                    $extension = $file->getClientOriginalExtension();
+                    $filename = $random_name.'-'.$file->getClientOriginalName(); //concatemos el nombre random creado anteriormente con el nombre original de la imagen (para evitar nombres repetidos)
+                    $uploadSuccess = $request->file('imagen')->move($destinationPath, $filename); //subimos y lo enviamos al path de Destin
+
+                    $mensaje= new Mensaje();
+                    $mensaje->user_id = Auth::user()->id;
+                    $mensaje->ticket_id = $idTicket;
+                    $mensaje->mensaje=$request->mensaje;
+                    $mensaje->imagen=$filename;
+                    $mensaje->save();
+
+                    $ticket = Ticket::find($idTicket);
+                    $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
+                    $ticket->save();
+
+                    event(new MensajeTecnicoEvent($mensaje));
+
+                    return response()->json([
+                        'mensaje' => $request->mensaje,
+                        'imagen' => $filename,
+                        'esTecnico' => $esTecnico,
+                        'status' => 'success',
+                        'msjSuccess'  => 'Ticket resuelto!, el cliente calificará la asistencia.',
+                    ]);
+
+                }else{
+
+                    $mensaje= new Mensaje();
+                    $mensaje->user_id =  Auth::user()->id;
+                    $mensaje->ticket_id = $idTicket;
+                    $mensaje->mensaje=$request->mensaje;
+                    $mensaje->save();
+
+                    $ticket = Ticket::find($idTicket);
+                    $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
+                    $ticket->save();
+
+                    event(new MensajeTecnicoEvent($mensaje));
+
+                    return response()->json([
+                        'mensaje' => $request->mensaje,
+                        'esTecnico' => $esTecnico,
+                        'status' => 'success',
+                        'msjSuccess'  => 'Ticket resuelto!, el cliente calificará la asistencia.',
+                    ]);
+
+                
+
+                }
             
-             // cambiar estado a "resuelto"
-             $ticket=Ticket::find($idTicket);
-             $ticket->estado_id= 5;
-             $ticket->save();
-
-             $historial= new TicketHistorial();
-             $historial->ticket_id= $idTicket;
-             $historial->estado_id=5;
-             $historial->respuesta_id=$respuesta->id;
-             $historial->updated_at= Carbon::now();
-             $historial->save();
-
-             event(new RespuestaEvent($respuesta));
+            }catch (\Illuminate\Validation\ValidationException $e) {
+                return response()->json([
+                    'errors' => $e->validator->errors()->toArray(),
+                ], 422);
+            }
 
         }else{
 
-            $respuesta= new Respuesta();
-            $respuesta->ticket_id = $idTicket;
-            $respuesta->mensaje=$request->mensaje;
-            $respuesta->fecha=Carbon::now();
-            $respuesta->save();
+            try{
+                $validator = $request->validate([
+                        'mensaje' =>'required',
+                        'imagen' => 'image',
+                    ],
+                    [
+                        'mensaje.required' => 'El campo mensaje es requerido',
+                        'imagen.image' => 'El archivo debe ser una imagen',
+                    ]
+                );
 
-             // cambiar estado a "resuelto"
-             $ticket=Ticket::find($idTicket);
-             $ticket->estado_id= 5;
-             $ticket->save();
 
-             $historial= new TicketHistorial();
-             $historial->ticket_id= $idTicket;
-             $historial->estado_id=5;
-             $historial->respuesta_id=$respuesta->id;
-             $historial->updated_at= Carbon::now();
-             $historial->save();
+                if($request->hasFile('imagen')){
 
-             event(new RespuestaEvent($respuesta));
+                    $file = $request->file('imagen'); // obtenemos el archivo
+                    $random_name = time(); // le colocamos a la imagen un nombre random y con el tiempo y fecha actual 
+                    $destinationPath = 'images/msjTecnico/'; // path de destino donde estaran las imagenes subidas 
+                    $extension = $file->getClientOriginalExtension();
+                    $filename = $random_name.'-'.$file->getClientOriginalName(); //concatemos el nombre random creado anteriormente con el nombre original de la imagen (para evitar nombres repetidos)
+                    $uploadSuccess = $request->file('imagen')->move($destinationPath, $filename); //subimos y lo enviamos al path de Destin
 
+                 
+                    $mensaje= new Mensaje();
+                    $mensaje->user_id = Auth::user()->id;
+                    $mensaje->ticket_id = $idTicket;
+                    $mensaje->mensaje=$request->mensaje;
+                    $mensaje->imagen=$filename;
+                    $mensaje->save();
+
+                    
+
+                    event(new MensajeTecnicoEvent($mensaje));
+
+                    return response()->json([
+                        'mensaje' => $request->mensaje,
+                        'imagen' => $filename,
+                        'esTecnico' => $esTecnico,
+                        'status' => 'success',
+                        'msjSuccess'  => 'Mensaje enviado exitosamente.',
+                    ]);
+
+                }else{  
+
+                    $mensaje= new Mensaje();
+                    $mensaje->user_id =  Auth::user()->id;
+                    $mensaje->ticket_id = $idTicket;
+                    $mensaje->mensaje=$request->mensaje;
+                    $mensaje->save();
+
+                    $tick = Ticket::find($idTicket);
+
+                    if($tick->mensajes){
+
+                        foreach($tick->mensajes as $msj){
+                          if($msj->user->hasAnyRole(['Administrador', 'Jefe de área', 'Técnico de soporte'])){
+                              $tick->estado_id = Estado::where('nombre', 'En espera')->first()->id;
+                            //    $estadoEnespera=$tick->estado_id ;
+                              $tick->save();
+                              break;
+                          }
+                      }
+                    }
+
+
+                    event(new MensajeTecnicoEvent($mensaje));
+
+                    
+                    return response()->json([
+                        'mensaje' => $request->mensaje,
+                        'esTecnico' => $esTecnico,
+                        'status' => 'success',
+                        'msjSuccess'  => 'Mensaje enviado exitosamente.',
+                    ]);
+
+                    
+
+                }
+            
+
+            }catch (\Illuminate\Validation\ValidationException $e) {
+                return response()->json([
+                    'errors' => $e->validator->errors()->toArray(),
+                ], 422);
+            }
         }
+  
 
-        return back()->with('status', 'Ticket respondido exitosamente :)');
+
+         // return back()->with('status', 'Mensaje enviado exitosamente');
     }
 
 
-    public function masInfo($idTicket){
+    
+    public function navbar_notifications(){
+        return view('vendor.adminlte.components.layout.navbar-notification');
+    }
 
-        $ticket=Ticket::find($idTicket);
-        $fecha_actual=Carbon::now()->format('d-m-Y');
+
+
+    // public function masInfo($idTicket){
+
+    //     $ticket=Ticket::find($idTicket);
+    //     $fecha_actual=Carbon::now()->format('d-m-Y');
         
       
-        return view('myViews.Admin.tickets.masInfo')->with(['ticket'=> $ticket, 'fecha_actual'=> $fecha_actual]);
+    //     return view('myViews.Admin.tickets.masInfo')->with(['ticket'=> $ticket, 'fecha_actual'=> $fecha_actual]);
         
-    }
+    // }
 
     
-    public function guardar_masInfo(Request $request, $idTicket)
-    {
+    // public function guardar_masInfo(Request $request, $idTicket)
+    // {
        
-        $request->validate([
-                'mensaje' =>'required',
-                'imagen' => 'image',
-            ],
-            [
-                'mensaje.required' => 'El campo mensaje es requerido',
-                'imagen.image' => 'El archivo debe ser una imagen',
-            ]
-        );
+    //     $request->validate([
+    //             'mensaje' =>'required',
+    //             'imagen' => 'image',
+    //         ],
+    //         [
+    //             'mensaje.required' => 'El campo mensaje es requerido',
+    //             'imagen.image' => 'El archivo debe ser una imagen',
+    //         ]
+    //     );
 
-        $usuario= Auth::user();
-        $tickets = Ticket::where('asignado_a', $usuario->name )->get();
-
-        
-        if($request->hasFile('imagen')){
-
-            $file = $request->file('imagen'); // obtenemos el archivo
-            $random_name = time(); // le colocamos a la imagen un nombre random y con el tiempo y fecha actual 
-            $destinationPath = 'images/masInfo/tickets/'; // path de destino donde estaran las imagenes subidas 
-            $extension = $file->getClientOriginalExtension();
-            $filename = $random_name.'-'.$file->getClientOriginalName(); //concatemos el nombre random creado anteriormente con el nombre original de la imagen (para evitar nombres repetidos)
-            $uploadSuccess = $request->file('imagen')->move($destinationPath, $filename); //subimos y lo enviamos al path de Destin
-
-            $masInfo=new MasInformacion();
-            $masInfo->ticket_id=$idTicket;   
-            $masInfo->mensaje=$request->mensaje;
-            $masInfo->imagen=$filename;
-            $masInfo->fecha=Carbon::now();
-            $masInfo->save();
-
-            // cambiar estado a "en espera"
-            $ticket=Ticket::find($idTicket);
-            $ticket->estado_id= 3;
-            $ticket->save();
-
-            $historial= new TicketHistorial();
-            $historial->ticket_id= $idTicket;
-            $historial->estado_id=3;
-            $historial->masinfo_id=$masInfo->id;
-            $historial->updated_at= Carbon::now();
-            $historial->save();
-
-            // Enviamos masInfo al event,para luego crear la notitificación
-            event(new MasInfoEvent($masInfo));
+    //     $usuario= Auth::user();
+    //     $tickets = Ticket::where('asignado_a', $usuario->name )->get();
 
         
-        }else{
+    //     if($request->hasFile('imagen')){
 
-            $masInfo=new MasInformacion();
-            $masInfo->ticket_id=$idTicket;   
-            $masInfo->mensaje=$request->mensaje;
-            $masInfo->fecha=Carbon::now();
-            $masInfo->save();
+    //         $file = $request->file('imagen'); // obtenemos el archivo
+    //         $random_name = time(); // le colocamos a la imagen un nombre random y con el tiempo y fecha actual 
+    //         $destinationPath = 'images/masInfo/tickets/'; // path de destino donde estaran las imagenes subidas 
+    //         $extension = $file->getClientOriginalExtension();
+    //         $filename = $random_name.'-'.$file->getClientOriginalName(); //concatemos el nombre random creado anteriormente con el nombre original de la imagen (para evitar nombres repetidos)
+    //         $uploadSuccess = $request->file('imagen')->move($destinationPath, $filename); //subimos y lo enviamos al path de Destin
 
-             // cambiar estado a "en espera"
-            $ticket=Ticket::find($idTicket);
-            $ticket->estado_id= 3;
-            $ticket->save();
+    //         $masInfo=new MasInformacion();
+    //         $masInfo->ticket_id=$idTicket;   
+    //         $masInfo->mensaje=$request->mensaje;
+    //         $masInfo->imagen=$filename;
+    //         $masInfo->fecha=Carbon::now();
+    //         $masInfo->save();
 
-            $historial= new TicketHistorial();
-            $historial->ticket_id= $idTicket;
-            $historial->estado_id=3;
-            $historial->masinfo_id=$masInfo->id;
-            $historial->updated_at= Carbon::now();
-            $historial->save();
+    //         // cambiar estado a "en espera"
+    //         $ticket=Ticket::find($idTicket);
+    //         $ticket->estado_id= 3;
+    //         $ticket->save();
 
-            // Enviamos masInfo al event,para luego crear la notitificación
-            event(new MasInfoEvent($masInfo));
-        }
+    //         $historial= new TicketHistorial();
+    //         $historial->ticket_id= $idTicket;
+    //         $historial->estado_id=3;
+    //         $historial->masinfo_id=$masInfo->id;
+    //         $historial->updated_at= Carbon::now();
+    //         $historial->save();
 
-        return back()->with('status', 'Mensaje enviado exitosamente :)');
+    //         // Enviamos masInfo al event,para luego crear la notitificación
+    //         event(new MasInfoEvent($masInfo));
+
+        
+    //     }else{
+
+    //         $masInfo=new MasInformacion();
+    //         $masInfo->ticket_id=$idTicket;   
+    //         $masInfo->mensaje=$request->mensaje;
+    //         $masInfo->fecha=Carbon::now();
+    //         $masInfo->save();
+
+    //          // cambiar estado a "en espera"
+    //         $ticket=Ticket::find($idTicket);
+    //         $ticket->estado_id= 3;
+    //         $ticket->save();
+
+    //         $historial= new TicketHistorial();
+    //         $historial->ticket_id= $idTicket;
+    //         $historial->estado_id=3;
+    //         $historial->masinfo_id=$masInfo->id;
+    //         $historial->updated_at= Carbon::now();
+    //         $historial->save();
+
+    //         // Enviamos masInfo al event,para luego crear la notitificación
+    //         event(new MasInfoEvent($masInfo));
+    //     }
+
+    //     return back()->with('status', 'Mensaje enviado exitosamente :)');
     
-    }
+    // }
 
     public function tickets_enEspera()
     {
@@ -569,54 +683,51 @@ class TicketsController extends Controller
     }
 
     
-    public function verRespCliente_masInfo( $idMensaje, $idTicket){
+    // public function verRespCliente_masInfo( $idMensaje, $idTicket){
 
-         //Obtener el historial que esta en la posicion que viene en el parametro $idMensaje (ya que pueden haber registros eliminados)
-         $hist_Posicion=TicketHistorial::where('ticket_id', $idTicket)->where('estado_id', 3)->whereNotNull('masinfo_id')
-                                                                                             ->orderBy('id', 'desc')->first();
-         $idMasInfo=$hist_Posicion->masinfo_id; 
+    //      //Obtener el historial que esta en la posicion que viene en el parametro $idMensaje (ya que pueden haber registros eliminados)
+    //      $hist_Posicion=TicketHistorial::where('ticket_id', $idTicket)->where('estado_id', 3)->whereNotNull('masinfo_id')
+    //                                                                                          ->orderBy('id', 'desc')->first();
+    //      $idMasInfo=$hist_Posicion->masinfo_id; 
       
-         //ultimo Mensaje del Agente  
-         $mensaje=MasInformacion::where('id', $idMasInfo)->latest('created_at')->first();
+    //      //ultimo Mensaje del Agente  
+    //      $mensaje=MasInformacion::where('id', $idMasInfo)->latest('created_at')->first();
 
-        // respuesta usuario
-         $respuesta=RespMasInfo::where('masInfo_id', $mensaje->id)->first();
+    //     // respuesta usuario
+    //      $respuesta=RespMasInfo::where('masInfo_id', $mensaje->id)->first();
 
-        if (Respuesta::where('ticket_id', $idTicket)->exists()) {
+    //     if (Respuesta::where('ticket_id', $idTicket)->exists()) {
 
-            $solucion=Respuesta::where('ticket_id', $idTicket)->first();
+    //         $solucion=Respuesta::where('ticket_id', $idTicket)->first();
 
-            return view('myViews.Admin.tickets.ticketRespondido', compact('idTicket', 'mensaje', 'idMasInfo', 'respuesta', 'solucion'));
+    //         return view('myViews.Admin.tickets.ticketRespondido', compact('idTicket', 'mensaje', 'idMasInfo', 'respuesta', 'solucion'));
              
-        }else{
-            return view('myViews.Admin.tickets.verRespCliente_masInfo', compact('idTicket', 'mensaje', 'idMasInfo', 'respuesta'));
-        }
+    //     }else{
+    //         return view('myViews.Admin.tickets.verRespCliente_masInfo', compact('idTicket', 'mensaje', 'idMasInfo', 'respuesta'));
+    //     }
       
+    // }
 
-         
-       
-    }
+    // public function historialTicket($ticket_id){
 
-    public function historialTicket($ticket_id){
-
-        // Incidente
-        $ticket= ticket::find($ticket_id);
+    //     // Incidente
+    //     $ticket= ticket::find($ticket_id);
     
-        // Mas info 
-        $masInfo = MasInformacion::where('ticket_id',$ticket_id)->get(); 
+    //     // Mas info 
+    //     $masInfo = MasInformacion::where('ticket_id',$ticket_id)->get(); 
      
-        // respuesta de masInfo (cliente)
-        $respMasInfo = RespMasInfo::where('ticket_id',$ticket_id)->get();
+    //     // respuesta de masInfo (cliente)
+    //     $respMasInfo = RespMasInfo::where('ticket_id',$ticket_id)->get();
        
-        // solucion del ticket
-        $soluciones=Respuesta::where('ticket_id',$ticket_id)->get();
+    //     // solucion del ticket
+    //     $soluciones=Respuesta::where('ticket_id',$ticket_id)->get();
 
 
-        $comentarios=Comentario::where('ticket_id',$ticket_id)->get();
+    //     $comentarios=Comentario::where('ticket_id',$ticket_id)->get();
      
-        return view('myViews.Admin.tickets.historialTicket', compact('ticket_id', 'ticket', 'masInfo','respMasInfo','soluciones', 'comentarios' ));
+    //     return view('myViews.Admin.tickets.historialTicket', compact('ticket_id', 'ticket', 'masInfo','respMasInfo','soluciones', 'comentarios' ));
        
-    }
+    // }
 
     public function volverDetalles($ticket_id)
     {
@@ -682,7 +793,7 @@ class TicketsController extends Controller
         $areas=Area::all();
 
         if ($usuario->hasRole(['Administrador'])) {
-            return view('myViews.admin.tickets.reasignarTicket', compact('areas', 'ticket' ));
+            return view('myViews.Admin.tickets.reasignarTicket', compact('areas', 'ticket' ));
         }
         elseif($usuario->hasRole(['Jefe de área'])){
             return view('myViews.jefeArea.reasignarTicket', compact('areas', 'ticket' ));
@@ -713,7 +824,7 @@ class TicketsController extends Controller
 
     public function mensajeReabierto($idTicket){
         $mensaje= Comentario::where('ticket_id', $idTicket)->latest()->first();
-        return view('myViews.admin.tickets.mensajeReabierto', compact('mensaje', 'idTicket' ));
+        return view('myViews.Admin.tickets.mensajeReabierto', compact('mensaje', 'idTicket' ));
 
     }
 
@@ -776,62 +887,62 @@ class TicketsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        $ticket= Ticket::find($id);
-        $respuestas=Respuesta::where('ticket_id', $id)->get();
-        $masInfos=MasInformacion::where('ticket_id', $id)->get();
-        $respMasInfos=RespMasInfo::where('ticket_id', $id)->get();
+    // public function destroy($id)
+    // {
+    //     $ticket= Ticket::find($id);
+    //     $respuestas=Respuesta::where('ticket_id', $id)->get();
+    //     $masInfos=MasInformacion::where('ticket_id', $id)->get();
+    //     $respMasInfos=RespMasInfo::where('ticket_id', $id)->get();
 
 
-        //* ELIMINAR LA IMAGEN DEL TICKET (DE LA CARPETA)
-        $rutaTicket_img = public_path('images/tickets/'). $ticket->imagen;  
+    //     //* ELIMINAR LA IMAGEN DEL TICKET (DE LA CARPETA)
+    //     $rutaTicket_img = public_path('images/tickets/'). $ticket->imagen;  
 
-        if (file_exists($rutaTicket_img)) // Verificar si existe un archivo asociado
-        {
-           File::delete($rutaTicket_img); // Eliminar el archivo
-        } 
+    //     if (file_exists($rutaTicket_img)) // Verificar si existe un archivo asociado
+    //     {
+    //        File::delete($rutaTicket_img); // Eliminar el archivo
+    //     } 
 
-        //* ELIMINAR TICKET
-        $ticket->delete(); 
+    //     //* ELIMINAR TICKET
+    //     $ticket->delete(); 
 
 
-        // *ELIMINAR LA IMAGEN DE LA RESPUESTA DEL TICKET (DE LA CARPETA)
-        foreach($respuestas as $respuesta){
+    //     // *ELIMINAR LA IMAGEN DE LA RESPUESTA DEL TICKET (DE LA CARPETA)
+    //     foreach($respuestas as $respuesta){
 
-            $rutaRespuesta_img = public_path('images/respuestas/tickets/'). $respuesta->imagen; 
+    //         $rutaRespuesta_img = public_path('images/respuestas/tickets/'). $respuesta->imagen; 
 
-            if (file_exists($rutaRespuesta_img))
-            {
-               File::delete($rutaRespuesta_img); 
-            } 
-        }
+    //         if (file_exists($rutaRespuesta_img))
+    //         {
+    //            File::delete($rutaRespuesta_img); 
+    //         } 
+    //     }
 
         // *ELIMINAR LA IMAGEN DE MAS INFO DEL TICKET (DE LA CARPETA)
-        foreach($masInfos as $masInfo){
+    //     foreach($masInfos as $masInfo){
 
-            $rutaMasInfo_img = public_path('images/masInfo/tickets/'). $masInfo->imagen; 
+    //         $rutaMasInfo_img = public_path('images/masInfo/tickets/'). $masInfo->imagen; 
 
-            if (file_exists($rutaMasInfo_img))
-            {
-               File::delete($rutaMasInfo_img); 
-            } 
-        }
+    //         if (file_exists($rutaMasInfo_img))
+    //         {
+    //            File::delete($rutaMasInfo_img); 
+    //         } 
+    //     }
 
-          // *ELIMINAR LA IMAGEN DE LA RESPUESTA_MAS INFO DEL TICKET (DE LA CARPETA)
-          foreach($respMasInfos as $respMasInfo){
+    //       // *ELIMINAR LA IMAGEN DE LA RESPUESTA_MAS INFO DEL TICKET (DE LA CARPETA)
+    //       foreach($respMasInfos as $respMasInfo){
 
-            $rutarespMasInfo_img = public_path('images/respMasInfo/tickets/'). $respMasInfo->imagen; 
+    //         $rutarespMasInfo_img = public_path('images/respMasInfo/tickets/'). $respMasInfo->imagen; 
 
-            if (file_exists($rutarespMasInfo_img))
-            {
-               File::delete($rutarespMasInfo_img); 
-            } 
-        }
+    //         if (file_exists($rutarespMasInfo_img))
+    //         {
+    //            File::delete($rutarespMasInfo_img); 
+    //         } 
+    //     }
 
-        return redirect()->route('tickets.index')->with('eliminar' , 'ok');
+    //     return redirect()->route('tickets.index')->with('eliminar' , 'ok');
   
-    }
+    // }
 
 
 

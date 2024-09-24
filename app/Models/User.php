@@ -79,6 +79,12 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Models\Area');
     }
 
+    public function mensajes()
+    {
+      return $this->hasMany('App\Models\Mensaje');
+    }
+
+  
     // METODOS PARA EL MENU DE SESION DEL USUARIO 
     // VINCULADOS A CONFIG/ADMINLTE.PHP
 

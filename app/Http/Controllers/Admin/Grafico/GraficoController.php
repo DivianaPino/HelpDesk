@@ -23,7 +23,7 @@ class GraficoController extends Controller
     public function index(){
 
         $areas = Area::all();
-        $comentTicketAll = [];
+        $califTicketAll = [];
         $datosGrafico=[];
 
         foreach ($areas as $area) {

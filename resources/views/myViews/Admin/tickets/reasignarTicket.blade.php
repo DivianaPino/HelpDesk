@@ -18,7 +18,7 @@
             <h3 class="titulo_prin" style="margin:0px; padding:0px;">Reasignar ticket #{{$ticket->id}}</h3>
            
             @if(session('status'))
-              <p class="alert alert-success" style="margin-top:20px;">{{ Session('status') }}</p>
+              <p class="alert alert-success" style="margin-top:20px; background-color:#3de64b;">{{ Session('status') }}</p>
             @endif
             <form action="/guardar/reasignacion/ticket/{{$ticket->id}}" class="mb-5" method="post" id="contactForm" name="contactForm" enctype="multipart/form-data">
               @csrf
@@ -36,43 +36,51 @@
                     
                 <div class="row">
                     <div class="col-md-4 form-group mb-3">
-                        <label for="clasificacion_id" class="col-form-label">Clasificación:</label>
-                        <select class="custom-select" id="clasificacion_id" name="clasificacion_id"  value="{{old('clasificacion_id')}}" disabled >
-                            <option value="">{{ $ticket->clasificacion->nombre }}</option>
-                        </select>
-
+                          <label for="area_id" class="col-form-label">Área:</label>
+                          <input type="text" class="form-control" name="area_id" id="area_id" value="{{ $ticket->area->nombre }}" disabled>
                     </div>
                     <div class="col-md-4 form-group mb-3">
-                        <label for="prioridad_id" class="col-form-label">Prioridad:</label>
-                        <select class="custom-select" id="prioridad_id" name="prioridad_id"  disabled>
-                            <option value="">{{ $ticket->prioridad->nombre }}</option>
-                        </select>
+                          <label for="servicio_id" class="col-form-label">Servicio:</label>
+                          <input type="text" class="form-control" name="servicio_id" id="servicio_id" value="{{ $ticket->servicio->nombre }}" disabled>
                     </div>
-
                     <div class="col-md-4 form-group mb-3">
-                        <label for="estado_id" class="col-form-label">Estado:</label>
-                        <input type="text" class="form-control" name="estado_id" id="estado_id" value="{{$ticket->estado->nombre}}" disabled>
+                      <label for="prioridad_id" class="col-form-label">Prioridad:</label>
+                      <input type="text" class="form-control" name="prioridad_id" id="prioridad_id" value="{{ $ticket->prioridad->nombre }}" disabled>
                     </div>
-                    
-                </div>
-                    
-                <div class="row">
-                    <div class="col-md-6 form-group mb-3">
-                        <label for="asunto" class="col-form-label">Asunto:</label>
-                        <input type="text" class="form-control" name="asunto" id="asunto" value="{{$ticket->asunto}}" disabled >
-                    </div>
+                  </div>     
+                  
+                  <div class="row">
+                   @if(is_null($ticket->asignado_a))
+                      <div class="col-md-6 form-group mb-3">
+                        <label for="asignado_a" class="col-form-label">Técnico asignado:</label>
+                        <input type="text" class="form-control" name="asignado_a" id="asignado_a" value="Sin asignar" disabled>
+                      </div>
+                    @else
+                     <div class="col-md-6 form-group mb-3">
+                        <label for="asignado_a" class="col-form-label">Técnico asignado:</label>
+                        <input type="text" class="form-control" name="asignado_a" id="asignado_a" value="{{$ticket->asignado_a}}" disabled>
+                      </div>
+                    @endif
 
                     <div class="col-md-6 form-group mb-3">
-                        <label for="tecnico" class="col-form-label">Técnico asignado:</label>
-                        <input type="text" class="form-control" name="tecnico" id="tecnico" value="{{$ticket->asignado_a}}" disabled >
+                      <label for="estado_id" class="col-form-label">Estado:</label>
+                      <input type="text" class="form-control" name="estado_id" id="estado_id" value="{{$ticket->estado->nombre}}" disabled>
                     </div>
-                </div>
-                    
+                  </div>
+              
+
                 <div class="row">
-                    <div class="col-md-12 form-group mb-3">
-                        <label for="mensaje" class="col-form-label">Mensaje:</label>
-                        <textarea class="form-control" name="mensaje" id="mensaje" cols="30" rows="4"  disabled>{{$ticket->mensaje}}</textarea>
-                    </div>
+                  <div class="col-md-12 form-group mb-3">
+                    <label for="asunto" class="col-form-label">Asunto:</label>
+                    <input type="text" class="form-control inputForm" name="asunto" id="asunto" value="{{$ticket->asunto}}" placeholder="Escribe el asunto" disabled >
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-12 form-group mb-3">
+                    <label for="mensaje" class="col-form-label">Mensaje:</label>
+                    <textarea class="form-control inputForm" name="mensaje" id="msj" cols="30" rows="4"  disabled>{{$ticket->mensaje}}</textarea>
+                  </div>
                 </div>
 
                 @if(isset($ticket->imagen))
@@ -141,53 +149,63 @@
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="https://kit.fontawesome.com/6f3d5551a7.js" crossorigin="anonymous"></script>
 
-
-
-
 <script>
 
-    function cargarTecnicos(selectAreas){
-
-        let areaId=selectAreas.value;
-      
+function cargarTecnicos(selectAreas){
+    let areaId = selectAreas.value;
+    
+    // Verificar si es la opción "Seleccionar área..."
+    if(areaId === "") {
+        // Limpiar completamente el select de tecnicos
+        let tecnicoSelect = document.getElementById('tecnicoSelect');
+        tecnicoSelect.innerHTML = '<option value="">Seleccionar tecnico...</option>';
+    } else {
+        // Cargar tecnicos para la área seleccionada
         fetch(`/area/${areaId}/agentes`)
-            .then(function (response){
+            .then(function (response) {
+                if (!response.ok) { // Comprobamos si la respuesta es OK (200-299)
+                    throw new Error('Error al cargar tecnicos');
+                }
                 return response.json();
             })
-
             .then(function(jsonData){
-               
-                buildTecnicosSelect(jsonData);
+                if (jsonData) {
+                    buildTecnicosSelect(jsonData);
+                } else {
+                    console.error('Datos de tecnicos inválidos:', jsonData);
+                }
+            })
+            .catch(function(error) {
+                console.error('Error al tecnicos:', error);
             });
     }
+}
 
-    function buildTecnicosSelect(jsonTecnicos){
 
-        let tecnicosSelect = document.getElementById('tecnicoSelect');
-        limpiarSelect(tecnicosSelect);
+function buildTecnicosSelect(jsonTecnicos){
+    let tecnicosSelect = document.getElementById('tecnicoSelect');
+    limpiarSelect(tecnicosSelect);
 
-    // Asegúrate de que los IDs sean únicos aquí
-    const ids = Array.from(new Set(jsonTecnicos.map(tecnico => tecnico.id)));
-    
-    ids.forEach(function(id){
-        const tecnico = jsonTecnicos.find(tecnico => tecnico.id === id);
-        if (tecnico) {
+    if (Array.isArray(jsonTecnicos)) {
+        jsonTecnicos.forEach(function(tecnico){
             let opcion = document.createElement('option');
             opcion.value = tecnico.id;
             opcion.innerHTML = tecnico.name;
-            tecnicosSelect.append(opcion);
-        }
-    });
+            tecnicosSelect.appendChild(opcion);
+        });
+    } else {
+        console.error('Los datos de tecnicos no son un arreglo válido:', jsonTecnicos);
     }
+}
 
-    function limpiarSelect(select){
-        while(select.options.length > 1){
-            select.remove(1);
-        }
-        
+
+function limpiarSelect(select){
+    while(select.options.length > 1){
+        select.remove(1);
     }
-
+}
 </script>
+
 
  
 @stop

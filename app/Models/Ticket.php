@@ -17,9 +17,14 @@ class Ticket extends Model
       return $this->belongsTo('App\Models\User');
     } 
 
-    public function clasificacion()
+    public function area()
     {
-      return $this->belongsTo('App\Models\Clasificacion');
+      return $this->belongsTo('App\Models\Area');
+    } 
+
+    public function servicio()
+    {
+      return $this->belongsTo('App\Models\Servicio');
     } 
 
     public function estado()

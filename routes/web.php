@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\Tickets\TicketsController;
 use App\Http\Controllers\Admin\Usuarios\UsuariosController;
 use App\Http\Controllers\Admin\Areas\AreasController;
 use App\Http\Controllers\Admin\Prioridades\PrioridadesController;
+use App\Http\Controllers\Admin\Servicios\ServiciosController;
 use App\Http\Controllers\Admin\Analisis\AnalisisController;
 use App\Http\Controllers\Admin\Grafico\GraficoController;
 use App\Http\Controllers\Admin\Reportes\ReporteController;
@@ -29,6 +30,10 @@ use App\Http\Controllers\Todos_Registrados\Notificaciones\MensajeTecnicoNotiCont
 use App\Http\Controllers\Todos_Registrados\Notificaciones\MensajeClienteNotiController;
 use App\Http\Controllers\Admin\Calificaciones\CalificacionController;
 
+// Notificaciones Email
+use App\Mail\ticketMailable;
+
+use App\Services\TelegramService;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +50,12 @@ Route::get('/', [HomeController::class, 'index'] )->name('/');
 Route::get('ticketEstado/{idTicket}', [TicketsUsuarioController::class, 'ticketEstado'])->name('ticketEstado');
 Route::get('nivelSatisfaccion/{idTicket}', [CalificacionController::class, 'nivel_satisfaccion'] )->name('nivelSatisfaccion');
 
+// Route::get('/emailTicket', function(){
+//   Mail::to('divianap96@gmail.com')->send(new ticketMailable);
+//   return "Mensaje enviado!";
+// })->name('ticket.email');
+
+
 
 
 
@@ -59,6 +70,7 @@ Route::middleware([
     'ticketsNoComentados'
 ])->group(function () {
 
+  Route::view('/email', 'emails.ticketMail');
     
     Route::get('/dashboard', [DashboardController::class, 'index'] )->name('dashboard');
 
@@ -66,6 +78,7 @@ Route::middleware([
     Route::resource('/usuarios', UsuariosController::class)->names('usuarios');
     Route::resource('/tickets', TicketsController::class)->names('tickets');  
     Route::resource('/areas', AreasController::class)->names('areas');
+    Route::resource('/servicios', ServiciosController::class)->names('servicios');
     Route::resource('/prioridades', PrioridadesController::class)->names('prioridades');
     Route::get('/misTickets', [MisTicketsController::class, 'misTickets_agenteTecnico'] )->name('misTickets');
     Route::get('/asignar_area/{id}', [UsuariosController::class, 'asignar_area'] )->name('asignar_area');
@@ -77,7 +90,24 @@ Route::middleware([
     Route::post('/tickets/filtrados', [ReporteController::class, 'reporteFiltrados'] )->name('reporteFiltrados');
     Route::post('/reporte-pdf',  [ReporteController::class, 'reporteCompletoPDF'] )->name('reporteCompletoPDF');
     Route::post('/reporteRango-pdf',  [ReporteController::class, 'reporteRangoPDF'] )->name('reporteRangoPDF');
+
+   
+    Route::post('/cargar-todos-tickets', [TicketController::class, 'cargarTodosTickets'])->name('tickets.filter.todos');
+
+    Route::get('/alltickets', [TicketsController::class, 'tickets'])->name('tickets.all');
+
     
+
+
+
+   
+    Route::get('/area/{areaId}/servicios', [AreasController::class, 'area_servicios'] )->name('area_servicios');
+    Route::get('/crear/servicio/area/{areaId}', [ServiciosController::class, 'crear_servicio'] )->name('crear_servicio');
+    Route::post('/guardar/servicio/{areaId}',  [ServiciosController::class, 'guardar_servicio'] )->name('guardar_servicio');
+    Route::get('/servicios/area/{idarea}', [TicketsUsuarioController::class, 'servicios_area'] )->name('servicios_area');
+
+  
+  
 
     // Rol: Usuario estandar
     Route::resource('/usuario/tickets', TicketsUsuarioController::class)->names('usuarios_tickets');
@@ -157,6 +187,12 @@ Route::middleware([
 
     Route::post('/actualizar-notificaciones', [NotificationController::class, 'actualizarContador']);
     Route::get('/obtener-notificaciones', [NotificationController::class, 'obtenerNotificaciones']);
+
+
+
+  
+
+   
 
   });
 

@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Crear área')
+@section('title',  'Editar servicio')
 
 @section('content')
 <div class="content ">
@@ -8,16 +8,17 @@
       <div class="row align-items-stretch no-gutters contact-wrap centrar-form">
         <div class="col-md-6">
           <div class="form h-100 sombra ">
-            <h3>Crear área</h3>
-            <form action="{{ url('areas') }}" class="mb-5" method="post" id="contactForm" name="contactForm">
+            <h3>Editar servicio</h3>
+            <form action="/servicios/{{$servicio->id}}" class="mb-5" method="post" id="contactForm" name="contactForm">
             @csrf
+            @method('PUT')
               <div class="row">
                 <div class="col-md-12 form-group mb-3">
-                  <label for="nombre" class="col-form-label">Nombre del área o departamento:</label>
-                  <input type="text" class="form-control" name="nombre" id="nombre"  >
+                  <label for="nombre" class="col-form-label">Nombre del servicio:</label>
+                  <input type="text" class="form-control" name="nombre" id="nombre"  value="{{$servicio->nombre}}" >
                 </div>
               </div>
-
+              
               <div class="msj_error">
                  @error('nombre')
                     {{$message}}
@@ -27,15 +28,13 @@
             
               <div class="row">
                 <div class="col-md-8 form-group">
-                  <input type="submit" id="submitButton" value="Crear" class="btnForm btn-primary rounded-0 py-2 px-4">
+                  <input type="submit" id="submitButton" value="Editar" class="btnForm btn-primary rounded-0 py-2 px-4">
                 </div>
 
                 <div class="col-md-4 form-group">
-                    <a href="/areas" class="btnForm btn-dark rounded-0 py-2 px-4 btn_volver"> Ver todas</a>
+                    <a href="/area/{{$area->id}}/servicios" class="btnForm btn-dark rounded-0 py-2 px-4 btn_volver"> Ver todos</a>
                 </div>
               </div>
-               
-
             </form>
 
           </div>
@@ -63,7 +62,7 @@
 
          document.addEventListener('ajax:success', function(event) {
             if (event.detail.status === 200) {
-               alert('Ticket enviado exitosamente!');
+               alert('Servicio modificado exitosamente!');
                document.getElementById('submitButton').disabled = true;
                document.getElementById('submitButton').value = 'Enviado';
             }

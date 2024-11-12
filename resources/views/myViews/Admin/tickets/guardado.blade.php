@@ -32,7 +32,7 @@
                       <option value="{{ $servicio->id }}" {{ old('servicio') == $servicio->id?'selected' : '' }}>{{ $servicio->nombre }}</option>
                   @endforeach
               </select>
-          </div>
+            </div>
           </div>
           <table id="tabla_tickets" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap"  style="width:100%;" >
                <thead class="text-center bg-dark text-white">
@@ -262,7 +262,7 @@ $(document).ready(function() {
 
         $('#areaFilter').on('change', function() {
     var selectedAreaId = $(this).val();
-    var url = '{{ route('tickets.index') }}?area=' + selectedAreaId;
+    var url = C?area=' + selectedAreaId;
     
     // Actualizar la tabla con el nuevo filtro
     window.location.href = url;

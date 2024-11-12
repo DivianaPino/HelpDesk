@@ -10,11 +10,14 @@ use Illuminate\Support\Facades\Auth;
 use App\Notifications\CalificacionNotification;
 use App\Events\CalificacionEvent;
 use App\Events\TicketEvent;
+use App\Events\TicketCorreoEvent;
 use App\Events\MensajeClienteEvent;
+use App\Services\TelegramService;
 use Carbon\Carbon;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Models\Area;
+use App\Models\Servicio;
 use App\Models\Clasificacion;
 use App\Models\Prioridad;
 use App\Models\Estado;
@@ -45,19 +48,27 @@ class TicketsUsuarioController extends Controller
     public function create()
     {
         $usuarios=auth()->user();
-        $clasificacions=Clasificacion::all();
-        $prioridads=Prioridad::all();
+        $areas=Area::all();
+        $servicios=Servicio::all();
+        $prioridades=Prioridad::all();
         $fecha_actual=Carbon::now()->format('d-m-Y');
         $estadoFirst= Estado::first();
         $tecnicos= User::role('Técnico de soporte')->get();
 
-        return view('myViews.usuarioEst.create')->with('usuarios', $usuarios)
-                                                ->with('clasificacions', $clasificacions)
-                                                ->with('prioridads', $prioridads)
-                                                ->with('fecha_actual', $fecha_actual)
-                                                ->with('estadoFirst', $estadoFirst)
-                                                ->with('tecnicos', $tecnicos);
-    }                        
+        return view('myViews.usuarioEst.create', compact('usuarios','areas', 'servicios', 'prioridades', 'fecha_actual', 'estadoFirst', 'tecnicos'));
+                                           
+    }        
+    
+    public function servicios_area($areaId){
+
+        $area= Area::find($areaId);
+        
+        // servicios de area
+        $serviciosArea=$area->servicios()->get();
+       
+        return response()->json($serviciosArea);
+
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -67,8 +78,12 @@ class TicketsUsuarioController extends Controller
      */
     public function store(Request $request)
     {
+
+        $isSubmitting = false; 
+
         $request->validate([
-                'clasificacion_id' =>'required',
+                'area_id' =>'required',
+                'servicio_id' =>'required',
                 'prioridad_id' =>'required',
                 'asunto' =>'required',
                 'mensaje' =>'required',
@@ -83,6 +98,7 @@ class TicketsUsuarioController extends Controller
             ]
         );
 
+        
         $prioridad = Prioridad::find($request->prioridad_id); // Obtener la prioridad por ID
         $tiempoResolucion = $prioridad->tiempo_resolucion;
 
@@ -97,7 +113,8 @@ class TicketsUsuarioController extends Controller
 
             $ticket=new Ticket();
             $ticket->user_id=auth()->id();    
-            $ticket->clasificacion_id=$request->clasificacion_id;
+            $ticket->area_id=$request->area_id;
+            $ticket->servicio_id=$request->servicio_id;
             $ticket->prioridad_id=$request->prioridad_id;
             $ticket->asunto=$request->asunto;
             $ticket->mensaje=$request->mensaje;
@@ -107,14 +124,29 @@ class TicketsUsuarioController extends Controller
             $ticket->fecha_caducidad=Carbon::now()->addDays($tiempoResolucion);
             $ticket->save();
 
+            $técnicos = User::whereHas('roles', function ($query) {
+                $query->whereIn('name', ['Tecnico de soporte', 'Jefe de área']);
+            })->get();
+            
             // Enviamos el ticket al event, para despues crear la notificación 
             event(new TicketEvent($ticket));
+
+            event(new TicketCorreoEvent($ticket));
+
+            $telegramService = new TelegramService(); // Crea solo una instancia
+            
+            foreach ($técnicos as $técnico) {
+                $telegramService->sendMessage($técnico->telegram, "Nuevo ticket creado: {$ticket->asunto}");
+            }
+
+
 
         }else{
 
             $ticket=new Ticket();
             $ticket->user_id=auth()->id();    
-            $ticket->clasificacion_id=$request->clasificacion_id;
+            $ticket->area_id=$request->area_id;
+            $ticket->servicio_id=$request->servicio_id;
             $ticket->prioridad_id=$request->prioridad_id;
             $ticket->asunto=$request->asunto;
             $ticket->mensaje=$request->mensaje;
@@ -123,8 +155,19 @@ class TicketsUsuarioController extends Controller
             $ticket->fecha_caducidad=Carbon::now()->addDays($tiempoResolucion);
             $ticket->save();
 
+            $tecnicos = User::whereHas('roles', function ($query) {
+                $query->whereIn('name', ['Tecnico de soporte', 'Jefe de área']);
+            })->get();
+
             // Enviamos el ticket al event, para despues crear la notificación 
             event(new TicketEvent($ticket));
+
+            event(new TicketCorreoEvent($ticket));
+            foreach ($tecnicos as $tecnico) {
+                $telegramService = app(TelegramService::class);
+                $response = $telegramService->sendMessage($tecnico->telegram, "Nuevo ticket creado: {$ticket->asunto}");
+               
+            }
         }
 
         $tickets=Ticket::where('user_id', auth()->user()->id)->orderBy('id', 'desc')->get();
@@ -141,6 +184,7 @@ class TicketsUsuarioController extends Controller
 
     //     return view('myViews.usuarioEst.historial' , compact ('idTicket', 'tickets', 'mensajes'));
     // }
+    
 
 
     public function ver_ticketReportado($idTicket){

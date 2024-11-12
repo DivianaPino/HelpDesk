@@ -30,11 +30,17 @@
                         <tr>
                             <td>{{$area->id}}</td>
                             <td>{{$area->nombre}}</td>
-                            <td >
+                            <td  class="align-items-center">
+                                <div>
 
                                     <a class="btn btn-info" href="{{url('/area/' . $area->id . '/tecnicos')}}" >Ver técnicos</a>
 
-                                    <p class="linea">|</p>
+                                    <a href="/area/{{$area->id}}/servicios" class="btn btn-secondary ">Servicios</a>
+                                </div>
+                       
+                                <div  class="align-items-center">
+
+                                    <!-- <p class="linea">|</p> -->
 
                                     <a href="/areas/{{$area->id}}/edit" class="btn btn-warning ">Editar</a>
                                     <form action="{{route('areas.destroy',$area->id)}}" method="POST" style="display:inline" class="formulario-eliminar">  
@@ -94,7 +100,7 @@
 
         Swal.fire({
         title: "¿Estás seguro?",
-        text: "El área se eliminara definitivamente",
+        text: "El área se eliminará definitivamente",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",

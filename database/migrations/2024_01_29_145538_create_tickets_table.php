@@ -16,7 +16,8 @@ class CreateTicketsTable extends Migration
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('clasificacion_id');
+            $table->unsignedBigInteger('area_id');
+            $table->unsignedBigInteger('servicio_id');
             $table->unsignedBigInteger('estado_id');
             $table->unsignedBigInteger('prioridad_id');
             $table->string('asunto');
@@ -31,7 +32,8 @@ class CreateTicketsTable extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('estado_id')->references('id')->on('estados')->onDelete('cascade');
             $table->foreign('prioridad_id')->references('id')->on('prioridads')->onDelete('cascade');  
-            $table->foreign('clasificacion_id')->references('id')->on('clasificacions')->onDelete('cascade');
+            $table->foreign('area_id')->references('id')->on('areas')->onDelete('cascade');
+            $table->foreign('servicio_id')->references('id')->on('servicios')->onDelete('cascade');
             
         });
     }

@@ -36,12 +36,9 @@ class TicketListener
         // Obtener el ticket desde el evento
         $ticket = $event->ticket;
 
-        //Clasificacion
-        $clasificacion= Clasificacion::find($ticket->clasificacion_id);
+        //id del area
+        $area= Area::find($ticket->area_id);
   
-        // Buscar el area en el modelo Area
-        $area = Area::where('nombre', $clasificacion->nombre)->first();
- 
         // Usuarios que pertecen al area area
         $usuariosEnArea = $area->users;
        

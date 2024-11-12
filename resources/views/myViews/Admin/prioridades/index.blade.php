@@ -91,7 +91,7 @@
 
         Swal.fire({
         title: "¿Estás seguro?",
-        text: "La prioridad se eliminara definitivamente",
+        text: "La prioridad se eliminará definitivamente",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",

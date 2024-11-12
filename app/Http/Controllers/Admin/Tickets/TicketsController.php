@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Ticket;
 use App\Models\Area;
+use App\Models\Servicio;
 use App\Models\Estado;
 use App\Models\Mensaje;
 use App\Models\TicketHistorial;
@@ -37,9 +38,56 @@ class TicketsController extends Controller
      */
     public function index()
     {
-        $tickets=Ticket::all();
-        return view('myViews.Admin.tickets.index')->with('tickets', $tickets);
+        $usuario = Auth::user();
+        $tickets = Ticket::query();
+        $areas = Area::all();
+    
+        // Obtener parámetros de filtro desde la solicitud
+        $selectedAreaId = request()->input('area', null);
+        $selectedServicioId = request()->input('servicio', null);
+    
+        // Aplicar filtros por area si están definidos
+        if ($selectedAreaId !== null && $selectedAreaId !== '') {
+            $tickets = $tickets->where('area_id', $selectedAreaId);
+        }
+
+        // servicios que pertenecen al área seleccionada
+        $serviciosArea= Servicio::where('area_id', $selectedAreaId)->get();
+     
+    
+           // Aplicar filtros por servicio si están definidos
+        if ($selectedServicioId !== null && $selectedServicioId !== '') {
+            $tickets = $tickets->where('servicio_id', $selectedServicioId);
+        }
+    
+        // Mostrar todos los tickets si ninguna opción está seleccionada
+        if ($selectedAreaId === '' && $selectedServicioId === '') {
+            $tickets = $tickets->get();
+        } else {
+            $tickets = $tickets->paginate(10);
+        }
+
+      
+        return view('myViews.Admin.tickets.index', compact('usuario', 'tickets', 'areas', 'serviciosArea'));
     }
+
+public function filtrarTickets(Request $request)
+{
+    $area_id = $request->input('area');
+
+    $tickets = Ticket::when($area_id, function ($query) use ($area_id) {
+        return $query->whereHas('area', function ($q) use ($area_id) {
+            return $q->where('id', $area_id);
+        });
+    });
+
+    return DataTables::eloquent($tickets)
+        ->make(true);
+}
+
+    
+    
+
 
     public function create()
     {
@@ -58,7 +106,7 @@ class TicketsController extends Controller
             $areasUsuario=$usuario->areas()->pluck('area_id');
 
             // Tickets que pertenecen al área del asuario
-            $tickets=Ticket::whereIn('clasificacion_id', $areasUsuario)->get();
+            $tickets=Ticket::whereIn('area_id', $areasUsuario)->get();
 
             $cant_tkt_nuevos=$tickets->where('estado_id', 1 )->count();
             $cant_tkt_abiertos=$tickets->where('estado_id', 2 )->count();

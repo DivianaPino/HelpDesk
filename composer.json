@@ -9,6 +9,8 @@
         "amendozaaguiar/laravel-lat-es": "*",
         "amendozaaguiar/laraveles-spanish-for-jetstream": "*",
         "barryvdh/laravel-dompdf": "^2.2",
+        "doctrine/dbal": "^4.2",
+        "fedeisas/laravel-mail-css-inliner": "^4.0",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "jeroennoten/laravel-adminlte": "^3.9",

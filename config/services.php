@@ -30,4 +30,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'mail_css_inliner' => [
+        'enabled' => true,
+    ],
+
 ];

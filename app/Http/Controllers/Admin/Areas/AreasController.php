@@ -55,13 +55,10 @@ class AreasController extends Controller
             ]
         );
 
-        // Llenar los datos de area tambien en la tabla clasificacion
+        // Llenar los datos de area 
         $area=new Area();
-        $clasificacion=new Clasificacion();
         $area->nombre=$request->nombre;
-        $clasificacion->nombre =$request->nombre;
         $area->save();
-        $clasificacion->save();
 
         $usuario= Auth::user();
 
@@ -87,19 +84,23 @@ class AreasController extends Controller
         return view('myViews.Admin.areas.tecnicos')->with(['usuarios'=> $usuarios, 'area'=>$area]);
     }
 
+
+    public function area_servicios($areaid)
+    { 
+        $area = Area::find($areaid);
+        $servicios = $area->servicios; // Obtiene todos los servicios de un área específica
+        return view('myViews.Admin.areas.servicios_area')->with(['servicios'=> $servicios, 'area'=>$area]);
+    }
+
+
+    
     public function edit($id)
     {
         $area=Area::find($id);
         return view('myViews.Admin.areas.edit')->with('area', $area);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -111,11 +112,8 @@ class AreasController extends Controller
         );
 
         $area=Area::find($id);
-        $clasificacion=Clasificacion::find($id);
         $area->nombre=$request->nombre;
-        $clasificacion->nombre =$request->nombre;
         $area->save();
-        $clasificacion->save();
 
         return redirect('/areas')->with('status', 'Área editada exitosamente :)');
     }

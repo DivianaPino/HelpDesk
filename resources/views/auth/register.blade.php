@@ -24,6 +24,11 @@
             </div>
 
             <div class="mt-4">
+                <x-jet-label for="telegram" value="{{ __('Telegram:') }}"  class="texto-formulario" />
+                <x-jet-input id="telegram" class="block mt-1 w-full" type="text" name="telegram" :value="old('telegram')" required />
+            </div>
+
+            <div class="mt-4">
                 <x-jet-label for="password" value="{{ __('Contraseña:') }}" class="texto-formulario" />
                 <x-jet-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
             </div>

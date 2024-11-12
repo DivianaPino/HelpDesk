@@ -92,7 +92,7 @@
 
         Swal.fire({
         title: "¿Estás seguro?",
-        text: "El usuario se eliminara definitivamente",
+        text: "El usuario se eliminará definitivamente",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",

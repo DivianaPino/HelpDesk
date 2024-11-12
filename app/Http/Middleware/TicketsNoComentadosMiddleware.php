@@ -28,7 +28,7 @@ class TicketsNoComentadosMiddleware
           
                 // Obtener todos los tickets para esta área
             $estadoResuelto= Estado::where('nombre', 'Resuelto')->first();
-            $ticketsResueltos = Ticket::where('clasificacion_id', $area->id)->where('estado_id', $estadoResuelto->id)->get();
+            $ticketsResueltos = Ticket::where('area_id', $area->id)->where('estado_id', $estadoResuelto->id)->get();
 
             $estadoCerrado= Estado::where('nombre', 'Cerrado')->first();
 

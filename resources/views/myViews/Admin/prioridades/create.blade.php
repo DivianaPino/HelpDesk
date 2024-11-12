@@ -40,7 +40,7 @@
             
               <div class="row">
                 <div class="col-md-8 form-group">
-                  <input type="submit" value="Crear" class="btnForm btn-primary rounded-0 py-2 px-4">
+                  <input type="submit" id="submitButton" value="Crear" class="btnForm btn-primary rounded-0 py-2 px-4">
                 </div>
 
                 <div class="col-md-4 form-group">
@@ -64,5 +64,24 @@
 @stop
 
 @section('js')
+
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+         document.getElementById('submitButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            this.disabled = true;
+            this.value = 'Enviando...';
+            this.form.submit();
+         });
+
+         document.addEventListener('ajax:success', function(event) {
+            if (event.detail.status === 200) {
+               alert('Ticket enviado exitosamente!');
+               document.getElementById('submitButton').disabled = true;
+               document.getElementById('submitButton').value = 'Enviado';
+            }
+         });
+   });
+</script>
 
 @stop

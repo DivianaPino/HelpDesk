@@ -14,6 +14,8 @@ use App\Events\MensajeClienteEvent;
 use App\Listeners\MensajeClienteListener;
 use App\Events\CalificacionEvent;
 use App\Listeners\CalificacionListener;
+use App\Events\TicketCorreoEvent;
+use App\Listeners\TicketCorreoListener;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -40,6 +42,9 @@ class EventServiceProvider extends ServiceProvider
         ], 
         CalificacionEvent::class => [
             CalificacionListener::class,
+        ],
+        TicketCorreoEvent::class => [
+            TicketCorreoListener::class,
         ],
 
 

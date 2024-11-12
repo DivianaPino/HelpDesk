@@ -81,6 +81,12 @@
                 @endif
             @endif
         </div>
+
+        <div class="col-span-6 sm:col-span-4">
+            <x-jet-label for="telegram" value="{{ __('Telegram') }}" />
+            <x-jet-input id="telegram" type="text" class="mt-1 block w-full" wire:model.defer="state.telegram" autocomplete="telegram" />
+            <x-jet-input-error for="telegram" class="mt-2" />
+        </div>
     </x-slot>
 
     <x-slot name="actions">

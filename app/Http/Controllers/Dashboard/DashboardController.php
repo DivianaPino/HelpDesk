@@ -40,7 +40,7 @@ class DashboardController extends Controller
                                                                 ));
                 // return view('myViews.Admin.tickets.index')->with('tickets', $tickets);
                 // dd('administrador');
-            }else if(Auth::user()->hasRole(['Jefe de área','Técnico de soporte',])){
+            }else if(Auth::user()->hasRole(['Jefe de área','Técnico de soporte'])){
                     
                 return redirect()->route('areaUsuario_tickets');
             

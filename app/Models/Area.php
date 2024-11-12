@@ -14,4 +14,16 @@ class Area extends Model
       return $this->belongsToMany('App\Models\User');
     } 
 
+    public function areas() 
+    {
+        return $this->hasMany('App\Models\Area');
+    }
+
+    public function servicios() 
+    {
+        return $this->hasMany('App\Models\Servicio');
+    }
+
+   
+
 }

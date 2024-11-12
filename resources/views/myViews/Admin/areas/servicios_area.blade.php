@@ -1,47 +1,52 @@
 @extends('adminlte::page')
 
-@section('title', 'Agentes T. de área(s)')
+@section('title', 'Servicios de ' . $area->nombre)
 
 @section('content_header')
-   
+    
 @stop
 
 @section('content')
-<div class="container_titulo_tecnicosSop">
-    <h1 class="titulo_prin titulo_tecnicosSop" style="margin-bottom:0px;">Agentes técnicos</h1>
-    <span style="color:#067af7; font-weight: bold;">Pertenecientes a tu(s) área(s)</span>
-</div>
-<div>
+<h1 class="titulo_prin">Servicios del área de <span>{{$area->nombre}}</span></h1>
+<div>   
      <div  class="card">
         <div  class="card-body" >
-            <table id="tabla_tecnicosSop" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap"  style="width:100%;" >
+            <table id="tabla_areas" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap" style="width:100%"  >
+             
+               <div class="content-btnVolver contentVolverServiciosArea">
+                    <a href="/crear/servicio/area/{{$area->id}}" class="btn btn-primary btn-crear mb-3" >Crear</a> 
+                    <a style="margin-top:8px;" href="/areas" class="btn btn-dark btn-volver btnVolver-serviciosArea"><i class="fa-solid fa-arrow-left fa-lg"></i>Todas las áreas</a>
+                </div>
+               @if(session('status'))
+                 <p class="alert alert-success">{{ Session('status') }}</p>
+               @endif
+
                <thead class="text-center bg-dark text-white">
                    <tr>
                       <th>ID</th>
-                      <th>Técnico</th>
-                      <th>Área(s)</th>
-                      <th>Rol(es)</th>
-                      <th>Email</th>
+                      <th>Servicio</th>
+                      <th>Creado</th>
+                      <th>Acciones</th>
                    </tr>
                </thead>
 
                <tbody>
-
-                    @php
-                        $lastArea = true;
-                    @endphp
-                    @foreach ($tecnicos as $tecnico )   
-              
+                    @foreach ($servicios as $servicio )
                         <tr>
-                            <td>{{$tecnico->id}}</td>
-                            <td>{{$tecnico->name}}</td>
-                            <td>
-                                @foreach ($tecnico->areas as $area)
-                                 {{ $area->nombre }}{{ $loop->last? '' : ', ' }}
-                                @endforeach
+                            <td>{{$servicio->id}}</td>
+                            <td>{{$servicio->nombre}}</td>
+                            <td>{{\Carbon\Carbon::parse($servicio->created_at)->format('d-m-Y')}}</td>
+                            <td  class="align-items-center">
+                            
+                                <!-- <p class="linea">|</p> -->
+                                <a href="/servicios/{{$servicio->id}}/edit" class="btn btn-warning ">Editar</a>
+                                <form action="{{route('servicios.destroy',$servicio->id)}}" method="POST" style="display:inline" class="formulario-eliminar">  
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger" >Eliminar</button>
+                                </form> 
+                               
                             </td>
-                            <td>{{$tecnico->roles()->pluck('name')->implode(', ')}}</td>
-                            <td>{{$tecnico->email}}</td> 
                         </tr>
                     @endforeach
                </tbody>
@@ -72,15 +77,15 @@
 
 <script type="text/javascript" src="https://cdn.datatables.net/2.0.2/js/dataTables.bootstrap5.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-
 <script  type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://kit.fontawesome.com/6f3d5551a7.js" crossorigin="anonymous"></script>
 
 @if(session('eliminar') == 'ok')
   <script>
       Swal.fire({
       title: "¡Eliminado!",
-      text: "El ticket se elimino con éxito",
+      text: "El servicio se elimino con éxito",
       icon: "success"
       });
   </script>
@@ -94,7 +99,7 @@
 
         Swal.fire({
         title: "¿Estás seguro?",
-        text: "El ticket se eliminará definitivamente",
+        text: "El servicio se eliminará definitivamente",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -111,9 +116,10 @@
     
 </script>
 
+
 <script>
 $(document).ready(function() {
-    $('#tabla_tecnicosSop').DataTable({
+    $('#tabla_areas').DataTable({
 
         responsive:true,
 
@@ -143,7 +149,22 @@ $(document).ready(function() {
             "infoFiltered":"",
         },
 
-      
+        "order": [[0, 'desc']],
+        "columnDefs": [
+            {
+                "targets": 2, 
+                "type": "date",
+                "render": function (data, type, row) {
+                    // Asegurar de que 'data' esté en el formato 'YYYY-MM-DD'
+                    // y luego convertirlo al formato 'DD-MM-YYYY' para la visualización
+                    if (type === 'display') {
+                        return moment(data, 'YYYY-MM-DD').format('DD-MM-YYYY');
+                    }
+                    // Para la ordenación y otros usos, devuelve el valor original
+                    return data;
+                }
+            }
+        ]
         
     });
 });

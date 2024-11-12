@@ -31,9 +31,13 @@
                      </div>
                 @endforeach
 
-                {!!Form::submit('Asignar rol', ['class'=>'btn btn-primary mt-2'])!!}
+                {!! Form::submit('Asignar rol', [
+                  'class' => 'btn btn-primary mt-2',
+                  'id' => 'submitButton',
+                  'name' => 'submitButton'
+                ]) !!}
                 <div style="display:inline-block; margin-left:20px;">
-                     <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volver">Volver</a>
+                     <a style="margin-top:8px;" href="#" class="btn btn-dark btn-volver" onclick="return cargarPaginaAnterior();">Volver</a>
                 </div>
           {!!Form::close()!!}
       </div>
@@ -45,5 +49,30 @@
 @stop
 
 @section('js')
-    <script> console.log('Hi!'); </script>
+
+<script>
+    function cargarPaginaAnterior() {
+        window.location.href = document.referrer;
+        return false;
+    }
+</script>
+
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+         document.getElementById('submitButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            this.disabled = true;
+            this.value = 'Enviando...';
+            this.form.submit();
+         });
+
+         document.addEventListener('ajax:success', function(event) {
+            if (event.detail.status === 200) {
+               alert('Ticket enviado exitosamente!');
+               document.getElementById('submitButton').disabled = true;
+               document.getElementById('submitButton').value = 'Enviado';
+            }
+         });
+   });
+</script>
 @stop

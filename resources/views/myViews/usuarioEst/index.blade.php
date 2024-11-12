@@ -21,7 +21,8 @@
                    <tr>
                       <th>ID</th>
                       <th>Usuario</th>
-                      <th>Clasif.</th>
+                      <th>Área</th>
+                      <th>Servicio</th>
                       <th>Prioridad</th>
                       <th>Creado</th>
                       <th>Estado</th>
@@ -40,7 +41,8 @@
                            
                         <td>{{$ticket->id}}</td>
                         <td>{{$ticket->user->name}}</td>
-                        <td>{{$ticket->clasificacion->nombre}}</td>
+                        <td>{{$ticket->area->nombre}}</td>
+                        <td>{{$ticket->servicio->nombre}}</td>
 
                         @if($ticket->prioridad->nombre == "Urgente")
                           <td class="prd_urgente">{{$ticket->prioridad->nombre}}</td>
@@ -148,7 +150,7 @@ $(document).ready(function() {
         "order": [[0, 'asc']],
         "columnDefs": [
             {
-                "targets": 6, 
+                "targets": 7, 
                 "type": "date",
                 "render": function (data, type, row) {
                     if (!data || data.trim() === '') {

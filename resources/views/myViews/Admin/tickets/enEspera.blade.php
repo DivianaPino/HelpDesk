@@ -16,7 +16,7 @@
                    <tr>
                       <th>ID</th>
                       <th>Usuario</th>
-                      <th>Clasificación</th>
+                      <th>Área</th>
                       <th>Asunto</th>
                       <th>Prioridad</th>
                       <th>Estado</th>
@@ -33,7 +33,7 @@
                         <tr>
                              <td>{{$ticket->id}}</td>
                              <td>{{$ticket->user->name}}</td>
-                             <td>{{$ticket->clasificacion->nombre}}</td>
+                             <td>{{$ticket->area->nombre}}</td>
                              <td>{{$ticket->asunto}}</td>
                             
                             <!-- Prioridades -->
@@ -53,16 +53,7 @@
                              @elseif($ticket->estado->nombre == "Abierto")
                                 <td class="abierto">{{$ticket->estado->nombre}}</td>
                              @elseif($ticket->estado->nombre == "En espera")
-                                @php 
-                                    $masInfo=App\Models\MasInformacion::where('ticket_id', $ticket->id)->orderBy('created_at','desc')->first();
-                                    $respuesta_masInfo= App\Models\RespMasInfo::where('masInfo_id', $masInfo->id)->first(); 
-                                @endphp 
-                                        
-                                @isset($respuesta_masInfo)
-                                    <td class="enEspera">{{$ticket->estado->nombre}}<br>(mensaje respondido)</td>
-                                @else
-                                   <td class="enEspera">{{$ticket->estado->nombre}}<br>(Esperando respuesta del cliente)</td>
-                                @endisset
+                                <td class="enEspera">{{$ticket->estado->nombre}}
                              @elseif($ticket->estado->nombre == "Resuelto")
                                 <td class="resuelto">{{$ticket->estado->nombre}}</td>
                              @elseif($ticket->estado->nombre == "Reabierto")

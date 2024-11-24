@@ -9,70 +9,118 @@
 @section('content')
 
 @if (Session('info'))
-   <div class="alert alert-success">
-     <strong>{{session('info')}}</strong>
-   </div>
-    
+    <div class="alert alert-success" id="successMessage">
+        <strong>{{ session('info') }}</strong>
+    </div>
 @endif
-   <div class="card">
-      <div class="card-body">
-          <p class="h5">Nombre</p>
-          <p class="form-control">{{$usuario->name}}</p>
-          
-          {!!Form::model($usuario,['route'=>['usuarios.update', $usuario], 'method'=> 'put'])!!}
+<div class="messages"></div>
 
-                @foreach ($roles as $role )
-                     <div>
-                        <label>
-                           {!!Form::checkbox('roles[]', $role->id, null, ['class'=>'mr-1'])!!}
-                           {{$role->name}}
-                        
-                        </label>
-                     </div>
-                @endforeach
+<div class="card">
+    <div class="card-body">
+        <p class="h5">Nombre</p>
+        <p class="form-control">{{$usuario->name}}</p>
+        
+        {!!Form::model($usuario,['route'=>['usuarios.update', $usuario], 'method'=> 'put', 'id'=>'formularioRoles'])!!}
 
-                {!! Form::submit('Asignar rol', [
-                  'class' => 'btn btn-primary mt-2',
-                  'id' => 'submitButton',
-                  'name' => 'submitButton'
-                ]) !!}
-                <div style="display:inline-block; margin-left:20px;">
-                     <a style="margin-top:8px;" href="#" class="btn btn-dark btn-volver" onclick="return cargarPaginaAnterior();">Volver</a>
+            @foreach ($roles as $role)
+                <div class="role-checkboxes">
+                    <label>
+                        {!! Form::checkbox('roles[]', $role->id, null, ['class'=>'mr-1', 'id' => $role->id]) !!}
+                        {{$role->name}}
+                        <div id="selectedRoles"></div>
+
+                    </label>
                 </div>
-          {!!Form::close()!!}
-      </div>
-   </div>
+            @endforeach
+
+            {!! Form::submit('Asignar rol', [
+            'class' => 'btn btn-primary mt-2',
+            'id' => 'submitButton',
+            'name' => 'submitButton'
+            ]) !!}
+
+            <div style="display:inline-block; margin-left:20px;">
+                <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volver">Volver</a>
+            </div>
+
+        {!!Form::close()!!}
+    </div>
+</div>
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
+    <!-- <link rel="stylesheet" href="/css/admin_custom.css"> -->
 @stop
 
 @section('js')
-
 <script>
-    function cargarPaginaAnterior() {
-        window.location.href = document.referrer;
-        return false;
-    }
-</script>
-
-<script>
-   document.addEventListener('DOMContentLoaded', function() {
-         document.getElementById('submitButton').addEventListener('click', function(e) {
-            e.preventDefault();
-            this.disabled = true;
-            this.value = 'Enviando...';
-            this.form.submit();
-         });
-
-         document.addEventListener('ajax:success', function(event) {
-            if (event.detail.status === 200) {
-               alert('Ticket enviado exitosamente!');
-               document.getElementById('submitButton').disabled = true;
-               document.getElementById('submitButton').value = 'Enviado';
+$(document).ready(function() {
+    $('#submitButton').click(function(e) {
+        e.preventDefault();
+        
+        var formData = $('#formularioRoles').serialize();
+        $.ajax({
+            url: '{{ route('usuarios.update', $usuario->id) }}',
+            method: 'PUT',
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    // Actualiza la lista de roles en la vista
+                    updateRolesList(response.roles);
+                    showMessage('success', 'La asignación de rol(es) se realizó correctamente.');
+                } else {
+                    console.error('Error al actualizar los roles');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Ocurrió un error:', error);
             }
-         });
-   });
+        });
+    });
+
+    function updateRolesList(roles) {
+        
+        $('.role-checkboxes').each(function(index, element) {
+           
+            $(element).find('input[type="checkbox"]').prop('checked', false);
+        });
+
+        roles.forEach(function(role) {
+         
+            $('#' + role.id).prop('checked', true);
+
+
+        });
+    }
+
+    function showMessage(type, message) {
+    var messageDiv = $('.messages');
+    
+    // Elimina cualquier mensaje existente
+    messageDiv.empty();
+    
+    // Agrega el nuevo mensaje
+    messageDiv.append(`
+    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+        <strong>${message}</strong>
+    </div>
+`);
+
+setTimeout(function() {
+    $('.alert-dismissible').fadeOut(500);
+}, 5000);
+}
+
+    
+});
 </script>
+
+
+
+
+
+
+
+
+
 @stop

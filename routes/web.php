@@ -55,9 +55,17 @@ Route::get('nivelSatisfaccion/{idTicket}', [CalificacionController::class, 'nive
 //   return "Mensaje enviado!";
 // })->name('ticket.email');
 
+Route::middleware([
+  'auth:sanctum',
+  config('jetstream.auth_session'),
+  'verified',
+  'calificacionNoti',
+  'ticketsNoComentados'
+])->group(function () {
 
-
-
+Route::resource('/usuarios', UsuariosController::class)->names('usuarios');
+Route::put('/actualizar_area/{id}', [UsuariosController::class, 'actualizar_area'])->name('actualizar_area');
+});
 
 Route::middleware([
     'auth:sanctum',
@@ -75,14 +83,13 @@ Route::middleware([
     Route::get('/dashboard', [DashboardController::class, 'index'] )->name('dashboard');
 
     // Rol: Admin
-    Route::resource('/usuarios', UsuariosController::class)->names('usuarios');
+    
     Route::resource('/tickets', TicketsController::class)->names('tickets');  
     Route::resource('/areas', AreasController::class)->names('areas');
     Route::resource('/servicios', ServiciosController::class)->names('servicios');
     Route::resource('/prioridades', PrioridadesController::class)->names('prioridades');
     Route::get('/misTickets', [MisTicketsController::class, 'misTickets_agenteTecnico'] )->name('misTickets');
     Route::get('/asignar_area/{id}', [UsuariosController::class, 'asignar_area'] )->name('asignar_area');
-    Route::put('/actualizar_area/{id}', [UsuariosController::class, 'actualizar_area'])->name('actualizar_area');
     Route::get('/area/{areaId}/tecnicos', [AreasController::class, 'area_tecnicos'] )->name('area_tecnicos');
     Route::get('/analisis', [AnalisisController::class, 'index'] )->name('indexAnalisis');
     Route::get('/grafico_kpi', [GraficoController::class, 'index'] )->name('indexGrafico');

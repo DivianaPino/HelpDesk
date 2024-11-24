@@ -36,18 +36,30 @@ class TicketCorreoListener
 
     private function sendNotificationToSupportTeam($ticket)
     {
-        
-        $tecnicos= User::role(['Tecnico de soporte', 'Jefe de área'])->get();
+        $areaId=$ticket->area_id;
+        $tecnicos = User::whereHas('areas', function ($query) use ($areaId) {
+            $query->where('area_id', $areaId);
+        })->role(['Técnico de soporte', 'Jefe de área'])->get();
+    
         $emails = $tecnicos->pluck('email');
+        
+        $results = [];
 
         foreach ($emails as $email) {
             try {
                 Mail::to($email)->send(new ticketMailable($ticket));
-                return "Correo enviado a {$email}";
+                $results[] = "Correo enviado a {$email}";
             } catch (\Exception $e) {
-                return "Error al enviar correo a {$email}: " . $e->getMessage();
+                if ($e instanceof \Swift_TransportException && strpos($e->getMessage(), 'Failed to authenticate on SMTP server') !== false) {
+                    // Error de autenticación SMTP, ignoramos este error y continuamos con el siguiente correo
+                    continue;
+                }
+                $results[] = "Error al enviar correo a {$email}: " . $e->getMessage();
             }
         }
+        // Retorna todos los resultados después de procesar todos los correos
+        return $results;
+        
     }
     
 }

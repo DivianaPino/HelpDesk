@@ -27,17 +27,17 @@
 
                <tbody>
 
-                    @php
-                        $lastArea = true;
-                    @endphp
-                    @foreach ($tecnicos as $tecnico )   
-              
+
+                    @foreach ($tecnicos as $tecnico ) 
+                        @php
+                            $uniqueAreas = array_unique($tecnico->areas->pluck('nombre')->toArray());
+                        @endphp  
                         <tr>
                             <td>{{$tecnico->id}}</td>
                             <td>{{$tecnico->name}}</td>
                             <td>
-                                @foreach ($tecnico->areas as $area)
-                                 {{ $area->nombre }}{{ $loop->last? '' : ', ' }}
+                                @foreach ($uniqueAreas as $area)
+                                 {{ $area }}{{ $loop->last? '' : ', ' }}
                                 @endforeach
                             </td>
                             <td>{{$tecnico->roles()->pluck('name')->implode(', ')}}</td>

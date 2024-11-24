@@ -68,6 +68,5 @@ class Kernel extends HttpKernel
         'mensajeClienteNoti' => \App\Http\Middleware\MensajeClienteNotiMiddleware::class, 
         'calificacionNoti' => \App\Http\Middleware\CalificacionNotiMiddleware::class,
         'ticketsNoComentados' => \App\Http\Middleware\TicketsNoComentadosMiddleware::class,
-        
     ];
 }

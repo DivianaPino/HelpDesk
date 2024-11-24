@@ -128,17 +128,19 @@ class TicketsUsuarioController extends Controller
                 $query->whereIn('name', ['Tecnico de soporte', 'Jefe de área']);
             })->get();
             
-            // Enviamos el ticket al event, para despues crear la notificación 
+            // Enviamos el ticket al event, para despues crear la notificación (en el sistema)
             event(new TicketEvent($ticket));
 
+            // Notiifcacion al correo
             event(new TicketCorreoEvent($ticket));
 
-            $telegramService = new TelegramService(); // Crea solo una instancia
-            
-            foreach ($técnicos as $técnico) {
-                $telegramService->sendMessage($técnico->telegram, "Nuevo ticket creado: {$ticket->asunto}");
+           // Notificacion al telegram  
+           foreach ($tecnicos as $tecnico) {
+                $ticketLink = route('detalles_ticket', ['idTicket' => $ticket->id]); // Asumimos que tienes una ruta definida para ver el detalle del ticket
+                $message = "Nuevo ticket creado: {$ticket->asunto}: ({$ticketLink})";
+                $telegramService = app(TelegramService::class);
+                $response = $telegramService->sendMessage($tecnico->telegram, $message);
             }
-
 
 
         }else{
@@ -159,14 +161,19 @@ class TicketsUsuarioController extends Controller
                 $query->whereIn('name', ['Tecnico de soporte', 'Jefe de área']);
             })->get();
 
-            // Enviamos el ticket al event, para despues crear la notificación 
+            // Enviamos el ticket al event, para despues crear la notificación (en el sistema)
             event(new TicketEvent($ticket));
 
+            // Notificacion al correo
             event(new TicketCorreoEvent($ticket));
+
+            // Notificacion al telegram  
             foreach ($tecnicos as $tecnico) {
+                $ticketLink = route('detalles_ticket', ['idTicket' => $ticket->id]); // Asumimos que tienes una ruta definida para ver el detalle del ticket
+                $message = "Nuevo ticket creado: {$ticket->asunto}: ({$ticketLink})";
+                
                 $telegramService = app(TelegramService::class);
-                $response = $telegramService->sendMessage($tecnico->telegram, "Nuevo ticket creado: {$ticket->asunto}");
-               
+                $response = $telegramService->sendMessage($tecnico->telegram, $message);
             }
         }
 

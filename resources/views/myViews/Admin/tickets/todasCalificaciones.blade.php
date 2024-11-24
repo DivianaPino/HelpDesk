@@ -59,7 +59,7 @@
 
                             <!-- Botones - opciones -->
                             <td class="tdStyle">
-                            <a class="btn btn-info" href="#" data-calificacion-id="{{$calificacion->id}}" data-nivel-satisfaccion="{{$calificacion->nivel_satisfaccion}}" 
+                            <a class="btn btn-info" href="#" data-ticket-id="{{$ticket->id}}" data-nivel-satisfaccion="{{$calificacion->nivel_satisfaccion}}" 
                                  data-accion="{{$calificacion->accion}}" data-comentario="{{$calificacion->comentario}}" data-created-at="{{$calificacion->created_at}}">Ver</a>
                             </td>
                         </tr>
@@ -84,7 +84,7 @@
             <div class="modal-body">
 
                 <p style="text-align:right;">Fecha: <span id="fechaCreacion"></span></p>
-                <p>Ticket ID: <span id="calificacionId"></span></p>
+                <p>Ticket ID: <span id="ticketId"></span></p>
                 <p>Nivel de satisfacción: <span id="nivelSatisfaccion"></span></p>
                 <p>Acción: <span id="accion"></span></p>
                 <p>Comentario: </p>
@@ -184,13 +184,13 @@ $(document).ready(function() {
         button.addEventListener('click', function(event) {
             event.preventDefault();
 
-            const calificacionId = this.getAttribute('data-calificacion-id');
+            const ticketId = this.getAttribute('data-ticket-id');
             const nivelSatisfaccion = this.getAttribute('data-nivel-satisfaccion');
             const accion = this.getAttribute('data-accion');
             const comentario = this.getAttribute('data-comentario');
             const fechaCreacion = this.getAttribute('data-created-at');
 
-            document.getElementById('calificacionId').textContent = calificacionId;
+            document.getElementById('ticketId').textContent = ticketId;
             document.getElementById('nivelSatisfaccion').textContent = nivelSatisfaccion;
             document.getElementById('accion').textContent = accion;
             document.getElementById('comentario').textContent = comentario;

@@ -34,7 +34,7 @@
                    <tr>
                       <th>ID</th>
                       <th>Usuario</th>
-                      <th>Clasif.</th>
+                      <th>Área</th>
                       <th>Prioridad</th>
                       <th>Estado</th>
                       <th>Agente</th>
@@ -52,7 +52,7 @@
                     <tr>
                         <td>{{$ticket->id}}</td>
                         <td>{{$ticket->user->name}}</td>
-                        <td>{{$ticket->clasificacion->nombre}}</td>
+                        <td>{{$ticket->area->nombre}}</td>
 
                         <!-- Prioridades -->
                         @if($ticket->prioridad->nombre == "Urgente")

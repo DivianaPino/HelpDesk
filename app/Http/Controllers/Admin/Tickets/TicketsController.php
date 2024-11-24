@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use App\Events\MasInfoEvent;
 use App\Events\MensajeTecnicoEvent;
+use App\Events\TicketAsignadoCorreoEvent;
+use App\Events\TicketReasignadoCorreoEvent;
+use App\Services\TelegramService;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Role;
@@ -64,7 +67,7 @@ class TicketsController extends Controller
         if ($selectedAreaId === '' && $selectedServicioId === '') {
             $tickets = $tickets->get();
         } else {
-            $tickets = $tickets->paginate(10);
+            $tickets =  $tickets->get();
         }
 
       
@@ -143,7 +146,7 @@ public function filtrarTickets(Request $request)
   
         $estadoNuevo = Estado::where('nombre', 'Nuevo')->first();
         // Tickets que pertenecen a las areas del usuario auth con estado "nuevo"
-        $ticketsNuevos = Ticket::whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estadoNuevo->id)->get();
+        $ticketsNuevos = Ticket::whereIn('area_id', $areasUsuario)->where('estado_id', $estadoNuevo->id)->get();
 
         return view('myViews.Admin.tickets.noasignados')->with('tickets', $ticketsNuevos) ;
     }
@@ -192,7 +195,7 @@ public function filtrarTickets(Request $request)
  
         $estadoAbierto = Estado::where('nombre', 'abierto')->first();
         // Tickets que pertenecen a las areas del usuario auth con estado "Abierto"
-        $ticketsAbiertos = Ticket::whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estadoAbierto->id)->get();
+        $ticketsAbiertos = Ticket::whereIn('area_id', $areasUsuario)->where('estado_id', $estadoAbierto->id)->get();
 
         return view('myViews.Admin.tickets.abiertos')->with('tickets', $ticketsAbiertos) ;
     }
@@ -510,7 +513,7 @@ public function filtrarTickets(Request $request)
         
         $estado_enEspera = Estado::where('nombre', 'En espera')->first();
         // Tickets que pertenecen a las areas del usuario auth con estado "Abierto"
-        $tickets_enEspera = Ticket::whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estado_enEspera->id)->get();
+        $tickets_enEspera = Ticket::whereIn('area_id', $areasUsuario)->where('estado_id', $estado_enEspera->id)->get();
 
         return view('myViews.Admin.tickets.enEspera')->with('tickets', $tickets_enEspera) ;
              
@@ -539,7 +542,7 @@ public function filtrarTickets(Request $request)
         
         $fecha_actual=Carbon::now();
 
-        $ticketsVencidos = Ticket::whereIn('clasificacion_id', $areasUsuario)->whereIn('estado_id', $estados)->where('fecha_caducidad', '<', $fecha_actual)->get();
+        $ticketsVencidos = Ticket::whereIn('area_id', $areasUsuario)->whereIn('estado_id', $estados)->where('fecha_caducidad', '<', $fecha_actual)->get();
 
         return view('myViews.Admin.tickets.vencidos')->with('tickets', $ticketsVencidos) ;
     }
@@ -551,7 +554,7 @@ public function filtrarTickets(Request $request)
         
         $estadoResuelto = Estado::where('nombre', 'Resuelto')->first();
         // Tickets que pertenecen a las areas del usuario auth con estado "Abierto"
-        $ticketsResueltos = Ticket::whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estadoResuelto->id)->get();
+        $ticketsResueltos = Ticket::whereIn('area_id', $areasUsuario)->where('estado_id', $estadoResuelto->id)->get();
 
         return view('myViews.Admin.tickets.resueltos')->with('tickets', $ticketsResueltos) ;
     }
@@ -564,7 +567,7 @@ public function filtrarTickets(Request $request)
 
 
         // Filtrar los tickets que fueron creados hace exactamente una semana
-        $ticketsResueltos = Ticket::whereIn('clasificacion_id', $areasUsuario)
+        $ticketsResueltos = Ticket::whereIn('area_id', $areasUsuario)
                                   ->where('estado_id', $estadoResuelto->id)->get();
         
         //  dd($ticketsResueltos);
@@ -607,7 +610,7 @@ public function filtrarTickets(Request $request)
 
             $estadoCerrado= Estado::where('nombre', 'Cerrado')->first();
 
-            $ticketsCerrados = Ticket::whereIn('clasificacion_id', $areasUsuario)
+            $ticketsCerrados = Ticket::whereIn('area_id', $areasUsuario)
                                   ->where('estado_id', $estadoCerrado->id)->get();
 
             return view('myViews.Admin.tickets.cerrados')->with('tickets', $ticketsCerrados) ;
@@ -617,7 +620,7 @@ public function filtrarTickets(Request $request)
 
             $estadoCerrado= Estado::where('nombre', 'Cerrado')->first();
 
-            $ticketsCerrados = Ticket::whereIn('clasificacion_id', $areasUsuario)
+            $ticketsCerrados = Ticket::whereIn('area_id', $areasUsuario)
                                   ->where('estado_id', $estadoCerrado->id)->get();
 
             return view('myViews.Admin.tickets.cerrados')->with('tickets', $ticketsCerrados) ;
@@ -636,7 +639,7 @@ public function filtrarTickets(Request $request)
         
         $estado_reAbierto = Estado::where('nombre', 'Reabierto')->first();
         // Tickets que pertenecen a las areas del usuario auth con estado "Abierto"
-        $tickets_reAbierto = Ticket::whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estado_reAbierto->id)->get();
+        $tickets_reAbierto = Ticket::whereIn('area_id', $areasUsuario)->where('estado_id', $estado_reAbierto->id)->get();
 
         return view('myViews.Admin.tickets.reAbiertos')->with('tickets', $tickets_reAbierto) ;
     }
@@ -672,9 +675,6 @@ public function filtrarTickets(Request $request)
 
         // Obtener el usuario por el id pasado por parametro
         $usuario=User::find($usuarioId); 
-
-        // Cantidad de tickets asignados que tiene el usuario seleccionado
-        $Usuarioticket_Count = Ticket::where('asignado_a', $usuario->name)->count(); 
     
         // ASIGNAR TICKET A USUARIO SELECCIONADO
  
@@ -686,6 +686,16 @@ public function filtrarTickets(Request $request)
         $ticket->asignado_a =$usuario->name ;  // asignamos el nombre del usuario tecnico seleccionado
         $ticket->estado_id= 2;  // cambiar estado a "abierto"
         $ticket->save();  // Guardamos
+
+        // Notificacion al correo
+        event(new TicketAsignadoCorreoEvent($ticket, $usuario));
+
+        // Notificacion al telegram  
+        $ticketLink = route('detalles_ticket', ['idTicket' => $ticket->id]); // Asumimos que tienes una ruta definida para ver el detalle del ticket
+        $message = "Se te ha asignado un ticket: {$ticket->asunto}: ({$ticketLink})";
+        $telegramService = app(TelegramService::class);
+        $response = $telegramService->sendMessage($usuario->telegram, $message);
+        
 
         return redirect()->back()->with('status', 'Ticket asignado exitosamente');
            
@@ -866,6 +876,16 @@ public function filtrarTickets(Request $request)
         $ticket->asignado_a=$tecnico->name;
         $ticket->updated_at= Carbon::now();
         $ticket->save();
+
+        // Notiifcacion al correo
+        event(new TicketReasignadoCorreoEvent($ticket, $tecnico));
+
+
+        // Notificacion al telegram  
+        $ticketLink = route('detalles_ticket', ['idTicket' => $ticket->id]); // Asumimos que tienes una ruta definida para ver el detalle del ticket
+        $message = "Se te ha reasignado un ticket: {$ticket->asunto}: ({$ticketLink})";
+        $telegramService = app(TelegramService::class);
+        $response = $telegramService->sendMessage($tecnico->telegram, $message);
 
         return redirect()->back()->with('status', 'El ticket ha sido reasignado exitosamente!!');
     }

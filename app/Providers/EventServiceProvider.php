@@ -16,6 +16,10 @@ use App\Events\CalificacionEvent;
 use App\Listeners\CalificacionListener;
 use App\Events\TicketCorreoEvent;
 use App\Listeners\TicketCorreoListener;
+use App\Events\TicketAsignadoCorreoEvent;
+use App\Listeners\TicketAsignadoCorreoListener;
+use App\Events\TicketReasignadoCorreoEvent;
+use App\Listeners\TicketReasignadoCorreoListener;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -45,6 +49,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         TicketCorreoEvent::class => [
             TicketCorreoListener::class,
+        ],
+        TicketAsignadoCorreoEvent::class => [
+            TicketAsignadoCorreoListener::class,
+        ],
+        TicketReasignadoCorreoEvent::class => [
+            TicketReasignadoCorreoListener::class,
         ],
 
 

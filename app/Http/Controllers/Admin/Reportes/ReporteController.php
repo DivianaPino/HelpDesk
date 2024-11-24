@@ -14,7 +14,7 @@ use PDF;
 class ReporteController extends Controller
 {
     public function reporte(){
-        $tickets=Ticket::with(['user', 'clasificacion', 'prioridad', 'estado'])->get();
+        $tickets=Ticket::with(['user', 'area', 'prioridad', 'estado'])->get();
         return view('myViews.Admin.reporte.reporte')->with('tickets', $tickets);
     }
 
@@ -32,21 +32,25 @@ class ReporteController extends Controller
          // Si no se proporcionan fechas, muestra todos los tickets
         if (empty($fecha_inicial) || empty($fecha_fin)) {
           
-            $tickets = Ticket::with(['user', 'clasificacion', 'prioridad', 'estado'])->get();
+            $tickets = Ticket::with(['user', 'area', 'prioridad', 'estado'])->get();
 
         // Si las fechas son iguales, filtra los tickets que fueron creados exactamente en esa fecha
         }elseif ($fecha_inicial == $fecha_fin) {
             
             $tickets = Ticket::whereDate('created_at', $fecha_inicial)
-                            ->with(['user', 'clasificacion', 'prioridad', 'estado'])
+                            ->with(['user', 'area', 'prioridad', 'estado'])
                             ->get();
 
         // Si las fechas no son iguales, filtra los tickets que fueron creados entre esas dos fechas    
         }elseif($fecha_inicial != $fecha_fin) {
            
-            $tickets = Ticket::whereBetween('created_at', [$fecha_inicial, $fecha_fin])
-                            ->with(['user', 'clasificacion', 'prioridad', 'estado'])
-                            ->get();
+            $fecha_inicial = Carbon::parse($fecha_inicial)->startOfDay();
+            $fecha_fin = Carbon::parse($fecha_fin)->endOfDay();
+
+            $tickets = Ticket::whereDate('created_at', '>=', $fecha_inicial)
+                ->whereDate('created_at', '<=', $fecha_fin)
+                ->with(['user', 'area', 'prioridad', 'estado'])
+                ->get();
         }
 
         return view('myViews.Admin.reporte.ticketsFiltrados', compact('tickets'));
@@ -62,7 +66,7 @@ class ReporteController extends Controller
         $reporte->save();
 
          // Obtener los tickets
-        $tickets = Ticket::with(['user', 'clasificacion', 'prioridad', 'estado'])->get();
+        $tickets = Ticket::with(['user', 'area', 'prioridad', 'estado'])->get();
 
         // Generar el PDF
         $pdf = PDF::loadView('myViews.Admin.reporte.reporteCompleto', ['tickets' => $tickets, 'idReporte' => $reporte->id]);
@@ -91,21 +95,26 @@ class ReporteController extends Controller
 
          // Si no se proporcionan fechas, muestra todos los tickets
         if (empty($fecha_inicial) || empty($fecha_fin)) {
-            $tickets = Ticket::with(['user', 'clasificacion', 'prioridad', 'estado'])->get();
+            $tickets = Ticket::with(['user', 'area', 'prioridad', 'estado'])->get();
 
         // Si las fechas son iguales, filtra los tickets que fueron creados exactamente en esa fecha
         }elseif ($fecha_inicial == $fecha_fin) {
             
             $tickets = Ticket::whereDate('created_at', $fecha_inicial)
-                            ->with(['user', 'clasificacion', 'prioridad', 'estado'])
+                            ->with(['user', 'area', 'prioridad', 'estado'])
                             ->get();
 
         // Si las fechas no son iguales, filtra los tickets que fueron creados entre esas dos fechas    
         }elseif($fecha_inicial != $fecha_fin) {
            
-            $tickets = Ticket::whereBetween('created_at', [$fecha_inicial, $fecha_fin])
-                            ->with(['user', 'clasificacion', 'prioridad', 'estado'])
-                            ->get();
+            $fecha_inicial = Carbon::parse($fecha_inicial)->startOfDay();
+            $fecha_fin = Carbon::parse($fecha_fin)->endOfDay();
+
+            $tickets = Ticket::whereDate('created_at', '>=', $fecha_inicial)
+                ->whereDate('created_at', '<=', $fecha_fin)
+                ->with(['user', 'area', 'prioridad', 'estado'])
+                ->get();
+
         }
 
         // Generar el PDF

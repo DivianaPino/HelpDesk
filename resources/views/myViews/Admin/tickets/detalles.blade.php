@@ -9,7 +9,7 @@
         <div class="row align-items-stretch no-gutters contact-wrap">
           <div class="col-md-12">
             <div class="form h-100">
-              @if(!is_null($ticket->asignado_a) && $ticket->estado->nombre == "Abierto" )
+              @if(!is_null($ticket->asignado_a) && $ticket->asignado_a != auth()->user()->name && $ticket->estado->nombre == "Abierto")
                 <div class="row  trueAsignado d-flex align-items-center">
                   <i class="fa-solid fa-triangle-exclamation fa-bounce fa-lg" style="color: #d71204;"></i>
                   <p>El ticket ya ha sido asignado</p>
@@ -19,7 +19,7 @@
               <div style="display:flex; justify-content:space-between;">
                   <h3>Detalles de ticket</h3>
                   <div class="content-btnVolver">
-                      <a style="margin-top:8px;" href="#" class="btn btn-dark btn-volver" onclick="return cargarPaginaAnterior();">
+                      <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volver">
                           <i class="fa-solid fa-arrow-left fa-lg"></i>Volver
                       </a>
                   </div>
@@ -159,11 +159,11 @@
     <!-- <script src="../../js/jquery.validate.min.js"></script>
     <script src="../../js/main.js"></script> -->
 
-<script>
+<!-- <script>
     function cargarPaginaAnterior() {
         window.location.href = document.referrer;
         return false;
     }
-</script>
+</script> -->
     
 @stop

@@ -8,22 +8,31 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Carbon\Carbon;
 
-class ticketMailable extends Mailable
+class ticketAsignadoMailable extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $ticket;
 
+    /**
+     * Create a new message instance.
+     *
+     * @return void
+     */
     public function __construct($ticket)
     {
         $this->ticket = $ticket;
     }
 
+    /**
+     * Build the message.
+     *
+     * @return $this
+     */
     public function build()
     {
-        return $this->markdown('emails.ticketMail')   
-        ->subject('Nuevo ticket - ' . Carbon::now()->format('d/M/Y H:i:s'));
+        return $this->markdown('emails.ticketAsignadoMail')   
+        ->subject('Se te ha asignado un ticket - '.Carbon::now()->format('d/M/Y H:i:s'));
 
-        
     }
 }

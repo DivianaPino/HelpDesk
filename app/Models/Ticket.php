@@ -62,10 +62,6 @@ class Ticket extends Model
       return $this->hasOne('App\Models\Calificacion')->latest();
     }
 
-   
-
-
-
     public function ticketHistorials()
     {
         return $this->hasMany('App\Models\TicketHistorial'); 

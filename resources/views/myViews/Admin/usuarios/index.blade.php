@@ -17,6 +17,7 @@
                       <th>ID</th>
                       <th>Nombre</th>
                       <th>Email</th>
+                      <th>Área(s)</th>
                       <th>Rol(es)</th>
                       <th>Acciones</th>
                    </tr>
@@ -24,14 +25,28 @@
 
                <tbody>
                  
-               @foreach ($usuarios as $usuario )
-   
-                          <tr>
-                             <td>{{$usuario->id}}</td>
-                             <td>{{$usuario->name}}</td>
-                             <td>{{$usuario->email}}</td>
-                             <td>{{$usuario->roles()->pluck('name')->implode(', ')}}</td>
-                             <td class="content-btnOpciones" >
+                    @foreach ($usuarios as $usuario )
+
+                        @php
+                            $uniqueAreas = array_unique($usuario->areas->pluck('nombre')->toArray());
+                            $uniqueRoles = array_unique($usuario->roles->pluck('name')->toArray());
+                        @endphp
+    
+                            <tr>
+                                <td>{{$usuario->id}}</td>
+                                <td>{{$usuario->name}}</td>
+                                <td>{{$usuario->email}}</td>
+                                <td>
+                                    @foreach ($uniqueAreas as $area)
+                                        {{ $area }}{{ $loop->last? '' : ', ' }}
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @foreach ($uniqueRoles as $rol)
+                                        {{ $rol }}{{ $loop->last? '' : ', ' }}
+                                    @endforeach
+                                </td>
+                                <td class="content-btnOpciones" >
                                 <a class="btn btn-info"  href="{{route('usuarios.edit', $usuario)}}">Editar rol</a>
                                 <a class="btn btn-warning" href="{{url('asignar_area', $usuario)}}">Asignar área</a>
 
@@ -40,12 +55,12 @@
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">Eliminar</button>
                                 </form> 
-                             </td> 
-                         </tr>
+                                </td> 
+                            </tr>
 
-                  @endforeach
+                    @endforeach
 
-               </tbody>
+                </tbody>
             </table>
         </div>
      </div>

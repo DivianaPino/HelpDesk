@@ -72,7 +72,7 @@ class CalificacionController extends Controller
           
             foreach ($areasUsuario as $area) {
 
-                $ticketsArea=Ticket::where('clasificacion_id', $area)->get();
+                $ticketsArea=Ticket::where('area_id', $area)->get();
        
                
                 foreach ($ticketsArea as $ticket){
@@ -139,7 +139,7 @@ class CalificacionController extends Controller
             $allCalificaciones[] = $calificaciones;
        }
 
-       return view('myViews.jefeArea.calificaciones_misTickets')->with('calificaciones', $allCalificaciones);
+       return view('myViews.jefeArea.calificacionesTickets')->with('calificaciones', $allCalificaciones);
 
     }
 

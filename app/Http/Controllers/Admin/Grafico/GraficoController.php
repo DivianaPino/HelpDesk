@@ -10,7 +10,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Area;
 use App\Models\Ticket;
-use App\Models\Comentario;
+use App\Models\Calificacion;
 
 class GraficoController extends Controller
 {
@@ -20,6 +20,7 @@ class GraficoController extends Controller
         $this->middleware('can:indexGrafico');
     
     }
+
     public function index(){
 
         $areas = Area::all();
@@ -28,56 +29,57 @@ class GraficoController extends Controller
 
         foreach ($areas as $area) {
 
-            $ticketsPorArea = Ticket::where('clasificacion_id', $area->id)->has('comments')->get();
-    
+            $ticketsPorArea = Ticket::where('area_id', $area->id)->has('calificaciones')->get();
+          
             foreach ($ticketsPorArea as $ticket) {
-                $comentariosPorTicket = Comentario::where('ticket_id', $ticket->id)->get();
+                $calificacionesPorTicket = Calificacion::where('ticket_id', $ticket->id)->get();
     
-                // Filtrar comentarios donde bool_reabrir es 0
-                $comentariosFiltrados = $comentariosPorTicket->filter(function ($comentario) {
-                    return $comentario->bool_reabrir == 0;
+                // Filtrar calificaciones donde bool_reabrir es 0
+                $calificacionesFiltradas = $calificacionesPorTicket->filter(function ($calificacion) {
+                    return isset($calificacion->nivel_satisfaccion)
+                        && in_array($calificacion->nivel_satisfaccion, ['Totalmente satisfecho', 'satisfecho', 'neutral']);
                 });
-    
-                // Agrupar los comentarios filtrados por clasificacion_id del ticket actual
-                if (!isset($comentTicketAll[$ticket->clasificacion_id])) {
-                    $comentTicketAll[$ticket->clasificacion_id] = [];
+
+                
+                //Agrupar las calificaciones filtradas por area_id del ticket actual
+                if (!isset($califTicketAll[$ticket->area_id])) {
+                    $califTicketAll[$ticket->area_id] = [];
                 }
-                foreach ($comentariosFiltrados as $comentario) {
-                    $comentTicketAll[$ticket->clasificacion_id][] = $comentario;
+                foreach ($calificacionesFiltradas as $calificacion) {
+                    $califTicketAll[$ticket->area_id][] = $calificacion;
                 }
             }
         }
 
           
-     
-
-
-        // Convertir el array asociativo a una colección para facilitar el manejo
-        $comentTicketAll = collect($comentTicketAll);
+        //Convertir el array asociativo a una colección para facilitar el manejo
+        $califTicketAll = collect($califTicketAll);
 
         $datosDrilldown = [];
 
         $ticketsAreaArray=[];
 
+        foreach($califTicketAll as $claveArea => $valorArea) {
 
-      
-        foreach($comentTicketAll as $claveArea => $valorArea) {
-            $ticketsAreaAll = Ticket::where('clasificacion_id', $claveArea)->get();
+            $ticketsAreaAll = Ticket::where('area_id', $claveArea)->get();
             $ticketsAreaArray[] = $ticketsAreaAll;
-        
+
             // buscar el área
             $area = Area::find($claveArea);
-            // contamos los ticket con comentarios satisfactorios que tiene cada area, los cuales estan en un array
-            $cantidadComentario = count($valorArea);
 
-            foreach($ticketsAreaArray as $ticket) {
-                $cantidadTickets = count($ticket);
-                $porcentaje = ($cantidadComentario  / $cantidadTickets) * 100;
-            }
+            $ticketsAreaCalif = Ticket::where('area_id', $claveArea)->has('calificaciones')->get();
+            $cantidadCalificaciones = count( $ticketsAreaCalif);
+
+            // echo $cantidadCalificaciones;
+
+            $porcentajes = [];
+
+            $cantidadTickets = count($ticketsAreaAll);
+                
+            $porcentaje = ($cantidadCalificaciones / $cantidadTickets) * 100;
         
             // Datos para el gráfico (Área y % de satisfacción)
             $datosGrafico[] = ['name' => $area->nombre, 'y' => floatval($porcentaje), 'drilldown' => $area->nombre];
-          
         
             //arreglo para los datos de drilldown por área
             $datosDrilldown[$claveArea] = ['name' => $area->nombre, 'id' => $area->nombre, 'data' => []];
@@ -91,32 +93,34 @@ class GraficoController extends Controller
             })->get();
         
             foreach($tecnicosArea as $tecnico) {
-                $ticketsTecnico = Ticket::where('clasificacion_id', $area->id)->where('asignado_a', $tecnico->name)->has('comments')->get();
+                $ticketsTecnico = Ticket::where('area_id', $area->id)->where('asignado_a', $tecnico->name)->has('calificaciones')->get();
         
-                $comentariosValidos = [];
+                $calificacionesValidas = [];
                 $nombresTecnicos[] = $tecnico->name;
         
                 foreach($ticketsTecnico as $ticketTec) {
-                    $comentariosSatisf = Comentario::where('ticket_id', $ticketTec->id)->where('bool_reabrir', false)->get();
-                    $comentariosConDatos = $comentariosSatisf->isNotEmpty()? $comentariosSatisf : null;
-        
-                    if ($comentariosConDatos!== null) {
-                        $comentariosValidos[] = $comentariosConDatos;
-                    }
+                    $calificacionesSatisf = Calificacion::where('ticket_id', $ticketTec->id)
+                    ->whereIn('nivel_satisfaccion', ['Totalmente satisfecho', 'satisfecho', 'neutral'])
+                    ->get();
+
+                    $calificacionConDatos =  $calificacionesSatisf->isNotEmpty()?  $calificacionesSatisf : null; 
+                 
+                    if ($calificacionConDatos !== null) {
+                        $calificacionesValidas[] = $calificacionConDatos;
+                    }  
+                
                 }
         
-                $cantidadComentariosValidos = count($comentariosValidos);
-                $porcentajeTicketTecnico = ($cantidadComentariosValidos / $cantidadTickets) * 100;
-        
-                // Agrega los datos del técnico al arreglo correcto basado en la clave de área
+                $cantidadCalificacionesValidas = count($calificacionesValidas);
+                // dd($cantidadCalificacionesValidas);
+               
+                $porcentajeTicketTecnico = ($cantidadCalificacionesValidas / $cantidadTickets) * 100;  
+               
+               // Agrega los datos del técnico al arreglo correcto basado en la clave de área
                 $datosDrilldown[$claveArea]['data'][] = ['name' => $tecnico->name, 'y' => $porcentajeTicketTecnico];
             }
         }
-     
 
-     
-        
-     
         // $jsonData = json_encode($datosDrilldown, JSON_PRETTY_PRINT);
         // dd($jsonData);
 

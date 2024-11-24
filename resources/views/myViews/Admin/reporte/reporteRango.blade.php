@@ -34,9 +34,6 @@
            margin-top:5px;
         }
 
-
-
-
         table{
             max-width: 100%; /* Ajusta esto según sea necesario */
             border-collapse: collapse; /* Para eliminar espacios entre celdas */
@@ -146,7 +143,7 @@
                    <tr>
                       <th>ID</th>
                       <th>Usuario</th>
-                      <th>Clasif.</th>
+                      <th>Área</th>
                       <th>Asunto</th>
                       <th>Agente</th>
                       <th>Prioridad</th>
@@ -162,7 +159,7 @@
                         <tr>
                             <td>{{$ticket->id}}</td>
                             <td>{{$ticket->user->name}}</td>
-                            <td>{{$ticket->clasificacion->nombre}}</td>
+                            <td>{{$ticket->area->nombre}}</td>
 
                             <td>{{$ticket->asunto}}</td>
 
@@ -200,8 +197,8 @@
 
                             <td>{{\Carbon\Carbon::parse($ticket->fecha_inicio)->format('d-m-Y')}}</td>
 
-                            @if ($ticket->respuestas->count() > 0)
-                              <td>{{ \Carbon\Carbon::parse($ticket->respuestas->last()['updated_at']) }}</td>
+                            @if($ticket->estado->nombre == "Resuelto")
+                              <td>{{ \Carbon\Carbon::parse($ticket->updated_at)->format('d-m-Y') }}</td>
                             @else
                               <td>---</td>
                             @endif

@@ -64,13 +64,13 @@
                    <tr>
                       <th>ID</th>
                       <th>Usuario</th>
-                      <th>Clasif.</th>
+                      <th>Área</th>
                       <th>Asunto</th>
                       <th>Agente</th>
                       <th>Prioridad</th>
                       <th>Estado</th>
                       <th>Creado</th>
-                      <th class="th-respondido">Respondido</th>
+                      <th class="th-respondido">Resuelto</th>
                       <th>Caducidad</th>
                       <th>Acciones</th>
                    </tr>
@@ -81,7 +81,7 @@
                         <tr>
                             <td>{{$ticket->id}}</td>
                             <td>{{$ticket->user->name}}</td>
-                            <td>{{$ticket->clasificacion->nombre}}</td>
+                            <td>{{$ticket->area->nombre}}</td>
 
                             <td>{{$ticket->asunto}}</td>
 
@@ -119,8 +119,8 @@
 
                             <td>{{\Carbon\Carbon::parse($ticket->fecha_inicio)->format('d-m-Y')}}</td>
 
-                            @if ($ticket->respuestas->count() > 0)
-                              <td>{{ \Carbon\Carbon::parse($ticket->respuestas->last()['updated_at']) }}</td>
+                            @if($ticket->estado->nombre == "Resuelto")
+                              <td>{{ \Carbon\Carbon::parse($ticket->updated_at)->format('d-m-Y') }}</td>
                             @else
                               <td>---</td>
                             @endif

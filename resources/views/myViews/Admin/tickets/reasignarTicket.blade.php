@@ -194,7 +194,7 @@ function buildTecnicosSelect(jsonTecnicos){
             tecnicosSelect.appendChild(opcion);
         });
     } else {
-        console.error('Los datos de tecnicos no son un arreglo válido:', jsonTecnicos);
+        console.error('Los datos de tecnicos no son válidos:', jsonTecnicos);
     }
 }
 
@@ -204,6 +204,25 @@ function limpiarSelect(select){
         select.remove(1);
     }
 }
+</script>
+
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+         document.getElementById('btn-reasignar').addEventListener('click', function(e) {
+            e.preventDefault();
+            this.disabled = true;
+            this.value = 'Enviando...';
+            this.form.submit();
+         });
+
+         document.addEventListener('ajax:success', function(event) {
+            if (event.detail.status === 200) {
+               alert('Ticket reasignado exitosamente!');
+               document.getElementById('btn-reasignar').disabled = true;
+               document.getElementById('btn-reasignar').value = 'Enviado';
+            }
+         });
+   });
 </script>
 
 

@@ -147,7 +147,7 @@ $(document).ready(function() {
             "infoFiltered":"",
         },
 
-        "order": [[0, 'asc']],
+        "order": [[0, 'desc']],
         "columnDefs": [
             {
                 "targets": 7, 
@@ -173,21 +173,4 @@ $(document).ready(function() {
         });
 });
 </script>
-
-<!-- <script>
-$(document).ready(function() {
-    $.ajax({
-       
-        success: function(response) {
-            console.log(response);
-            // Aquí puedes procesar la respuesta según sea necesario
-        },
-        error: function(xhr, status, error) {
-            console.error('Error al obtener la calificación del ticket:', status, error);
-            // Aquí puedes agregar más detalles de error si es necesario
-        }
-    });
-});
-</script> -->
-
 @stop

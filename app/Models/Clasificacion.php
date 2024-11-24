@@ -9,10 +9,10 @@ class Clasificacion extends Model
 {
     use HasFactory;
 
-    public function tickes()
-    {
-      return $this->hasMany('App\Models\Ticket');
-    }
-}
+//     public function tickes()
+//     {
+//       return $this->hasMany('App\Models\Ticket');
+//     }
+ }
 
 

@@ -95,7 +95,7 @@
                 <div class="content-chat">
                     <div class="row">
                       <div class="col-md-12 form-group mb-3 cuadro2">
-                          CHAT CON EL CLIENTE
+                          CHAT CON EL CLIENTE "{{strtoupper($cliente->name)}}"
                       </div>
                     </div>
 
@@ -104,22 +104,9 @@
                       <div class="card col-md-12 form-group mb-3 overflow-auto chat" id="chat">
                         @if($ticket->mensajes()->exists())
                           @foreach($ticket->mensajes as $msj)
-                            @php
-                              $usuariomsj = App\Models\User::find($msj->user_id);
-                              $rolesuser = $usuariomsj->roles()->get();
-                              $tecnico = false;
-
-                              foreach($rolesuser as $rol) {
-                                  if($rol->name == "Administrador" || $rol->name == "Jefe de área" || $rol->name == "Técnico de soporte") {
-                                      $tecnico = true;
-                                      break; 
-                                  }
-                              }
-                            @endphp
-
-                            @if($tecnico == true)
+                            @if($msj->user_id == Auth::user()->id)
                               @if($msj->mensaje || isset($msj['imagen']))
-                                <div class="mensajesTecnico">
+                                <div class="mensajesRight">
                                     <h5>{{$msj->mensaje}}</h5>
                                     @if(isset($msj['imagen']))
                                         <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
@@ -133,7 +120,7 @@
                               @endif
                             @else
                               @if($msj->mensaje || isset($msj['imagen']))
-                                <div class="mensajesCliente">
+                                <div class="mensajesLeft">
                                     <h5>{{$msj->mensaje}}</h5>
                                     @if(isset($msj['imagen']))
                                         <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
@@ -194,7 +181,7 @@
                 
                 <div class="content-responder" id="btnEnviarMsj">
                   <div>
-                    <input type="submit" value="Enviar mensaje" class="btn-primary rounded-0 py-2 px-4 btnResponder" >
+                    <input type="submit" id="submitButton" value="Enviar mensaje" class="btn-primary rounded-0 py-2 px-4 btnResponder" >
                   </div>
                 </div>
 
@@ -268,19 +255,20 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('contactForm').addEventListener('submit', function(event) {
         event.preventDefault(); // Evita que el formulario se envíe por defecto
 
-
-
+        
+        document.getElementById('submitButton').value = 'Enviando...'; 
+        document.getElementById('submitButton').disabled = true; 
+        
         var formData = new FormData(this);
 
-        fetch('/mensaje/tecnico/ticket/{{$ticket->id}}', { // Asume que este es el endpoint correcto
+        fetch('/mensaje/tecnico/ticket/{{$ticket->id}}', { 
             method: 'POST',
             body: formData
         })
         .then(response => response.json())
         .then(data => {
 
-          // console.log(data);
-
+          console.log(data);
           if (data.status === 'success') {
                 // Mostrar mensaje de éxito
                 let successMessageElement = document.createElement('p');
@@ -334,11 +322,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 messageElement.innerHTML += `<span class="fecha_mensajes">${fechaActual}</span>`;
                 $('#sinMsj').hide();
 
-                if (data.esTecnico) {
-                messageElement.classList.add('mensajesTecnico');
-                } else {
-                  messageElement.classList.add('mensajesCliente');
-                }
+                messageElement.classList.add('mensajesRight');
+               
               }
          
 
@@ -349,6 +334,8 @@ document.addEventListener("DOMContentLoaded", function() {
             // Limpiar los campos de entrada
             document.getElementById('mensaje').value = ''; // Limpia el textarea de mensaje
             document.getElementById('imagenMsj').value = ''; // Limpia el input de imagen
+            document.getElementById('submitButton').value = 'Enviar mensaje'; 
+            document.getElementById('submitButton').disabled = false; 
         })
         .catch(error => console.error('Error:', error));
 
@@ -356,7 +343,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
-
 <script>
   $(document).ready(function() {
       checkTicketStatus();

@@ -97,7 +97,7 @@
                 <div class="content-chat">
                     <div class="row">
                       <div class="col-md-12 form-group mb-3 cuadro2">
-                          CHAT CON EL TÉCNICO DE SOPORTE
+                          CHAT CON EL TÉCNICO DE SOPORTE "{{strtoupper($tecnico->name)}}"
                       </div>
                     </div>
 
@@ -106,36 +106,9 @@
                       <div class="card col-md-12 form-group mb-3 overflow-auto chat" id="chat">
                         @if($ticket->mensajes()->exists())
                           @foreach($ticket->mensajes as $msj)
-                            @php
-                              $usuariomsj = App\Models\User::find($msj->user_id);
-                              $rolesuser = $usuariomsj->roles()->get();
-                              $tecnico = false;
-
-                              foreach($rolesuser as $rol) {
-                                  if($rol->name == "Administrador" || $rol->name == "Jefe de área" || $rol->name == "Técnico de soporte") {
-                                      $tecnico = true;
-                                      break; 
-                                  }
-                              }
-                            @endphp
-
-                            @if($tecnico == true)
+                            @if($msj->user_id == Auth::user()->id)
                               @if($msj->mensaje || isset($msj['imagen']))
-                                <div class="mensajesTecnico">
-                                    <h5>{{$msj->mensaje}}</h5>
-                                    @if(isset($msj['imagen']))
-                                        <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
-                                        <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" style="font-size:12px;" download>Descargar Imagen</a>   
-                                    @else
-                                        <img src="{{asset('images/msjTecnico/default.png')}}" class="img-fluid img-rounded" width="60px" hidden> 
-                                        <a href="{{ asset('images/msjTecnico/default.png') }}" download hidden>Descargar Imagen</a>   
-                                    @endif    
-                                    <span class="fecha_mensajes">{{$msj->created_at->format('d-m-Y')}}, {{$msj->created_at->format('H:i:s')}} </span>
-                                </div>
-                              @endif
-                            @else
-                              @if($msj->mensaje || isset($msj['imagen']))
-                                <div class="mensajesCliente">
+                                <div class="mensajesRight">
                                     <h5>{{$msj->mensaje}}</h5>
                                     @if(isset($msj['imagen']))
                                         <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
@@ -143,6 +116,20 @@
                                     @else
                                         <img src="{{asset('images/msjCliente/default.png')}}" class="img-fluid img-rounded" width="60px" hidden> 
                                         <a href="{{ asset('images/msjCliente/default.png') }}" download hidden>Descargar Imagen</a>   
+                                    @endif    
+                                    <span class="fecha_mensajes">{{$msj->created_at->format('d-m-Y')}}, {{$msj->created_at->format('H:i:s')}} </span>
+                                </div>
+                              @endif
+                            @else
+                              @if($msj->mensaje || isset($msj['imagen']))
+                                <div class="mensajesLeft">
+                                    <h5>{{$msj->mensaje}}</h5>
+                                    @if(isset($msj['imagen']))
+                                        <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
+                                        <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" style="font-size:12px;" download>Descargar Imagen</a>   
+                                    @else
+                                        <img src="{{asset('images/msjTecnico/default.png')}}" class="img-fluid img-rounded" width="60px" hidden> 
+                                        <a href="{{ asset('images/msjTecnico/default.png') }}" download hidden>Descargar Imagen</a>   
                                   @endif    
                                   <span class="fecha_mensajes">{{$msj->created_at->format('d-m-Y')}}, {{$msj->created_at->format('H:i:s')}}</span>
                                 </div>
@@ -192,7 +179,7 @@
                   
                   <div class="content-responder" id="botonEnviarMensaje">
                     <div>
-                      <input type="submit" value="Enviar mensaje" class="btn-primary rounded-0 py-2 px-4 btnResponder" >
+                      <input type="submit" id="submitButton" value="Enviar mensaje" class="btn-primary rounded-0 py-2 px-4 btnResponder" >
                     </div>
                   </div>
 
@@ -240,7 +227,7 @@
                       
                       <div class="contentResponderResuelto">
                           <div>
-                              <input type="submit" value="Enviar" class="btn-primary rounded-0 py-2 px-4 btnResponder" id="btnResponder_resuelto">
+                              <input type="submit" id="btnResponder_resuelto"  value="Enviar" class="btn-primary rounded-0 py-2 px-4 btnResponder">
                           </div>
                       </div>
                       
@@ -365,7 +352,11 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('contactForm').addEventListener('submit', function(event) {
     event.preventDefault(); // Evita que el formulario se envíe por defecto
 
-    
+      document.getElementById('submitButton').value = 'Enviando...'; 
+      document.getElementById('submitButton').disabled = true; 
+      document.getElementById('btnResponder_resuelto').disabled = true; 
+      document.getElementById('btnResponder_resuelto').value = 'Enviando...'; 
+  
     
         var formData = new FormData(this);
         toggleFormElements(true);
@@ -434,11 +425,7 @@ document.addEventListener("DOMContentLoaded", function() {
               messageElement.innerHTML += `<span class="fecha_mensajes">${fechaActual}</span>`;
                 $('#sinMsj').hide();
 
-                if (data.esTecnico) {
-                  messageElement.classList.add('mensajesTecnico');
-                } else {
-                  messageElement.classList.add('mensajesCliente');
-                }
+                messageElement.classList.add('mensajesRight');
             }
 
             if(data.accion === 'Reabrirlo'){
@@ -471,8 +458,12 @@ document.addEventListener("DOMContentLoaded", function() {
             // Limpiar los campos de entrada
             document.getElementById('mensaje').value = ''; // Limpia el textarea de mensaje
             document.getElementById('imagenMsj').value = ''; // Limpia el input de imagen
-            
-
+            document.getElementById('submitButton').value = 'Enviar mensaje'; 
+            document.getElementById('submitButton').disabled = false; 
+            document.getElementById('btnResponder_resuelto').disabled = false; 
+            document.getElementById('btnResponder_resuelto').value = 'Enviar'; 
+  
+           
             toggleFormElements(false);
 
         })
@@ -499,6 +490,7 @@ function toggleFormElements(disable) {
   }
   
 </script>
+
 <script>
   $(document).ready(function() {
       checkTicketStatus();
@@ -508,13 +500,17 @@ function toggleFormElements(disable) {
   });
 
   function checkTicketStatus() {
+
+
       $.ajax({
           url: '{{ route('ticketEstado', $idTicket) }}',
           type: 'GET',
 
           success: function(response) {
 
-            console.log(response);
+            // console.log(response);
+
+            
 
               if (response.estado === 'Resuelto') {
 
@@ -542,7 +538,7 @@ function toggleFormElements(disable) {
                   $('#txtTicketCerrado').hide();
               }
 
-          
+
           },
           error: function(xhr, status, error) {
               console.error("Error al obtener el estado del ticket:", error);

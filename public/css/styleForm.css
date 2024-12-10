@@ -673,7 +673,7 @@ body {
   margin-bottom: 0 !important;
 }
 
-.mensajesTecnico{
+.mensajesRight{
   text-align: right;
   background-color:#66d887;
   margin: 10px;
@@ -681,7 +681,7 @@ body {
   border-radius: 5px;
 }
 
-.mensajesCliente{
+.mensajesLeft{
   text-align: left;
   background-color:#c7cac8;
   margin: 10px;

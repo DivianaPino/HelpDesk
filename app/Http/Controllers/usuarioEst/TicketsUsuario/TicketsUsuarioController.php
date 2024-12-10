@@ -12,6 +12,8 @@ use App\Events\CalificacionEvent;
 use App\Events\TicketEvent;
 use App\Events\TicketCorreoEvent;
 use App\Events\MensajeClienteEvent;
+use App\Events\MsjClienteCorreoEvent;
+use App\Events\CalificacionCorreoEvent;
 use App\Services\TelegramService;
 use Carbon\Carbon;
 use App\Models\Ticket;
@@ -136,7 +138,7 @@ class TicketsUsuarioController extends Controller
 
            // Notificacion al telegram  
            foreach ($tecnicos as $tecnico) {
-                $ticketLink = route('detalles_ticket', ['idTicket' => $ticket->id]); // Asumimos que tienes una ruta definida para ver el detalle del ticket
+                $ticketLink = route('detalles_ticket', ['idTicket' => $ticket->id]); 
                 $message = "Nuevo ticket creado: {$ticket->asunto}: ({$ticketLink})";
                 $telegramService = app(TelegramService::class);
                 $response = $telegramService->sendMessage($tecnico->telegram, $message);
@@ -169,7 +171,7 @@ class TicketsUsuarioController extends Controller
 
             // Notificacion al telegram  
             foreach ($tecnicos as $tecnico) {
-                $ticketLink = route('detalles_ticket', ['idTicket' => $ticket->id]); // Asumimos que tienes una ruta definida para ver el detalle del ticket
+                $ticketLink = route('detalles_ticket', ['idTicket' => $ticket->id]); 
                 $message = "Nuevo ticket creado: {$ticket->asunto}: ({$ticketLink})";
                 
                 $telegramService = app(TelegramService::class);
@@ -196,14 +198,18 @@ class TicketsUsuarioController extends Controller
 
     public function ver_ticketReportado($idTicket){
         $ticket= Ticket::find($idTicket);
-        return view('myViews.usuarioEst.ticketReportado')->with(['ticket'=> $ticket, 'idTicket' => $idTicket]);
+        $tecnico=User::where('name', $ticket->asignado_a)->first();
+        return view('myViews.usuarioEst.ticketReportado', compact('ticket', 'idTicket', 'tecnico'));
     }
 
     public function guardar_mensajeCliente(Request $request, $idTicket){
 
        $tick=Ticket::find($idTicket);
        $estadoTick=$tick->estado->nombre;
-
+       $cliente=Auth::user();
+       $tecnico=User::where('name', $tick->asignado_a)->first();
+       $prioridad = Prioridad::find($tick->prioridad_id); // Obtener la prioridad por ID
+       $tiempoResolucion = $prioridad->tiempo_resolucion;
 
        if($estadoTick == "Resuelto"){
 
@@ -241,8 +247,16 @@ class TicketsUsuarioController extends Controller
                     $tick->save();
                 }
 
-        
-                event(new CalificacionEvent($calificacion));
+                // Notificación en el sistema del técnico
+                CalificacionEvent::dispatch($calificacion);
+                // Notificación al correo del técnico
+                CalificacionCorreoEvent::dispatch($calificacion, $tecnico, $idTicket);
+
+                // Notificación al telegram del técnico
+                $ticketLink = route('form_msjTecnico', ['idTicket' => $tick->id]); 
+                $message = "El cliente {$cliente->name} ha calificado la asistencia del ticket: {$calificacion->nivel_satisfaccion}: ({$ticketLink})";
+                $telegramService = app(TelegramService::class);
+                $response = $telegramService->sendMessage($tecnico->telegram, $message);
 
 
                 return response()->json([
@@ -264,26 +278,16 @@ class TicketsUsuarioController extends Controller
             
        }else{
 
-            $esTecnico = false; 
-            $usuario = Auth::user();
-            $roles = $usuario->roles()->get();
-            foreach ($roles as $role) {
-                if ($role->name == "Administrador" || $role->name == "Jefe de área" || $role->name == "Técnico de soporte") {
-                    $esTecnico = true;
-                    break;
-                }
-            }
-        
             try{
-                        $validator = $request->validate([
-                                'mensaje' =>'required',
-                                'imagen' => 'image',
-                            ],
-                            [
-                                'mensaje.required' => 'El campo mensaje es requerido',
-                                'imagen.image' => 'El archivo debe ser una imagen',
-                            ]
-                        );
+                    $validator = $request->validate([
+                            'mensaje' =>'required',
+                            'imagen' => 'image',
+                        ],
+                        [
+                            'mensaje.required' => 'El campo mensaje es requerido',
+                            'imagen.image' => 'El archivo debe ser una imagen',
+                        ]
+                    );
 
 
                     if($request->hasFile('imagen')){
@@ -302,12 +306,24 @@ class TicketsUsuarioController extends Controller
                         $mensaje->imagen=$filename;
                         $mensaje->save();
 
-                        event(new MensajeClienteEvent($mensaje));
+                        $ticket=Ticket::find($idTicket);
+                        $ticket->fecha_caducidad=Carbon::now()->addDays($tiempoResolucion);
+                        $ticket->save();
+
+                        //Notificación al sistema del técnico
+                        MensajeClienteEvent::dispatch($mensaje);
+                        //Notificación al correo del técnico
+                        MsjClienteCorreoEvent::dispatch($mensaje, $cliente, $tecnico,$idTicket);
+
+                        // Notificación al telegram del técnico
+                        $ticketLink = route('form_msjTecnico', ['idTicket' => $ticket->id]); 
+                        $message = "Nuevo mensaje del cliente {$cliente->name}: {$mensaje->mensaje}: ({$ticketLink})";
+                        $telegramService = app(TelegramService::class);
+                        $response = $telegramService->sendMessage($tecnico->telegram, $message);
 
                         return response()->json([
                             'mensaje' => $request->mensaje,
                             'imagen' => $filename,
-                            'esTecnico' => $esTecnico,
                             'status' => 'success',
                             'msjSuccess'  => 'Mensaje enviado exitosamente.',
                         
@@ -321,12 +337,26 @@ class TicketsUsuarioController extends Controller
                         $mensaje->mensaje=$request->mensaje;
                         $mensaje->save();
 
-                        event(new MensajeClienteEvent($mensaje));
+                        $ticket=Ticket::find($idTicket);
+                        $ticket->fecha_caducidad=Carbon::now()->addDays($tiempoResolucion);
+                        $ticket->save();
+
+                     
+                        // Notificación en el sistema del técnico
+                        MensajeClienteEvent::dispatch($mensaje);
+                         // Notificación al correo del técnico
+                        MsjClienteCorreoEvent::dispatch($mensaje, $cliente, $tecnico,$idTicket);
+
+                        // Notificación al telegram del técnico
+                        $ticketLink = route('form_msjTecnico', ['idTicket' => $ticket->id]); 
+                        $message = "Nuevo mensaje del cliente {$cliente->name}: {$mensaje->mensaje}: ({$ticketLink})";
+                        $telegramService = app(TelegramService::class);
+                        $response = $telegramService->sendMessage($tecnico->telegram, $message);
+                        
 
                         
                         return response()->json([
                             'mensaje' => $request->mensaje,
-                            'esTecnico' => $esTecnico,
                             'status' => 'success',
                             'msjSuccess'  => 'Mensaje enviado exitosamente.',
                         ]);

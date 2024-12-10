@@ -66,9 +66,15 @@
                             <td>{{\Carbon\Carbon::parse($ticket->fecha_inicio)->format('d-m-Y')}}</td>
                             <td>{{\Carbon\Carbon::parse($ticket->updated_at)}}</td>
 
-                             <td>
-                                <a class="btn btn-info" href="/historial/ticket/{{$ticket->id}}" >Ver</a>
-                             </td>
+                             @if($ticket->user_id == Auth::user()->id)
+                              <td >
+                                 <a class="btn btn-info" href="/ticket/reportado/{{$ticket->id}}" >Ver</a>
+                              </td>
+                             @else
+                              <td>
+                                 <a class="btn btn-info" href="/form/mensaje/tec/ticket/{{$ticket->id}}" >Ver</a>
+                              </td>
+                             @endif
 
                         </tr>
 

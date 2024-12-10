@@ -65,9 +65,17 @@
                             <td>{{\Carbon\Carbon::parse($ticket->fecha_caducidad)}}</td>
 
                             <!-- Botones - opciones -->
-                            <td>
-                               <a class="btn btn-info" href="/detalles/{{$ticket->id}}" >Ver</a>
-                            </td>
+                              <td>
+                                 @if($ticket->user_id == Auth::user()->id)
+                                    <a class="btn btn-info" href="/ticket/reportado/{{$ticket->id}}" >Ver</a>
+                                 @else
+                                    <a class="btn btn-info" href="/form/mensaje/tec/ticket/{{$ticket->id}}" >Ver</a>
+                                 @endif
+                                 
+                                 @can('reasignar_ticket')
+                                    <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                                 @endcan
+                              </td>
                         </tr>
 
                   @endforeach

@@ -102,23 +102,42 @@
                               <td>---</td>
                             @endif
 
+                            @php
+                                  $prioridad = App\Models\Prioridad::find($ticket->prioridad_id); // Obtener la prioridad por ID
+                                  $tiempoResolucion = $prioridad->tiempo_resolucion;
+                                  $ultimoMensaje = $ticket->mensajes()->latest()->first();
+                            @endphp 
+                              
                             @if($ticket->estado->nombre == "En espera")
-                              <td>En pausa</td>
+                                  @if ($ultimoMensaje && $ultimoMensaje->user_id == $ticket->asignado_a)
+                                      <td>En pausa</td>
+                                  @else
+                                   <td>{{\Carbon\Carbon::parse($ticket->fecha_caducidad)->format('d-m-Y')}}</td>
+                                  @endif
                             @else
-                              <td>{{\Carbon\Carbon::parse($ticket->fecha_caducidad)->format('d-m-Y')}}</td>
+                            <td>{{\Carbon\Carbon::parse($ticket->fecha_caducidad)->format('d-m-Y')}}</td>
                             @endif
+                          
                              
                             <td class="content-btnOpciones" >
                               @if($ticket->estado->nombre == "Nuevo")
                                 <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
                               @elseif($ticket->estado->nombre == "Abierto" ||$ticket->estado->nombre == "En espera" || $ticket->estado->nombre == "Reabierto" )
                               
-                                    <a class="btn btn-info" href="/form/mensaje/tec/ticket/{{$ticket->id}}">Ver</a>
+                                @if($ticket->user_id == Auth::user()->id)
+                                  <a class="btn btn-info" href="/ticket/reportado/{{$ticket->id}}" >Ver</a>
+                                @else
+                                  <a class="btn btn-info" href="/form/mensaje/tec/ticket/{{$ticket->id}}" >Ver</a>
+                                @endif
                              
-                                <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                                  <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
                               @elseif( $ticket->estado->nombre == "Resuelto" || $ticket->estado->nombre == "Cerrado")
                                
-                                    <a class="btn btn-info" href="/form/mensaje/tec/ticket/{{$ticket->id}}">Ver</a>
+                                @if($ticket->user_id == Auth::user()->id)
+                                  <a class="btn btn-info" href="/ticket/reportado/{{$ticket->id}}" >Ver</a>
+                                @else
+                                  <a class="btn btn-info" href="/form/mensaje/tec/ticket/{{$ticket->id}}" >Ver</a>
+                                @endif
                                 
                               @endif
 

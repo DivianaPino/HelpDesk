@@ -121,7 +121,7 @@ Route::middleware([
     // Route::get('/ticket/{idticket}/historial', [TicketsUsuarioController::class, 'historial'])->name('historial');
     // Route::get('/ticket/{idticket}/mensaje/{idmensaje}', [TicketsUsuarioController::class, 'verMensaje'])->name('ver_mensaje');
     // Route::get('/ticket/{idticket}/respuesta/{idrespuesta}', [TicketsUsuarioController::class, 'verRespuesta'])->name('ver_respuesta');
-    Route::get('/ticket/reportado/{idTicket}', [TicketsUsuarioController::class, 'ver_ticketReportado'])->name(' ver_ticketReportado');
+    Route::get('/ticket/reportado/{idTicket}', [TicketsUsuarioController::class, 'ver_ticketReportado'])->name('ver_ticketReportado');
     Route::post('/mensaje/cliente/ticket/{idTicket}', [TicketsUsuarioController::class, 'guardar_mensajeCliente'] )->name('guardar_mensajeCliente');
     Route::post('/comentar/respuesta/{idrespuesta}/ticket/{idTicket}', [TicketsUsuarioController::class, 'comentar_Respuesta'])->name('comentar_Respuesta');
 

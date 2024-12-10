@@ -12,6 +12,8 @@ use App\Events\MasInfoEvent;
 use App\Events\MensajeTecnicoEvent;
 use App\Events\TicketAsignadoCorreoEvent;
 use App\Events\TicketReasignadoCorreoEvent;
+use App\Events\MsjTecnicoCorreoEvent;
+use App\Events\TicketResueltoCorreoEvent;
 use App\Services\TelegramService;
 use Carbon\Carbon;
 use App\Models\User;
@@ -211,11 +213,10 @@ public function filtrarTickets(Request $request)
     public function form_msjTecnico($idTicket){
 
         $ticket=Ticket::find($idTicket);
+        $cliente=User::find($ticket->user_id);
         session(['previous_url' => url()->previous()]);
 
-        
-
-        return view('myViews.Admin.tickets.form_msjTecnico')->with(['ticket'=> $ticket, 'idTicket' => $idTicket]);
+        return view('myViews.Admin.tickets.form_msjTecnico', compact('ticket', 'idTicket','cliente'));
   
         // if (Mensaje::where('ticket_id', $idTicket)->exists()) {
         //     return view('myViews.Admin.tickets.form_respuesta')->with(['ticket'=> $ticket, 'idTicket' => $idTicket]);
@@ -233,16 +234,10 @@ public function filtrarTickets(Request $request)
     
     public function guardar_mensajeTecnico(Request $request, $idTicket){
 
-        $esTecnico = false; 
-        $usuario = Auth::user();
-        $roles = $usuario->roles()->get();
-        foreach ($roles as $role) {
-            if ($role->name == "Administrador" || $role->name == "Jefe de área" || $role->name == "Técnico de soporte") {
-                $esTecnico = true;
-                break;
-            }
-        }
-
+       
+        $ticket=Ticket::find($idTicket);
+        $cliente=User::find($ticket->user_id);
+        $tecnico = Auth::user();
 
         if($request->input('resuelto') === 'on') {
 
@@ -276,12 +271,20 @@ public function filtrarTickets(Request $request)
                     $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
                     $ticket->save();
 
-                    event(new MensajeTecnicoEvent($mensaje));
+                    // Notificacion al sistema del cliente
+                    MensajeTecnicoEvent::dispatch($mensaje);
+                    //  Notificacion al correo del cliente
+                    TicketResueltoCorreoEvent::dispatch($mensaje, $cliente, $tecnico,$idTicket);
+
+                    // Notificación al  telegram del cliente
+                    $ticketLink = route('ver_ticketReportado', ['idTicket' => $ticket->id]); 
+                    $message = "Nuevo mensaje del técnico {$tecnico->name}: {$mensaje->mensaje}: ({$ticketLink})";
+                    $telegramService = app(TelegramService::class);
+                    $response = $telegramService->sendMessage($cliente->telegram, $message);
 
                     return response()->json([
                         'mensaje' => $request->mensaje,
                         'imagen' => $filename,
-                        'esTecnico' => $esTecnico,
                         'status' => 'success',
                         'msjSuccess'  => 'Ticket resuelto!, el cliente calificará la asistencia.',
                     ]);
@@ -298,11 +301,19 @@ public function filtrarTickets(Request $request)
                     $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
                     $ticket->save();
 
-                    event(new MensajeTecnicoEvent($mensaje));
+                    // Notificación al sistema del cliente
+                    MensajeTecnicoEvent::dispatch($mensaje);
+                    // Notificación al correo del cliente
+                    TicketResueltoCorreoEvent::dispatch($mensaje, $cliente, $tecnico,$idTicket);
+
+                    // Notificación al telegram del cliente
+                    $ticketLink = route('ver_ticketReportado', ['idTicket' => $ticket->id]); 
+                    $message = "Nuevo mensaje del técnico {$tecnico->name}: {$mensaje->mensaje}: ({$ticketLink})";
+                    $telegramService = app(TelegramService::class);
+                    $response = $telegramService->sendMessage($cliente->telegram, $message);
 
                     return response()->json([
                         'mensaje' => $request->mensaje,
-                        'esTecnico' => $esTecnico,
                         'status' => 'success',
                         'msjSuccess'  => 'Ticket resuelto!, el cliente calificará la asistencia.',
                     ]);
@@ -317,8 +328,8 @@ public function filtrarTickets(Request $request)
                 ], 422);
             }
 
-        }else{
-
+        }else{    
+           
             try{
                 $validator = $request->validate([
                         'mensaje' =>'required',
@@ -333,6 +344,8 @@ public function filtrarTickets(Request $request)
 
                 if($request->hasFile('imagen')){
 
+                    
+
                     $file = $request->file('imagen'); // obtenemos el archivo
                     $random_name = time(); // le colocamos a la imagen un nombre random y con el tiempo y fecha actual 
                     $destinationPath = 'images/msjTecnico/'; // path de destino donde estaran las imagenes subidas 
@@ -340,55 +353,68 @@ public function filtrarTickets(Request $request)
                     $filename = $random_name.'-'.$file->getClientOriginalName(); //concatemos el nombre random creado anteriormente con el nombre original de la imagen (para evitar nombres repetidos)
                     $uploadSuccess = $request->file('imagen')->move($destinationPath, $filename); //subimos y lo enviamos al path de Destin
 
-                 
+                  
                     $mensaje= new Mensaje();
-                    $mensaje->user_id = Auth::user()->id;
+                    $mensaje->user_id = $tecnico->id;
                     $mensaje->ticket_id = $idTicket;
                     $mensaje->mensaje=$request->mensaje;
                     $mensaje->imagen=$filename;
                     $mensaje->save();
 
+                    // Notificación al sistema del cliente
+                    MensajeTecnicoEvent::dispatch($mensaje);
+                    // Notificación al corrreo del cliente
+                    MsjTecnicoCorreoEvent::dispatch($mensaje, $cliente, $tecnico,$idTicket);
+
+                     // Notificación al  telegram del cliente
+                    $ticketLink = route('ver_ticketReportado', ['idTicket' => $ticket->id]); 
+                    $message = "Nuevo mensaje del técnico {$tecnico->name}: {$mensaje->mensaje}: ({$ticketLink})";
+                    $telegramService = app(TelegramService::class);
+                    $response = $telegramService->sendMessage($cliente->telegram, $message);
                     
-
-                    event(new MensajeTecnicoEvent($mensaje));
-
                     return response()->json([
                         'mensaje' => $request->mensaje,
                         'imagen' => $filename,
-                        'esTecnico' => $esTecnico,
                         'status' => 'success',
                         'msjSuccess'  => 'Mensaje enviado exitosamente.',
                     ]);
 
                 }else{  
 
+                   
                     $mensaje= new Mensaje();
-                    $mensaje->user_id =  Auth::user()->id;
+                    $mensaje->user_id =  $tecnico->id;
                     $mensaje->ticket_id = $idTicket;
                     $mensaje->mensaje=$request->mensaje;
                     $mensaje->save();
 
-                    $tick = Ticket::find($idTicket);
+                    if($ticket->mensajes){
 
-                    if($tick->mensajes){
-
-                        foreach($tick->mensajes as $msj){
+                        foreach($ticket->mensajes as $msj){
                           if($msj->user->hasAnyRole(['Administrador', 'Jefe de área', 'Técnico de soporte'])){
-                              $tick->estado_id = Estado::where('nombre', 'En espera')->first()->id;
+                              $ticket->estado_id = Estado::where('nombre', 'En espera')->first()->id;
                             //    $estadoEnespera=$tick->estado_id ;
-                              $tick->save();
+                              $ticket->save();
                               break;
                           }
                       }
                     }
 
+                    // Notificación al sistema del cliente
+                    MensajeTecnicoEvent::dispatch($mensaje);
+                    // Notificación al correo del cliente
+                    MsjTecnicoCorreoEvent::dispatch($mensaje, $cliente, $tecnico,$idTicket);
 
-                    event(new MensajeTecnicoEvent($mensaje));
+                   // Notificación al telegram del cliente
+                   $ticketLink = route('ver_ticketReportado', ['idTicket' => $ticket->id]); 
+                   $message = "Nuevo mensaje del técnico {$tecnico->name}: {$mensaje->mensaje}: ({$ticketLink})";
+                   $telegramService = app(TelegramService::class);
+                   $response = $telegramService->sendMessage($cliente->telegram, $message);
 
-                    
+
+
                     return response()->json([
                         'mensaje' => $request->mensaje,
-                        'esTecnico' => $esTecnico,
                         'status' => 'success',
                         'msjSuccess'  => 'Mensaje enviado exitosamente.',
                     ]);
@@ -563,72 +589,12 @@ public function filtrarTickets(Request $request)
     {
         $usuario= Auth::user();
         $areasUsuario=$usuario->areas()->pluck('area_id');
-        $estadoResuelto = Estado::where('nombre', 'Resuelto')->first();
+       
+        $estadoCerrado= Estado::where('nombre', 'Cerrado')->first();
 
+        $ticketsCerrados = Ticket::whereIn('area_id', $areasUsuario)->where('estado_id', $estadoCerrado->id)->get();
 
-        // Filtrar los tickets que fueron creados hace exactamente una semana
-        $ticketsResueltos = Ticket::whereIn('area_id', $areasUsuario)
-                                  ->where('estado_id', $estadoResuelto->id)->get();
-        
-        //  dd($ticketsResueltos);
-            
-        $ticketsModificados=[];
-
-        // Verificar que $ticketsResueltos tenga datos 
-        if($ticketsResueltos->isNotEmpty()){
-            foreach($ticketsResueltos as $ticket){
-
-                $ticket=Ticket::find($ticket->id);
-                // dd($ticketOtro);
-                $createdAt = $ticket->created_at;
-    
-        
-                $carbonCreatedAt = Carbon::parse($createdAt);
-    
-                // Suma las horas de una semana
-                $newDate = $carbonCreatedAt->addWeek();
-    
-                if ($ticket->comments()->exists()) {
-                   $comentariosTicket=Comentario::where('ticket_id', $ticket->id)->get();
-                    foreach($comentariosTicket as $comentario){
-                        if($comentario->reabrir == 0){
-                            $ticket->estado_id= 7;
-                            $ticketsModificados[] = $ticket; 
-                            $ticket->save();
-                        }
-                    }
-                } else {
-                    if(Carbon::now() > $newDate){
-                        $ticket->estado_id= 7;
-                        $ticketsModificados[] = $ticket;
-                        $ticket->save();
-                    }
-                }
-               
-            }
-
-
-            $estadoCerrado= Estado::where('nombre', 'Cerrado')->first();
-
-            $ticketsCerrados = Ticket::whereIn('area_id', $areasUsuario)
-                                  ->where('estado_id', $estadoCerrado->id)->get();
-
-            return view('myViews.Admin.tickets.cerrados')->with('tickets', $ticketsCerrados) ;
-
-
-        }else{
-
-            $estadoCerrado= Estado::where('nombre', 'Cerrado')->first();
-
-            $ticketsCerrados = Ticket::whereIn('area_id', $areasUsuario)
-                                  ->where('estado_id', $estadoCerrado->id)->get();
-
-            return view('myViews.Admin.tickets.cerrados')->with('tickets', $ticketsCerrados) ;
-        }
-
-     
-        
-
+        return view('myViews.Admin.tickets.cerrados')->with('tickets', $ticketsCerrados) ;
 
     }
 

@@ -15,12 +15,12 @@
 
             @if($esTecnico)
                 <div class="content-btnVolver">
-                    <a style="margin-top:8px;" href="/form/mensaje/tec/ticket/{{ $idTicket }}" class="btn btn-dark btn-volver" onclick="cargarNuevaPagina()">
+                    <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volver">
                     <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
                 </div>
             @else
                <div class="content-btnVolver">
-                    <a style="margin-top:8px;" href="/ticket/reportado/{{ $idTicket }}" class="btn btn-dark btn-volver" onclick="cargarNuevaPagina()">
+                    <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volver" >
                     <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
                 </div>
             @endif

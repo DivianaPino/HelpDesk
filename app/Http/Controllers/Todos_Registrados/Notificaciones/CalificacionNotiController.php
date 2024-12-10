@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Models\Mensaje;
+use App\Models\User;
 
 
 class CalificacionNotiController extends Controller
@@ -25,6 +26,8 @@ class CalificacionNotiController extends Controller
         // Ticket
         $ticket=Ticket::find($idTicket);
 
-        return view('myViews.Admin.tickets.form_msjTecnico')->with(['ticket'=> $ticket, 'idTicket' => $idTicket]);    
+        $cliente=User::find($ticket->user_id);
+
+        return view('myViews.Admin.tickets.form_msjTecnico')->with(['ticket'=> $ticket, 'idTicket' => $idTicket, 'cliente' => $cliente]);    
     }
 }

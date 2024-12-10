@@ -63,12 +63,36 @@
                             <!-- En espera desde -->
                             <td>{{\Carbon\Carbon::parse($ticket->updated_at)}}</td>
                             <!-- Fecha de caducidad -->
-                            <td>En pausa</td>
+                            @php
+                              $prioridad = App\Models\Prioridad::find($ticket->prioridad_id);
+                              $tiempoResolucion = $prioridad->tiempo_resolucion;
+                              $ultimoMensaje = $ticket->mensajes()->latest()->first();
+                              $tecnico= App\Models\User::where('name', $ticket->asignado_a)->first();
+                            
+                            @endphp 
+                              
+                            @if($ticket->estado->nombre == "En espera")
+                              @if ($ultimoMensaje && $ultimoMensaje->user_id == $tecnico->id)
+                                <td>En pausa</td>
+                              @else
+                              <td>{{\Carbon\Carbon::parse($ticket->fecha_caducidad)->format('d-m-Y')}}</td>
+                              @endif
+                            @else
+                              <td>{{\Carbon\Carbon::parse($ticket->fecha_caducidad)->format('d-m-Y')}}</td>
+                            @endif
 
-                            <!-- Botones - opciones -->
-                             <td >
-                                <a class="btn btn-info" href="/historial/ticket/{{$ticket->id}}" >Historial</a>
-                             </td>
+                            <!-- Botones - opciones --> 
+                              <td>
+                                 @if($ticket->user_id == Auth::user()->id)
+                                    <a class="btn btn-info" href="/ticket/reportado/{{$ticket->id}}" >Ver</a>
+                                 @else
+                                    <a class="btn btn-info" href="/form/mensaje/tec/ticket/{{$ticket->id}}" >Ver</a>
+                                 @endif
+
+                                 @can('reasignar_ticket')
+                                    <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                                 @endcan
+                              </td>
 
                         </tr>
 

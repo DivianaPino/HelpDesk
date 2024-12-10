@@ -20,6 +20,14 @@ use App\Events\TicketAsignadoCorreoEvent;
 use App\Listeners\TicketAsignadoCorreoListener;
 use App\Events\TicketReasignadoCorreoEvent;
 use App\Listeners\TicketReasignadoCorreoListener;
+use App\Events\MsjTecnicoCorreoEvent;
+use App\Listeners\MsjTecnicoCorreoListener;
+use App\Events\MsjClienteCorreoEvent;
+use App\Listeners\MsjClienteCorreoListener;
+use App\Events\TicketResueltoCorreoEvent;
+use App\Listeners\TicketResueltoCorreoListener;
+use App\Events\CalificacionCorreoEvent;
+use App\Listeners\CalificacionCorreoListener;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -56,6 +64,20 @@ class EventServiceProvider extends ServiceProvider
         TicketReasignadoCorreoEvent::class => [
             TicketReasignadoCorreoListener::class,
         ],
+        MsjTecnicoCorreoEvent::class => [
+            MsjTecnicoCorreoListener::class,
+        ],
+        MsjClienteCorreoEvent::class => [
+            MsjClienteCorreoListener::class,
+        ],
+        TicketResueltoCorreoEvent::class => [
+            TicketResueltoCorreoListener::class,
+        ],
+        CalificacionCorreoEvent::class => [
+            CalificacionCorreoListener::class,
+        ],
+
+
 
 
     ];

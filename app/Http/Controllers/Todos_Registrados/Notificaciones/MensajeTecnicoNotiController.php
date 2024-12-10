@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Ticket;
 use App\Models\Mensaje;
+use App\Models\User;
 
 class MensajeTecnicoNotiController extends Controller
 {
@@ -23,8 +24,10 @@ class MensajeTecnicoNotiController extends Controller
 
          // Marca la notificación como leída
         $notification->markAsRead();
+
+        $cliente=User::find($ticket->user_id);
  
-        return view('myViews.Admin.tickets.form_msjTecnico')->with(['ticket'=> $ticket, 'idTicket' => $idTicket]);
+        return view('myViews.Admin.tickets.form_msjTecnico')->with(['ticket'=> $ticket, 'idTicket' => $idTicket, 'cliente' => $cliente]);
 
     }
 }

@@ -58,6 +58,8 @@ class AreasController extends Controller
         // Llenar los datos de area 
         $area=new Area();
         $area->nombre=$request->nombre;
+        $area->notif_correo = $request->opcionCorreo;
+        $area->notif_telegram = $request->opcionTelegram;
         $area->save();
 
         $usuario= Auth::user();
@@ -80,8 +82,18 @@ class AreasController extends Controller
     public function area_tecnicos($areaid)
     { 
         $area = Area::find($areaid);
-        $usuarios = $area->users->unique('id'); // Obtiene todos los usuarios de un área específica
-        return view('myViews.Admin.areas.tecnicos')->with(['usuarios'=> $usuarios, 'area'=>$area]);
+        //Usuarios que pertenecen al area especifica
+        $usuarios = $area->users;
+    
+        // Filtrar los usuarios con rol tecnico de soporte y jefe de area
+        $tecnicos = $usuarios->filter(function($user) {
+            return $user->hasRole(['Jefe de área', 'Técnico de soporte']);
+        });
+    
+        return view('myViews.Admin.areas.tecnicos')->with([
+            'tecnicos' => $tecnicos,
+            'area' => $area
+        ]);
     }
 
 

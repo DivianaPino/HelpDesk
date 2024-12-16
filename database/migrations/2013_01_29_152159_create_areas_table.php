@@ -16,6 +16,8 @@ class CreateAreasTable extends Migration
         Schema::create('areas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
+            $table->string('notif_correo')->comment('Todos, Jefe de area')->nullable();
+            $table->string('notif_telegram')->comment('Todos, Jefe de area')->nullable();
             $table->timestamps();
         });
     }

@@ -235,15 +235,17 @@ public function filtrarTickets(Request $request)
     public function guardar_mensajeTecnico(Request $request, $idTicket){
 
        
-        $ticket=Ticket::find($idTicket);
-        $cliente=User::find($ticket->user_id);
+        $ticket = Ticket::findOrFail($idTicket);
+        $cliente = User::find($ticket->user_id);
         $tecnico = Auth::user();
+
 
         if($request->input('resuelto') === 'on') {
 
             try{
-                    $validator = $request->validate([
-                        'imagen' => 'image',
+
+                $validator = $request->validate([
+                        'imagen' => 'image|nullable',
                     ],
                     [
                         'imagen.image' => 'El archivo debe ser una imagen',
@@ -251,76 +253,29 @@ public function filtrarTickets(Request $request)
                 );
 
 
-                if($request->hasFile('imagen')){
-
-                    $file = $request->file('imagen'); // obtenemos el archivo
-                    $random_name = time(); // le colocamos a la imagen un nombre random y con el tiempo y fecha actual 
-                    $destinationPath = 'images/msjTecnico/'; // path de destino donde estaran las imagenes subidas 
-                    $extension = $file->getClientOriginalExtension();
-                    $filename = $random_name.'-'.$file->getClientOriginalName(); //concatemos el nombre random creado anteriormente con el nombre original de la imagen (para evitar nombres repetidos)
-                    $uploadSuccess = $request->file('imagen')->move($destinationPath, $filename); //subimos y lo enviamos al path de Destin
-
-                    $mensaje= new Mensaje();
-                    $mensaje->user_id = Auth::user()->id;
-                    $mensaje->ticket_id = $idTicket;
-                    $mensaje->mensaje=$request->mensaje;
-                    $mensaje->imagen=$filename;
-                    $mensaje->save();
-
-                    $ticket = Ticket::find($idTicket);
-                    $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
-                    $ticket->save();
-
-                    // Notificacion al sistema del cliente
-                    MensajeTecnicoEvent::dispatch($mensaje);
-                    //  Notificacion al correo del cliente
-                    TicketResueltoCorreoEvent::dispatch($mensaje, $cliente, $tecnico,$idTicket);
-
-                    // Notificación al  telegram del cliente
-                    $ticketLink = route('ver_ticketReportado', ['idTicket' => $ticket->id]); 
-                    $message = "Nuevo mensaje del técnico {$tecnico->name}: {$mensaje->mensaje}: ({$ticketLink})";
-                    $telegramService = app(TelegramService::class);
-                    $response = $telegramService->sendMessage($cliente->telegram, $message);
-
-                    return response()->json([
-                        'mensaje' => $request->mensaje,
-                        'imagen' => $filename,
-                        'status' => 'success',
-                        'msjSuccess'  => 'Ticket resuelto!, el cliente calificará la asistencia.',
-                    ]);
-
-                }else{
-
-                    $mensaje= new Mensaje();
-                    $mensaje->user_id =  Auth::user()->id;
-                    $mensaje->ticket_id = $idTicket;
-                    $mensaje->mensaje=$request->mensaje;
-                    $mensaje->save();
-
-                    $ticket = Ticket::find($idTicket);
-                    $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
-                    $ticket->save();
-
-                    // Notificación al sistema del cliente
-                    MensajeTecnicoEvent::dispatch($mensaje);
-                    // Notificación al correo del cliente
-                    TicketResueltoCorreoEvent::dispatch($mensaje, $cliente, $tecnico,$idTicket);
-
-                    // Notificación al telegram del cliente
-                    $ticketLink = route('ver_ticketReportado', ['idTicket' => $ticket->id]); 
-                    $message = "Nuevo mensaje del técnico {$tecnico->name}: {$mensaje->mensaje}: ({$ticketLink})";
-                    $telegramService = app(TelegramService::class);
-                    $response = $telegramService->sendMessage($cliente->telegram, $message);
-
-                    return response()->json([
-                        'mensaje' => $request->mensaje,
-                        'status' => 'success',
-                        'msjSuccess'  => 'Ticket resuelto!, el cliente calificará la asistencia.',
-                    ]);
-
-                
-
+                $mensaje = new Mensaje();
+                $mensaje->user_id = $tecnico->id;
+                $mensaje->ticket_id = $idTicket;
+                $mensaje->mensaje = $request->mensaje;
+            
+                if ($request->hasFile('imagen')) {
+                    $filename = $this->subirImagen($request->file('imagen'));
+                    $mensaje->imagen = $filename;
                 }
+            
+                $mensaje->save();
+
+                $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
+                $ticket->save();
+            
+                $this->notificacionClienteResuelto($mensaje, $cliente, $tecnico, $idTicket);
+            
+                return response()->json([
+                    'mensaje' => $request->mensaje,
+                    'imagen' => $mensaje->imagen ?? null,
+                    'status' => 'success',
+                    'msjSuccess' => 'Ticket resuelto!, el cliente calificará la asistencia.',
+                ]);
             
             }catch (\Illuminate\Validation\ValidationException $e) {
                 return response()->json([
@@ -333,7 +288,7 @@ public function filtrarTickets(Request $request)
             try{
                 $validator = $request->validate([
                         'mensaje' =>'required',
-                        'imagen' => 'image',
+                        'imagen' => 'image|nullable',
                     ],
                     [
                         'mensaje.required' => 'El campo mensaje es requerido',
@@ -341,196 +296,88 @@ public function filtrarTickets(Request $request)
                     ]
                 );
 
-
-                if($request->hasFile('imagen')){
-
-                    
-
-                    $file = $request->file('imagen'); // obtenemos el archivo
-                    $random_name = time(); // le colocamos a la imagen un nombre random y con el tiempo y fecha actual 
-                    $destinationPath = 'images/msjTecnico/'; // path de destino donde estaran las imagenes subidas 
-                    $extension = $file->getClientOriginalExtension();
-                    $filename = $random_name.'-'.$file->getClientOriginalName(); //concatemos el nombre random creado anteriormente con el nombre original de la imagen (para evitar nombres repetidos)
-                    $uploadSuccess = $request->file('imagen')->move($destinationPath, $filename); //subimos y lo enviamos al path de Destin
-
-                  
-                    $mensaje= new Mensaje();
-                    $mensaje->user_id = $tecnico->id;
-                    $mensaje->ticket_id = $idTicket;
-                    $mensaje->mensaje=$request->mensaje;
-                    $mensaje->imagen=$filename;
-                    $mensaje->save();
-
-                    // Notificación al sistema del cliente
-                    MensajeTecnicoEvent::dispatch($mensaje);
-                    // Notificación al corrreo del cliente
-                    MsjTecnicoCorreoEvent::dispatch($mensaje, $cliente, $tecnico,$idTicket);
-
-                     // Notificación al  telegram del cliente
-                    $ticketLink = route('ver_ticketReportado', ['idTicket' => $ticket->id]); 
-                    $message = "Nuevo mensaje del técnico {$tecnico->name}: {$mensaje->mensaje}: ({$ticketLink})";
-                    $telegramService = app(TelegramService::class);
-                    $response = $telegramService->sendMessage($cliente->telegram, $message);
-                    
-                    return response()->json([
-                        'mensaje' => $request->mensaje,
-                        'imagen' => $filename,
-                        'status' => 'success',
-                        'msjSuccess'  => 'Mensaje enviado exitosamente.',
-                    ]);
-
-                }else{  
-
-                   
-                    $mensaje= new Mensaje();
-                    $mensaje->user_id =  $tecnico->id;
-                    $mensaje->ticket_id = $idTicket;
-                    $mensaje->mensaje=$request->mensaje;
-                    $mensaje->save();
-
-                    if($ticket->mensajes){
-
-                        foreach($ticket->mensajes as $msj){
-                          if($msj->user->hasAnyRole(['Administrador', 'Jefe de área', 'Técnico de soporte'])){
-                              $ticket->estado_id = Estado::where('nombre', 'En espera')->first()->id;
-                            //    $estadoEnespera=$tick->estado_id ;
-                              $ticket->save();
-                              break;
-                          }
-                      }
-                    }
-
-                    // Notificación al sistema del cliente
-                    MensajeTecnicoEvent::dispatch($mensaje);
-                    // Notificación al correo del cliente
-                    MsjTecnicoCorreoEvent::dispatch($mensaje, $cliente, $tecnico,$idTicket);
-
-                   // Notificación al telegram del cliente
-                   $ticketLink = route('ver_ticketReportado', ['idTicket' => $ticket->id]); 
-                   $message = "Nuevo mensaje del técnico {$tecnico->name}: {$mensaje->mensaje}: ({$ticketLink})";
-                   $telegramService = app(TelegramService::class);
-                   $response = $telegramService->sendMessage($cliente->telegram, $message);
-
-
-
-                    return response()->json([
-                        'mensaje' => $request->mensaje,
-                        'status' => 'success',
-                        'msjSuccess'  => 'Mensaje enviado exitosamente.',
-                    ]);
-
-                    
-
-                }
+                $mensaje = new Mensaje();
+                $mensaje->user_id = $tecnico->id;
+                $mensaje->ticket_id = $idTicket;
+                $mensaje->mensaje = $request->mensaje;
             
+                if ($request->hasFile('imagen')) {
+                    $filename = $this->subirImagen($request->file('imagen'));
+                    $mensaje->imagen = $filename;
+                }
 
+                $mensaje->save();
+
+                $estadoTicket = Estado::find($ticket->estado_id);
+
+                if($estadoTicket->nombre != "En espera" && $ticket->mensajes){
+                    foreach($ticket->mensajes as $msj){
+                        if($msj->user->hasAnyRole(['Administrador', 'Jefe de área', 'Técnico de soporte'])){
+                            $ticket->estado_id = Estado::where('nombre', 'En espera')->first()->id;
+                            $ticket->save();
+                            break;
+                        }  
+                    }
+                }
+
+                $this->notificacionCliente($mensaje, $cliente, $tecnico, $idTicket);
+
+                return response()->json([
+                    'mensaje' => $request->mensaje,
+                    'imagen' => $mensaje->imagen ?? null,
+                    'status' => 'success',
+                    'msjSuccess'  => 'Mensaje enviado exitosamente.',
+                ]);
+                
+        
             }catch (\Illuminate\Validation\ValidationException $e) {
                 return response()->json([
                     'errors' => $e->validator->errors()->toArray(),
                 ], 422);
             }
         }
-  
-
-
-         // return back()->with('status', 'Mensaje enviado exitosamente');
+       
     }
 
+    private function subirImagen($file) {
+        $random_name = time();
+        $destinationPath = 'images/msjTecnico/';
+        $filename = $random_name . '-' . $file->getClientOriginalName();
+        $file->move($destinationPath, $filename);
+        return $filename;
+    }
 
+    private function notificacionCliente($mensaje, $cliente, $tecnico, $idTicket) {
+
+        MensajeTecnicoEvent::dispatch($mensaje);
+        MsjTecnicoCorreoEvent::dispatch($mensaje, $cliente,$tecnico, $idTicket);
+
+        $ticketLink = route('ver_ticketReportado', ['idTicket' => $idTicket]);
+        $message = "Nuevo mensaje del técnico {$tecnico->name}: {$mensaje->mensaje}: ({$ticketLink})";
+        $telegramService = app(TelegramService::class);
+        $telegramService->sendMessage($cliente->telegram, $message);
+    }
+    
+    private function notificacionClienteResuelto($mensaje, $cliente, $tecnico, $idTicket) {
+
+        //Notificacion en el sistema del cliente
+        $mensajeSistema = $mensaje ? $mensaje->mensaje : "El ticket ha sido resuelto";
+        MensajeTecnicoEvent::dispatch($mensajeSistema);
+
+        //Notificacion al correo del cliente
+        TicketResueltoCorreoEvent::dispatch($mensaje, $cliente, $tecnico, $idTicket);
+    
+        //Notificacion al telegram del cliente
+        $ticketLink = route('ver_ticketReportado', ['idTicket' => $idTicket]);
+        $mensajeTexto = is_null($mensaje) ? "El ticket ha sido resuelto" : $mensaje->mensaje;
+        $message = "Nuevo mensaje del técnico {$tecnico->name}: {$mensajeTexto}: ({$ticketLink})";
+        $telegramService = app(TelegramService::class);
+        $telegramService->sendMessage($cliente->telegram, $message);
+    }
     
     public function navbar_notifications(){
         return view('vendor.adminlte.components.layout.navbar-notification');
     }
-
-
-
-    // public function masInfo($idTicket){
-
-    //     $ticket=Ticket::find($idTicket);
-    //     $fecha_actual=Carbon::now()->format('d-m-Y');
-        
-      
-    //     return view('myViews.Admin.tickets.masInfo')->with(['ticket'=> $ticket, 'fecha_actual'=> $fecha_actual]);
-        
-    // }
-
-    
-    // public function guardar_masInfo(Request $request, $idTicket)
-    // {
-       
-    //     $request->validate([
-    //             'mensaje' =>'required',
-    //             'imagen' => 'image',
-    //         ],
-    //         [
-    //             'mensaje.required' => 'El campo mensaje es requerido',
-    //             'imagen.image' => 'El archivo debe ser una imagen',
-    //         ]
-    //     );
-
-    //     $usuario= Auth::user();
-    //     $tickets = Ticket::where('asignado_a', $usuario->name )->get();
-
-        
-    //     if($request->hasFile('imagen')){
-
-    //         $file = $request->file('imagen'); // obtenemos el archivo
-    //         $random_name = time(); // le colocamos a la imagen un nombre random y con el tiempo y fecha actual 
-    //         $destinationPath = 'images/masInfo/tickets/'; // path de destino donde estaran las imagenes subidas 
-    //         $extension = $file->getClientOriginalExtension();
-    //         $filename = $random_name.'-'.$file->getClientOriginalName(); //concatemos el nombre random creado anteriormente con el nombre original de la imagen (para evitar nombres repetidos)
-    //         $uploadSuccess = $request->file('imagen')->move($destinationPath, $filename); //subimos y lo enviamos al path de Destin
-
-    //         $masInfo=new MasInformacion();
-    //         $masInfo->ticket_id=$idTicket;   
-    //         $masInfo->mensaje=$request->mensaje;
-    //         $masInfo->imagen=$filename;
-    //         $masInfo->fecha=Carbon::now();
-    //         $masInfo->save();
-
-    //         // cambiar estado a "en espera"
-    //         $ticket=Ticket::find($idTicket);
-    //         $ticket->estado_id= 3;
-    //         $ticket->save();
-
-    //         $historial= new TicketHistorial();
-    //         $historial->ticket_id= $idTicket;
-    //         $historial->estado_id=3;
-    //         $historial->masinfo_id=$masInfo->id;
-    //         $historial->updated_at= Carbon::now();
-    //         $historial->save();
-
-    //         // Enviamos masInfo al event,para luego crear la notitificación
-    //         event(new MasInfoEvent($masInfo));
-
-        
-    //     }else{
-
-    //         $masInfo=new MasInformacion();
-    //         $masInfo->ticket_id=$idTicket;   
-    //         $masInfo->mensaje=$request->mensaje;
-    //         $masInfo->fecha=Carbon::now();
-    //         $masInfo->save();
-
-    //          // cambiar estado a "en espera"
-    //         $ticket=Ticket::find($idTicket);
-    //         $ticket->estado_id= 3;
-    //         $ticket->save();
-
-    //         $historial= new TicketHistorial();
-    //         $historial->ticket_id= $idTicket;
-    //         $historial->estado_id=3;
-    //         $historial->masinfo_id=$masInfo->id;
-    //         $historial->updated_at= Carbon::now();
-    //         $historial->save();
-
-    //         // Enviamos masInfo al event,para luego crear la notitificación
-    //         event(new MasInfoEvent($masInfo));
-    //     }
-
-    //     return back()->with('status', 'Mensaje enviado exitosamente :)');
-    
-    // }
 
     public function tickets_enEspera()
     {
@@ -921,62 +768,27 @@ public function filtrarTickets(Request $request)
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    // public function destroy($id)
-    // {
-    //     $ticket= Ticket::find($id);
-    //     $respuestas=Respuesta::where('ticket_id', $id)->get();
-    //     $masInfos=MasInformacion::where('ticket_id', $id)->get();
-    //     $respMasInfos=RespMasInfo::where('ticket_id', $id)->get();
+    public function destroy($id)
+    {
+        $ticket = Ticket::find($id);
 
+        //* ELIMINAR LA IMAGEN DEL TICKET (DE LA CARPETA)
+        $rutaTicket_img = public_path('images/tickets/') . $ticket->imagen;  
 
-    //     //* ELIMINAR LA IMAGEN DEL TICKET (DE LA CARPETA)
-    //     $rutaTicket_img = public_path('images/tickets/'). $ticket->imagen;  
+        if (file_exists($rutaTicket_img)) // Verificar si existe un archivo asociado
+        {
+            File::delete($rutaTicket_img); // Eliminar el archivo
+        } 
 
-    //     if (file_exists($rutaTicket_img)) // Verificar si existe un archivo asociado
-    //     {
-    //        File::delete($rutaTicket_img); // Eliminar el archivo
-    //     } 
+        //* ELIMINAR MENSAJES RELACIONADOS
+        $ticket->mensajes()->delete(); // Eliminar todos los mensajes relacionados
 
-    //     //* ELIMINAR TICKET
-    //     $ticket->delete(); 
+        //* ELIMINAR TICKET
+        $ticket->delete(); 
 
-
-    //     // *ELIMINAR LA IMAGEN DE LA RESPUESTA DEL TICKET (DE LA CARPETA)
-    //     foreach($respuestas as $respuesta){
-
-    //         $rutaRespuesta_img = public_path('images/respuestas/tickets/'). $respuesta->imagen; 
-
-    //         if (file_exists($rutaRespuesta_img))
-    //         {
-    //            File::delete($rutaRespuesta_img); 
-    //         } 
-    //     }
-
-        // *ELIMINAR LA IMAGEN DE MAS INFO DEL TICKET (DE LA CARPETA)
-    //     foreach($masInfos as $masInfo){
-
-    //         $rutaMasInfo_img = public_path('images/masInfo/tickets/'). $masInfo->imagen; 
-
-    //         if (file_exists($rutaMasInfo_img))
-    //         {
-    //            File::delete($rutaMasInfo_img); 
-    //         } 
-    //     }
-
-    //       // *ELIMINAR LA IMAGEN DE LA RESPUESTA_MAS INFO DEL TICKET (DE LA CARPETA)
-    //       foreach($respMasInfos as $respMasInfo){
-
-    //         $rutarespMasInfo_img = public_path('images/respMasInfo/tickets/'). $respMasInfo->imagen; 
-
-    //         if (file_exists($rutarespMasInfo_img))
-    //         {
-    //            File::delete($rutarespMasInfo_img); 
-    //         } 
-    //     }
-
-    //     return redirect()->route('tickets.index')->with('eliminar' , 'ok');
+        return redirect()->route('tickets.index')->with('eliminar', 'ok');
   
-    // }
+    }
 
 
 

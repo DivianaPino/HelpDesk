@@ -14,7 +14,27 @@
               <div class="row">
                 <div class="col-md-12 form-group mb-3">
                   <label for="nombre" class="col-form-label">Nombre del área o departamento:</label>
-                  <input type="text" class="form-control" name="nombre" id="nombre"  >
+                  <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ingresar nombre del área..." >
+                </div>
+                <div class="col-md-12 form-group mb-3">
+                  <label for="nombre" class="col-form-label">Notificación al correo de:</label>
+                  <div class="select-containerCorreo w-100"> 
+                    <select class="select-box w-100" name="opcionCorreo" id="opcionCorreo" style="height:40px;">
+                        <option value="">Seleccionar</option>
+                        <option value="Todos" data-stars="5">Todos</option> 
+                        <option value="Jefe de area" data-stars="4">Jefe de área</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-12 form-group mb-3">
+                  <label for="nombre" class="col-form-label">Notificación al telegram de:</label>
+                  <div class="select-containerTelegram"> 
+                    <select class="select-box w-100" name="opcionTelegram" id="opcionTelegram" style="height:40px;">
+                        <option value="">Seleccionar</option>
+                        <option value="Todos" data-stars="5">Todos</option> 
+                        <option value="Jefe de area" data-stars="4">Jefe de área</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -25,13 +45,14 @@
               </div>
               
             
-              <div class="row">
-                <div class="col-md-8 form-group">
-                  <input type="submit" id="submitButton" value="Crear" class="btnForm btn-primary rounded-0 py-2 px-4">
+              <div class="row mt-4 contentBtn-CrearArea">
+                <div class="form-group">
+                  <input type="submit" id="submitButton" value="Crear" class="btnForm btn-primary rounded-0 py-2 px-4 btnVolver-crearArea">
+  
                 </div>
 
-                <div class="col-md-4 form-group">
-                    <a href="/areas" class="btnForm btn-dark rounded-0 py-2 px-4 btn_volver"> Ver todas</a>
+                <div class="form-group">
+                    <a href="/areas" class="btnForm btn-dark rounded-0 py-2 px-4 btn_volver btnVer-TodasAreas"> Ver todas</a>
                 </div>
               </div>
                

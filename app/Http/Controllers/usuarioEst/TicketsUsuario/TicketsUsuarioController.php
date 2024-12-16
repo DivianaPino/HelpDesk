@@ -81,107 +81,69 @@ class TicketsUsuarioController extends Controller
     public function store(Request $request)
     {
 
-        $isSubmitting = false; 
-
         $request->validate([
-                'area_id' =>'required',
-                'servicio_id' =>'required',
-                'prioridad_id' =>'required',
-                'asunto' =>'required',
-                'mensaje' =>'required',
-                'imagen' => 'image',
-            ],
-            [
-                'clasificacion_id.required' => 'El campo clasificación es requerido',
-                'prioridad_id.required' => 'El campo prioridad es requerido',
-                'asunto.required' => 'El campo asunto es requerido',
-                'mensaje.required' => 'El campo mensaje es requerido',
-                'imagen.image' => 'El archivo debe ser una imagen',
-            ]
-        );
-
-        
-        $prioridad = Prioridad::find($request->prioridad_id); // Obtener la prioridad por ID
+            'area_id' => 'required',
+            'servicio_id' => 'required',
+            'prioridad_id' => 'required',
+            'asunto' => 'required',
+            'mensaje' => 'required',
+            'imagen' => 'image|nullable', 
+        ], [
+            'area_id.required' => 'El campo área es requerido',
+            'servicio_id.required' => 'El campo servicio es requerido',
+            'prioridad_id.required' => 'El campo prioridad es requerido',
+            'asunto.required' => 'El campo asunto es requerido',
+            'mensaje.required' => 'El campo mensaje es requerido',
+            'imagen.image' => 'El archivo debe ser una imagen',
+        ]);
+    
+        $prioridad = Prioridad::find($request->prioridad_id);
         $tiempoResolucion = $prioridad->tiempo_resolucion;
-
-        if($request->hasFile('imagen')){
-
-            $file = $request->file('imagen'); // obtenemos el archivo
-            $random_name = time(); // le colocamos a la imagen un nombre random y con el tiempo y fecha actual 
-            $destinationPath = 'images/tickets/'; // path de destino donde estaran las imagenes subidas 
-            $extension = $file->getClientOriginalExtension();
-            $filename = $random_name.'-'.$file->getClientOriginalName(); //concatemos el nombre random creado anteriormente con el nombre original de la imagen (para evitar nombres repetidos)
-            $uploadSuccess = $request->file('imagen')->move($destinationPath, $filename); //subimos y lo enviamos al path de Destin
-
-            $ticket=new Ticket();
-            $ticket->user_id=auth()->id();    
-            $ticket->area_id=$request->area_id;
-            $ticket->servicio_id=$request->servicio_id;
-            $ticket->prioridad_id=$request->prioridad_id;
-            $ticket->asunto=$request->asunto;
-            $ticket->mensaje=$request->mensaje;
-            $ticket->imagen=$filename;
-            $ticket->fecha_inicio=Carbon::now();
-            $ticket->estado_id=Estado::first()->id;
-            $ticket->fecha_caducidad=Carbon::now()->addDays($tiempoResolucion);
-            $ticket->save();
-
-            $técnicos = User::whereHas('roles', function ($query) {
-                $query->whereIn('name', ['Tecnico de soporte', 'Jefe de área']);
-            })->get();
-            
-            // Enviamos el ticket al event, para despues crear la notificación (en el sistema)
-            event(new TicketEvent($ticket));
-
-            // Notiifcacion al correo
-            event(new TicketCorreoEvent($ticket));
-
-           // Notificacion al telegram  
-           foreach ($tecnicos as $tecnico) {
-                $ticketLink = route('detalles_ticket', ['idTicket' => $ticket->id]); 
-                $message = "Nuevo ticket creado: {$ticket->asunto}: ({$ticketLink})";
-                $telegramService = app(TelegramService::class);
-                $response = $telegramService->sendMessage($tecnico->telegram, $message);
-            }
-
-
-        }else{
-
-            $ticket=new Ticket();
-            $ticket->user_id=auth()->id();    
-            $ticket->area_id=$request->area_id;
-            $ticket->servicio_id=$request->servicio_id;
-            $ticket->prioridad_id=$request->prioridad_id;
-            $ticket->asunto=$request->asunto;
-            $ticket->mensaje=$request->mensaje;
-            $ticket->fecha_inicio=Carbon::now();
-            $ticket->estado_id=Estado::first()->id;
-            $ticket->fecha_caducidad=Carbon::now()->addDays($tiempoResolucion);
-            $ticket->save();
-
-            $tecnicos = User::whereHas('roles', function ($query) {
-                $query->whereIn('name', ['Tecnico de soporte', 'Jefe de área']);
-            })->get();
-
-            // Enviamos el ticket al event, para despues crear la notificación (en el sistema)
-            event(new TicketEvent($ticket));
-
-            // Notificacion al correo
-            event(new TicketCorreoEvent($ticket));
-
-            // Notificacion al telegram  
-            foreach ($tecnicos as $tecnico) {
-                $ticketLink = route('detalles_ticket', ['idTicket' => $ticket->id]); 
-                $message = "Nuevo ticket creado: {$ticket->asunto}: ({$ticketLink})";
-                
-                $telegramService = app(TelegramService::class);
-                $response = $telegramService->sendMessage($tecnico->telegram, $message);
-            }
+    
+        $area = Area::find($request->area_id);
+        $notif_telegram = $area->notif_telegram;
+    
+        // Obtener técnicos según la notificación de Telegram
+        $tecnicos = User::whereHas('areas', function ($query) {
+            $query->where('area_id', request('area_id'));
+        })->role($notif_telegram == 'Todos' ? ['Administrador', 'Técnico de soporte', 'Jefe de área'] : ['Administrador', 'Jefe de área'])->get();
+    
+        // Manejo de la imagen
+        $filename = null;
+        if ($request->hasFile('imagen')) {
+            $file = $request->file('imagen');
+            $filename = time() . '-' . $file->getClientOriginalName();
+            $file->move('images/tickets/', $filename);
         }
-
+    
+        // Crear el ticket
+        $ticket = Ticket::create([
+            'user_id' => auth()->id(),
+            'area_id' => $request->area_id,
+            'servicio_id' => $request->servicio_id,
+            'prioridad_id' => $request->prioridad_id,
+            'asunto' => $request->asunto,
+            'mensaje' => $request->mensaje,
+            'imagen' => $filename,
+            'fecha_inicio' => Carbon::now(),
+            'estado_id' => Estado::first()->id,
+            'fecha_caducidad' => Carbon::now()->addDays($tiempoResolucion),
+        ]);
+    
+        // Enviar eventos
+        event(new TicketEvent($ticket));
+        event(new TicketCorreoEvent($ticket));
+    
+        // Notificación a Telegram
+        foreach ($tecnicos as $tecnico) {
+            $ticketLink = route('detalles_ticket', ['idTicket' => $ticket->id]);
+            $message = "Nuevo ticket creado: {$ticket->asunto}: ({$ticketLink})";
+            $telegramService = app(TelegramService::class);
+            $telegramService->sendMessage($tecnico->telegram, $message);
+        }
+    
         $tickets=Ticket::where('user_id', auth()->user()->id)->orderBy('id', 'desc')->get();
         return  redirect()->route('usuarios_tickets.index')->with(['tickets'=> $tickets, 'status'=> 'Ticket enviado exitosamente :)' ]);
-
     }
 
     // public function historial($idTicket){
@@ -279,89 +241,48 @@ class TicketsUsuarioController extends Controller
        }else{
 
             try{
-                    $validator = $request->validate([
-                            'mensaje' =>'required',
-                            'imagen' => 'image',
-                        ],
-                        [
-                            'mensaje.required' => 'El campo mensaje es requerido',
-                            'imagen.image' => 'El archivo debe ser una imagen',
-                        ]
-                    );
-
-
-                    if($request->hasFile('imagen')){
-
-                        $file = $request->file('imagen'); // obtenemos el archivo
-                        $random_name = time(); // le colocamos a la imagen un nombre random y con el tiempo y fecha actual 
-                        $destinationPath = 'images/msjCliente/'; // path de destino donde estaran las imagenes subidas 
-                        $extension = $file->getClientOriginalExtension();
-                        $filename = $random_name.'-'.$file->getClientOriginalName(); //concatemos el nombre random creado anteriormente con el nombre original de la imagen (para evitar nombres repetidos)
-                        $uploadSuccess = $request->file('imagen')->move($destinationPath, $filename); //subimos y lo enviamos al path de Destin
-
-                        $mensaje= new Mensaje();
-                        $mensaje->user_id = Auth::user()->id;
-                        $mensaje->ticket_id = $idTicket;
-                        $mensaje->mensaje=$request->mensaje;
-                        $mensaje->imagen=$filename;
-                        $mensaje->save();
-
-                        $ticket=Ticket::find($idTicket);
-                        $ticket->fecha_caducidad=Carbon::now()->addDays($tiempoResolucion);
-                        $ticket->save();
-
-                        //Notificación al sistema del técnico
-                        MensajeClienteEvent::dispatch($mensaje);
-                        //Notificación al correo del técnico
-                        MsjClienteCorreoEvent::dispatch($mensaje, $cliente, $tecnico,$idTicket);
-
-                        // Notificación al telegram del técnico
-                        $ticketLink = route('form_msjTecnico', ['idTicket' => $ticket->id]); 
-                        $message = "Nuevo mensaje del cliente {$cliente->name}: {$mensaje->mensaje}: ({$ticketLink})";
-                        $telegramService = app(TelegramService::class);
-                        $response = $telegramService->sendMessage($tecnico->telegram, $message);
-
-                        return response()->json([
-                            'mensaje' => $request->mensaje,
-                            'imagen' => $filename,
-                            'status' => 'success',
-                            'msjSuccess'  => 'Mensaje enviado exitosamente.',
-                        
-                        ]);
-
-                    }else{  
-
-                        $mensaje= new Mensaje();
-                        $mensaje->user_id =  Auth::user()->id;
-                        $mensaje->ticket_id = $idTicket;
-                        $mensaje->mensaje=$request->mensaje;
-                        $mensaje->save();
-
-                        $ticket=Ticket::find($idTicket);
-                        $ticket->fecha_caducidad=Carbon::now()->addDays($tiempoResolucion);
-                        $ticket->save();
-
-                     
-                        // Notificación en el sistema del técnico
-                        MensajeClienteEvent::dispatch($mensaje);
-                         // Notificación al correo del técnico
-                        MsjClienteCorreoEvent::dispatch($mensaje, $cliente, $tecnico,$idTicket);
-
-                        // Notificación al telegram del técnico
-                        $ticketLink = route('form_msjTecnico', ['idTicket' => $ticket->id]); 
-                        $message = "Nuevo mensaje del cliente {$cliente->name}: {$mensaje->mensaje}: ({$ticketLink})";
-                        $telegramService = app(TelegramService::class);
-                        $response = $telegramService->sendMessage($tecnico->telegram, $message);
-                        
-
-                        
-                        return response()->json([
-                            'mensaje' => $request->mensaje,
-                            'status' => 'success',
-                            'msjSuccess'  => 'Mensaje enviado exitosamente.',
-                        ]);
-
-                    }
+                $validator = $request->validate([
+                    'mensaje' => 'required',
+                    'imagen' => 'image|nullable',
+                ], [
+                    'mensaje.required' => 'El campo mensaje es requerido',
+                    'imagen.image' => 'El archivo debe ser una imagen',
+                ]);
+                
+                $mensaje = new Mensaje();
+                $mensaje->user_id = Auth::user()->id;
+                $mensaje->ticket_id = $idTicket;
+                $mensaje->mensaje = $request->mensaje;
+                
+                if ($request->hasFile('imagen')) {
+                    $filename = time() . '-' . $request->file('imagen')->getClientOriginalName();
+                    $request->file('imagen')->move('images/msjCliente', $filename);
+                    $mensaje->imagen = $filename;
+                }
+                
+                $mensaje->save();
+                
+                $ticket = Ticket::find($idTicket);
+                $ticket->fecha_caducidad = Carbon::now()->addDays($tiempoResolucion);
+                $ticket->save();
+                
+                // Notificacion al sistema del técnico
+                MensajeClienteEvent::dispatch($mensaje);
+                 // Notificacion al correo del técnico
+                MsjClienteCorreoEvent::dispatch($mensaje, $cliente, $tecnico, $idTicket);
+                
+                // Notificacion al telegram del técnico
+                $ticketLink = route('form_msjTecnico', ['idTicket' => $ticket->id]);
+                $message = "Nuevo mensaje del cliente {$cliente->name}: {$mensaje->mensaje}: ({$ticketLink})";
+                $telegramService = app(TelegramService::class);
+                $telegramService->sendMessage($tecnico->telegram, $message);
+                
+                return response()->json([
+                    'mensaje' => $request->mensaje,
+                    'imagen' => $mensaje->imagen ?? null,
+                    'status' => 'success',
+                    'msjSuccess' => 'Mensaje enviado exitosamente.',
+                ]);
                 
 
                 }catch (\Illuminate\Validation\ValidationException $e) {

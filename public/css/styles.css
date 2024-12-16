@@ -2534,7 +2534,7 @@ table{
 
 @media(max-width: 1024px){
 
-  .titulo_prin{
+  #tabla_asignarTec .titulo_prin{
     font-size: 36px !important;
   }
   
@@ -2550,7 +2550,7 @@ table{
     margin: 6px !important;
   }
 
-  .btn-dark{
+  #tabla_asignarTec .btn-dark{
     width: 100px !important;
     font-size: 14px !important;
   }
@@ -2558,7 +2558,7 @@ table{
 
 @media(max-width: 600px){
 
-  .titulo_prin{
+  #tabla_asignarTec .titulo_prin{
     font-size: 15px !important;
   }
   
@@ -2577,7 +2577,7 @@ table{
     margin: 6px !important;
   }
 
-  .btn-dark{
+  #tabla_asignarTec .btn-dark{
     width: 70px !important;
     font-size: 8px !important;
     margin: 0px !important;
@@ -2604,7 +2604,7 @@ table{
     margin: 4px !important;
   }
 
-  .btn-dark{
+  #tabla_asignarTec .btn-dark{
     width: 60px !important;
     font-size: 8px !important;
     margin: 0px !important;

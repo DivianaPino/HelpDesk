@@ -808,6 +808,60 @@ body {
   margin-right: 10px;
 }
 
+.contentBtn-CrearArea{
+  display: flex !important;
+  justify-content: space-between !important;
+}
+
+.btnVolver-crearArea, .btnVer-TodasAreas{
+
+  width:150px !important;
+  font-size:14px;
+  text-align: center;
+}
+
+@media(max-width: 1024px){
+
+  .btnVolver-crearArea, .btnVer-TodasAreas{
+    width:130px !important;
+    font-size:10px !important;
+    text-align: center;
+  }
+
+
+
+}
+
+@media(max-width: 375px){
+
+  .btnVolver-crearArea, .btnVer-TodasAreas{
+    width:120px !important;
+    font-size:8px !important;
+    text-align: center;
+  }
+
+}
+
+@media(max-width: 320px){
+
+  .btnVolver-crearArea, .btnVer-TodasAreas{
+    width:95px !important;
+    font-size:8px !important;
+    text-align: center;
+    padding: 4px 2px !important;
+  }
+
+  .btnVer-TodasAreas{
+    margin-top: 5px !important;
+  }
+
+}
+
+
+
+
+
+
 
 
 

@@ -12,6 +12,20 @@ class Ticket extends Model
     use HasFactory;
     use Notifiable;
 
+    protected $fillable = [
+      'user_id',
+      'area_id',
+      'servicio_id',
+      'estado_id',
+      'prioridad_id',
+      'asunto',
+      'mensaje',
+      'asignado_a',
+      'imagen',
+      'fecha_inicio',
+      'fecha_caducidad'
+  ];
+
     public function user()
     {
       return $this->belongsTo('App\Models\User');

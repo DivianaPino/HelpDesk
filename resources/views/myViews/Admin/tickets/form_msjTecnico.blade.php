@@ -11,7 +11,7 @@
         <div class="col-md-12 ">
           <div class="form h-100  content-fondo" >
               <div class="content-btnVolver">
-                  <a style="margin-top:8px;" href="#" class="btn btn-dark btn-volver" onclick="return cargarPaginaAnterior();">
+                  <a style="margin-top:8px;" href="javascript:void(0);" class="btn btn-dark btn-volver" onclick="checkPreviousUrl({{ $ticket->id }})">
                       <i class="fa-solid fa-arrow-left fa-lg"></i>Volver
                   </a>
               </div>
@@ -260,6 +260,7 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('submitButton').disabled = true; 
         
         var formData = new FormData(this);
+        document.getElementById('mensaje').disabled = true; 
 
         fetch('/mensaje/tecnico/ticket/{{$ticket->id}}', { 
             method: 'POST',
@@ -336,10 +337,11 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('imagenMsj').value = ''; // Limpia el input de imagen
             document.getElementById('submitButton').value = 'Enviar mensaje'; 
             document.getElementById('submitButton').disabled = false; 
+
+            document.getElementById('mensaje').disabled = false; 
         })
         .catch(error => console.error('Error:', error));
 
-        
     });
 });
 </script>
@@ -502,13 +504,24 @@ document.addEventListener("DOMContentLoaded", function() {
       });
   }
 </script>
+<script>
+function checkPreviousUrl(ticketId) {
+    // Obtener la URL anterior
+    var previousUrl = document.referrer;
 
+    // Crear la URL esperada con el ID del ticket
+    var expectedUrl = '/detalles/' + ticketId;
 
-
-
-
-
-
+    // Comparar con la URL deseada
+    if (previousUrl.endsWith(expectedUrl)) {
+        // Si es igual, regresar dos páginas atrás
+        history.go(-3);
+    } else {
+       // Si no es igual, regresa una página atrás
+       history.go(-1);
+    }
+}
+</script>
 
 
 

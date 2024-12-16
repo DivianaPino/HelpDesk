@@ -4,9 +4,10 @@ namespace App\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
-use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ticketMailable;
+use App\Models\User;
+use App\Models\Area;
 
 class TicketCorreoListener
 {
@@ -36,29 +37,34 @@ class TicketCorreoListener
 
     private function sendNotificationToSupportTeam($ticket)
     {
-        $areaId=$ticket->area_id;
-        $tecnicos = User::whereHas('areas', function ($query) use ($areaId) {
-            $query->where('area_id', $areaId);
-        })->role(['Técnico de soporte', 'Jefe de área'])->get();
-    
-        $emails = $tecnicos->pluck('email');
-        
-        $results = [];
+        $area = Area::find($ticket->area_id);
+        $notifCorreo = $area->notif_correo;
 
-        foreach ($emails as $email) {
+        $roles = $notifCorreo === "Todos" 
+            ? ['Administrador', 'Técnico de soporte', 'Jefe de área'] 
+            : ['Administrador', 'Jefe de área'];
+
+        $tecnicos = User::whereHas('areas', function ($query) use ($ticket) {
+            $query->where('area_id', $ticket->area_id);
+        })->role($roles)->pluck('email');
+
+        foreach ($tecnicos as $email) {
             try {
                 Mail::to($email)->send(new ticketMailable($ticket));
-                $results[] = "Correo enviado a {$email}";
+                
             } catch (\Exception $e) {
                 if ($e instanceof \Swift_TransportException && strpos($e->getMessage(), 'Failed to authenticate on SMTP server') !== false) {
-                    // Error de autenticación SMTP, ignoramos este error y continuamos con el siguiente correo
+                    // Ignorar error de autenticación
                     continue;
                 }
-                $results[] = "Error al enviar correo a {$email}: " . $e->getMessage();
+                // Registrar el error en lugar de acumular mensajes
+                \Log::error("Error al enviar correo a {$email}: " . $e->getMessage());
             }
         }
+   
+        
         // Retorna todos los resultados después de procesar todos los correos
-        return $results;
+        //return $results;
         
     }
     

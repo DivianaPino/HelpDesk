@@ -29,7 +29,7 @@
 
                <tbody>
                  
-                    @foreach ($usuarios as $usuario )
+                    @foreach ($tecnicos as $usuario )
                           <tr>
                              <td>{{$usuario->id}}</td>
                              <td>{{$usuario->name}}</td>

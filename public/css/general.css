@@ -50,7 +50,8 @@
 }
 
 .brand-text{
-    color: rgb(105, 220, 255);
+    font-family:serif;
+    color: rgb(173, 229, 250);
     font-size: 30px;
     font-weight: bold !important;
 }

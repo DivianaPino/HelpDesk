@@ -35,6 +35,9 @@ use App\Mail\ticketMailable;
 
 use App\Services\TelegramService;
 
+
+use App\Http\Controllers\IA\SentimentController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -54,6 +57,8 @@ Route::get('nivelSatisfaccion/{idTicket}', [CalificacionController::class, 'nive
 //   Mail::to('divianap96@gmail.com')->send(new ticketMailable);
 //   return "Mensaje enviado!";
 // })->name('ticket.email');
+
+
 
 Route::middleware([
   'auth:sanctum',
@@ -104,7 +109,8 @@ Route::middleware([
     Route::get('/alltickets', [TicketsController::class, 'tickets'])->name('tickets.all');
 
     
-
+    Route::get('/formSentiment', [SentimentController::class, 'formSentiment'] )->name('/form.sentimiento');
+    Route::post('/sentimiento', [SentimentController::class, 'index'] )->name('sentimiento');
 
 
    

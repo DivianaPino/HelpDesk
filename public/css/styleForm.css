@@ -293,10 +293,12 @@ body {
   width: 100%;
   display: flex;
   justify-content: center;
-  border: 3px dashed #102abb72;
+  border: 0px solid #102abb72;
   color: #2a71dcad;
   margin-bottom: 5px;
 }
+
+
 
 
 .cuadro2, .cuadro2 i{

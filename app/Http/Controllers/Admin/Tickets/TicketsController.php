@@ -15,6 +15,7 @@ use App\Events\TicketReasignadoCorreoEvent;
 use App\Events\MsjTecnicoCorreoEvent;
 use App\Events\TicketResueltoCorreoEvent;
 use App\Services\TelegramService;
+use App\Services\GeminiService;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Role;
@@ -25,15 +26,26 @@ use App\Models\Estado;
 use App\Models\Mensaje;
 use App\Models\TicketHistorial;
 use App\Models\Calificacion;
+use Gemini\Laravel\Facades\Gemini;
+use Gemini\Transporters\HttpTransporter;
+use GuzzleHttp\Client as GuzzleClient;
+use Gemini\Client;
+use Illuminate\Validation\Rule;
+
+use App\Rules\sentimientoTextoRule;
 
 
 class TicketsController extends Controller
 {
-    public function __construct(){
 
-        $this->middleware('can:tickets.index')->only('index');
-        $this->middleware('can:tickets.edit')->only('edit', 'update');
-        $this->middleware('can:todos_tecnicos');
+    protected $geminiService;
+
+    public function __construct(GeminiService $geminiService){
+
+        $this->geminiService = $geminiService;
+        // $this->middleware('can:tickets.index')->only('index');
+        // $this->middleware('can:tickets.edit')->only('edit', 'update');
+        // $this->middleware('can:todos_tecnicos');
 
     }
     /**
@@ -232,7 +244,7 @@ public function filtrarTickets(Request $request)
         // }
     }
     
-    public function guardar_mensajeTecnico(Request $request, $idTicket){
+    public function guardar_mensajeTecnico(GeminiService $geminiService, Request $request, $idTicket){
 
        
         $ticket = Ticket::findOrFail($idTicket);
@@ -284,10 +296,12 @@ public function filtrarTickets(Request $request)
             }
 
         }else{    
-           
+            
             try{
-                $validator = $request->validate([
-                        'mensaje' =>'required',
+
+                $validator = $request->validate(
+                    [
+                        'mensaje' => 'required',
                         'imagen' => 'image|nullable',
                     ],
                     [
@@ -295,18 +309,34 @@ public function filtrarTickets(Request $request)
                         'imagen.image' => 'El archivo debe ser una imagen',
                     ]
                 );
-
+                
+                
                 $mensaje = new Mensaje();
                 $mensaje->user_id = $tecnico->id;
                 $mensaje->ticket_id = $idTicket;
-                $mensaje->mensaje = $request->mensaje;
-            
+
                 if ($request->hasFile('imagen')) {
                     $filename = $this->subirImagen($request->file('imagen'));
                     $mensaje->imagen = $filename;
                 }
 
-                $mensaje->save();
+                // Analizar el sentimiento o estado de ánimo que transmite el mensaje
+                $geminiService = new GeminiService();
+                $result=$geminiService->generateSentiment($request->mensaje);
+                $textAnalizado = $result['candidates'][0]['content']['parts'][0]['text'];
+                
+                // si el estado de ánimo es negativo mostrar mensaje de error y no guardarlo
+                if($textAnalizado === "Negativo.\n"){
+                    session(['mensaje' => $request->mensaje]);
+                    session(['imagen' => $mensaje->imagen ?? null]);
+                    return response()->json([
+                        'animoNegativo' => 'El estado de ánimo del mensaje es negativo',
+                    ]);
+                    
+                }elseif($textAnalizado === "Positivo.\n" || $textAnalizado === "Neutral.\n"){
+                    $mensaje->mensaje = $request->mensaje;
+                    $mensaje->save();
+                }
 
                 $estadoTicket = Estado::find($ticket->estado_id);
 

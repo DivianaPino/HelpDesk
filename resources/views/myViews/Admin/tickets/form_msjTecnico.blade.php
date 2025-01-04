@@ -10,202 +10,188 @@
       <div class="row align-items-stretch no-gutters contact-wrap ">
         <div class="col-md-12 ">
           <div class="form h-100  content-fondo" >
-              <div class="content-btnVolver">
-                  <a style="margin-top:8px;" href="javascript:void(0);" class="btn btn-dark btn-volver" onclick="checkPreviousUrl({{ $ticket->id }})">
-                      <i class="fa-solid fa-arrow-left fa-lg"></i>Volver
-                  </a>
-              </div>
-              <h3 class="tituloMsjTecnico">Ticket #{{$idTicket}} </h3>
-              <form action="/mensaje/tecnico/ticket/{{$ticket->id}}" class="mb-5" method="post" id="contactForm" name="contactForm" enctype="multipart/form-data">
+            <div class="content-btnVolver">
+                <a style="margin-top:8px;" href="javascript:void(0);" class="btn btn-dark btn-volver" onclick="checkPreviousUrl({{ $ticket->id }})">
+                    <i class="fa-solid fa-arrow-left fa-lg"></i>Volver
+                </a>
+            </div>
+            <h3 class="tituloMsjTecnico">Ticket #{{$idTicket}} </h3>
+            <form action="/mensaje/tecnico/ticket/{{$ticket->id}}" class="mb-5" method="post" id="contactForm" name="contactForm" enctype="multipart/form-data">
               @csrf
-
-                <div class="cuadro1">
-                      INFORMACIÓN DEL TICKET
+              <div class="row">
+                <div class="col-md-8 form-group mb-3">
+                  <label for="user_id" class="col-form-label">Usuario:</label>
+                  <input type="text" class="form-control" name="user_id" id="user_id"   value="{{$ticket->user->name}}" disabled >
                 </div>
-                <div class="row">
-                    <div class="col-md-8 form-group mb-3">
-                      <label for="user_id" class="col-form-label">Usuario:</label>
-                      <input type="text" class="form-control" name="user_id" id="user_id"   value="{{$ticket->user->name}}" disabled >
-                    </div>
-                    <div class="col-md-4 form-group mb-3 ml-auto">
-                      <label for="fecha_inicio" class="col-form-label">Fecha:</label>
-                      <input type="text" class="form-control" name="fecha_inicio" id="fecha_inicio" value="{{$ticket->fecha_inicio}}"  disabled>
-                    </div>
+                <div class="col-md-4 form-group mb-3 ml-auto">
+                  <label for="fecha_inicio" class="col-form-label">Fecha:</label>
+                  <input type="text" class="form-control" name="fecha_inicio" id="fecha_inicio" value="{{$ticket->fecha_inicio}}"  disabled>
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-4 form-group mb-3">
+                      <label for="area_id" class="col-form-label">Área:</label>
+                      <input type="text" class="form-control" name="area_id" id="area_id" value="{{ $ticket->area->nombre }}" disabled>
+                </div>
+                <div class="col-md-4 form-group mb-3">
+                      <label for="servicio_id" class="col-form-label">Servicio:</label>
+                      <input type="text" class="form-control" name="servicio_id" id="servicio_id" value="{{ $ticket->servicio->nombre }}" disabled>
+                </div>
+                <div class="col-md-4 form-group mb-3">
+                  <label for="prioridad_id" class="col-form-label">Prioridad:</label>
+                  <input type="text" class="form-control" name="prioridad_id" id="prioridad_id" value="{{ $ticket->prioridad->nombre }}" disabled>
+                </div>
+              </div>     
+              
+              <div class="row">
+                @if(is_null($ticket->asignado_a))
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="asignado_a" class="col-form-label">Técnico asignado:</label>
+                    <input type="text" class="form-control" name="asignado_a" id="asignado_a" value="Sin asignar" disabled>
                   </div>
-                  
-                  <div class="row">
-                    <div class="col-md-4 form-group mb-3">
-                          <label for="area_id" class="col-form-label">Área:</label>
-                          <input type="text" class="form-control" name="area_id" id="area_id" value="{{ $ticket->area->nombre }}" disabled>
-                    </div>
-                    <div class="col-md-4 form-group mb-3">
-                          <label for="servicio_id" class="col-form-label">Servicio:</label>
-                          <input type="text" class="form-control" name="servicio_id" id="servicio_id" value="{{ $ticket->servicio->nombre }}" disabled>
-                    </div>
-                    <div class="col-md-4 form-group mb-3">
-                      <label for="prioridad_id" class="col-form-label">Prioridad:</label>
-                      <input type="text" class="form-control" name="prioridad_id" id="prioridad_id" value="{{ $ticket->prioridad->nombre }}" disabled>
-                    </div>
-                  </div>     
-                  
-                  <div class="row">
-                   @if(is_null($ticket->asignado_a))
-                      <div class="col-md-6 form-group mb-3">
-                        <label for="asignado_a" class="col-form-label">Técnico asignado:</label>
-                        <input type="text" class="form-control" name="asignado_a" id="asignado_a" value="Sin asignar" disabled>
-                      </div>
+                @else
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="asignado_a" class="col-form-label">Técnico asignado:</label>
+                    <input type="text" class="form-control" name="asignado_a" id="asignado_a" value="{{$ticket->asignado_a}}" disabled>
+                  </div>
+                @endif
+
+                <div class="col-md-6 form-group mb-3">
+                  <label for="estado_id" class="col-form-label">Estado:</label>
+                  <input type="text" class="form-control" name="estado_id" id="estado_id" value="{{$ticket->estado->nombre}}" disabled>
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-12 form-group mb-3">
+                  <label for="asunto" class="col-form-label">Asunto:</label>
+                  <input type="text" class="form-control inputForm" name="asunto" id="asunto" value="{{$ticket->asunto}}" placeholder="Escribe el asunto" disabled >
+                </div>
+              </div>
+                
+              <div class="row">
+                <div class="col-md-12 form-group mb-3">
+                  <label for="mensaje" class="col-form-label">Mensaje:</label>
+                  <textarea class="form-control inputForm" name="mensaje" id="msj" cols="30" rows="4"  disabled>{{$ticket->mensaje}}</textarea>
+                </div>
+              </div>
+
+              @if(isset($ticket->imagen))
+                <div class="row">
+                  <div class="col-md-12 form-group mb-3">
+                      <img src="{{asset('images/tickets/'.$ticket->imagen)}}"
+                        class="img-fluid img-rounded" width="60px"> 
+                      <a href="{{ asset('images/tickets/'.$ticket->imagen) }}" style="font-size:12px;" download >Descargar Imagen</a>   
+                  </div>
+                </div>
+              @endif
+
+              <div class="content-chat">
+                <div class="row">
+                  <div class="col-md-12 form-group mb-3 cuadro2">
+                      CHAT CON EL CLIENTE "{{strtoupper($cliente->name)}}"
+                  </div>
+            
+                  <div class="card col-md-12 form-group mb-3 overflow-auto chat" id="chat">
+                    @if($ticket->mensajes()->exists())
+                      @foreach($ticket->mensajes as $msj)
+                        @if($msj->user_id == Auth::user()->id)
+                          @if($msj->mensaje || isset($msj['imagen']))
+                            <div class="mensajesRight">
+                                <h5>{{$msj->mensaje}}</h5>
+                                @if(isset($msj['imagen']))
+                                    <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
+                                    <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" style="font-size:12px;" download>Descargar Imagen</a>   
+                                @else
+                                    <img src="{{asset('images/msjTecnico/default.png')}}" class="img-fluid img-rounded" width="60px" hidden> 
+                                    <a href="{{ asset('images/msjTecnico/default.png') }}" download hidden>Descargar Imagen</a>   
+                                @endif    
+                                <span class="fecha_mensajes">{{$msj->created_at->format('d-m-Y')}}, {{$msj->created_at->format('H:i:s')}} </span>
+                            </div>
+                          @endif
+                        @else
+                          @if($msj->mensaje || isset($msj['imagen']))
+                            <div class="mensajesLeft">
+                                <h5>{{$msj->mensaje}}</h5>
+                                @if(isset($msj['imagen']))
+                                    <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
+                                    <a href="{{ asset('images/msjCliente/'.$msj['imagen']) }}" style="font-size:12px;" download>Descargar Imagen</a>   
+                                @else
+                                    <img src="{{asset('images/msjCliente/default.png')}}" class="img-fluid img-rounded" width="60px" hidden> 
+                                    <a href="{{ asset('images/msjCliente/default.png') }}" download hidden>Descargar Imagen</a>   
+                              @endif    
+                              <span class="fecha_mensajes">{{$msj->created_at->format('d-m-Y')}}, {{$msj->created_at->format('H:i:s')}}</span>
+                            </div>
+                          @endif
+                        @endif
+                      @endforeach
                     @else
-                     <div class="col-md-6 form-group mb-3">
-                        <label for="asignado_a" class="col-form-label">Técnico asignado:</label>
-                        <input type="text" class="form-control" name="asignado_a" id="asignado_a" value="{{$ticket->asignado_a}}" disabled>
+                      <div class="sinmensajes" id="sinMsj">
+                          <p>Sin mensajes...</p>
                       </div>
                     @endif
-
-                    <div class="col-md-6 form-group mb-3">
-                      <label for="estado_id" class="col-form-label">Estado:</label>
-                      <input type="text" class="form-control" name="estado_id" id="estado_id" value="{{$ticket->estado->nombre}}" disabled>
-                    </div>
-                  </div>
-              
-
-                <div class="row">
-                  <div class="col-md-12 form-group mb-3">
-                    <label for="asunto" class="col-form-label">Asunto:</label>
-                    <input type="text" class="form-control inputForm" name="asunto" id="asunto" value="{{$ticket->asunto}}" placeholder="Escribe el asunto" disabled >
-                  </div>
-                </div>
-                
-                <div class="row">
-                  <div class="col-md-12 form-group mb-3">
-                    <label for="mensaje" class="col-form-label">Mensaje:</label>
-                    <textarea class="form-control inputForm" name="mensaje" id="msj" cols="30" rows="4"  disabled>{{$ticket->mensaje}}</textarea>
+                  </div> 
+               
+         
+                  <div id="messagesContainer" class="col-md-12 containermsj">
+                    @if(session('status'))
+                      <p class="alert alert-success message-alert" ><i class="fa-solid fa-circle-check fa-lg"></i>{{ Session('status') }}</p>
+                    @elseif(session('error'))
+                      <p class="alert alert-danger message-alert" >{{ Session('error') }}</p>
+                    @elseif(session('errorText'))
+                      <p class="alert alert-danger message-alert" >{{ Session('errorText') }}</p>
+                    @endif
                   </div>
                 </div>
-
-                @if(isset($ticket->imagen))
-                  <div class="row">
-                    <div class="col-md-12 form-group mb-3">
-                        <img src="{{asset('images/tickets/'.$ticket->imagen)}}"
-                          class="img-fluid img-rounded" width="60px"> 
-                        <a href="{{ asset('images/tickets/'.$ticket->imagen) }}" style="font-size:12px;" download >Descargar Imagen</a>   
-                    </div>
-                  </div>
-                @endif
-
-                <div class="content-chat">
-                    <div class="row">
-                      <div class="col-md-12 form-group mb-3 cuadro2">
-                          CHAT CON EL CLIENTE "{{strtoupper($cliente->name)}}"
-                      </div>
-                    </div>
-
-
-                    <div class="row">   
-                      <div class="card col-md-12 form-group mb-3 overflow-auto chat" id="chat">
-                        @if($ticket->mensajes()->exists())
-                          @foreach($ticket->mensajes as $msj)
-                            @if($msj->user_id == Auth::user()->id)
-                              @if($msj->mensaje || isset($msj['imagen']))
-                                <div class="mensajesRight">
-                                    <h5>{{$msj->mensaje}}</h5>
-                                    @if(isset($msj['imagen']))
-                                        <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
-                                        <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" style="font-size:12px;" download>Descargar Imagen</a>   
-                                    @else
-                                        <img src="{{asset('images/msjTecnico/default.png')}}" class="img-fluid img-rounded" width="60px" hidden> 
-                                        <a href="{{ asset('images/msjTecnico/default.png') }}" download hidden>Descargar Imagen</a>   
-                                    @endif    
-                                    <span class="fecha_mensajes">{{$msj->created_at->format('d-m-Y')}}, {{$msj->created_at->format('H:i:s')}} </span>
-                                </div>
-                              @endif
-                            @else
-                              @if($msj->mensaje || isset($msj['imagen']))
-                                <div class="mensajesLeft">
-                                    <h5>{{$msj->mensaje}}</h5>
-                                    @if(isset($msj['imagen']))
-                                        <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
-                                        <a href="{{ asset('images/msjCliente/'.$msj['imagen']) }}" style="font-size:12px;" download>Descargar Imagen</a>   
-                                    @else
-                                        <img src="{{asset('images/msjCliente/default.png')}}" class="img-fluid img-rounded" width="60px" hidden> 
-                                        <a href="{{ asset('images/msjCliente/default.png') }}" download hidden>Descargar Imagen</a>   
-                                  @endif    
-                                  <span class="fecha_mensajes">{{$msj->created_at->format('d-m-Y')}}, {{$msj->created_at->format('H:i:s')}}</span>
-                                </div>
-                              @endif
-                            @endif
-                          @endforeach
-                       @else
-                          <div class="sinmensajes" id="sinMsj">
-                              <p>Sin mensajes...</p>
-                          </div>
-                       @endif
-                     </div> 
-                    </div>  
-                    <div class="row">
-                      <div id="messagesContainer" class="col-md-12 containermsj">
-                        @if(session('status'))
-                          <p class="alert alert-success message-alert" ><i class="fa-solid fa-circle-check fa-lg"></i>{{ Session('status') }}</p>
-                        @elseif(session('error'))
-                          <p class="alert alert-danger message-alert" >{{ Session('error') }}</p>
-                        @endif
-                      </div>
-                   </div>   
-                  
-                 </div>
-              
+            
                 <div class="row" id="rowMensaje">
                   <div class="col-md-12 form-group mb-3 " style="padding:0px;">
-                    <textarea class="form-control" name="mensaje" id="mensaje" cols="40" rows="4"  placeholder="Escribe el mensaje" >{{old('mensaje')}}</textarea>
+                    <textarea  class="form-control"  name="mensaje" id="mensaje" cols="40" rows="4"  placeholder="Escribe el mensaje" >Buen día, {{$cliente->name}}, </textarea>
                   </div>
                 </div>
+              </div>
+              <div class="row contentCheckbox-Resuelto" id="rowImagenBox">
+                  <div class="col-md-8 form-group mb-3 content-file">
+                    <input type="file" name="imagen" accept="image/*" id="imagenMsj">
+                  </div>
 
-                <div class="row contentCheckbox-Resuelto" id="rowImagenBox">
-                    <div class="col-md-8 form-group mb-3 content-file">
-                      <input type="file" name="imagen" accept="image/*" id="imagenMsj">
-                    </div>
+                  <div class="col-md-4 content_starsCheckbox d-flex justify-content-end">
+                    <div class="checkbox-containerResuelto"  id="checkboxContainerResuelto">
+                        <input class="checkbox" type="checkbox" id="resuelto" name="resuelto"  value="on">
+                        <label class="labelResuelto" for="resuelto" >Ticket resuelto</label>
+                      </div>
+                        
+                      <div class="container-estrellas" >
+                        <div class="estrellas"></div>
+                        <a href="/calificaciones/ticket/{{$idTicket}}" class="ml-2">Ver calificación(es)</a>
+                      </div>
+                  </div>
+              </div>
 
-                    <div class="col-md-4 content_starsCheckbox d-flex justify-content-end">
-                       <div class="checkbox-containerResuelto"  id="checkboxContainerResuelto">
-                          <input class="checkbox" type="checkbox" id="resuelto" name="resuelto"  value="on">
-                          <label class="labelResuelto" for="resuelto" >Ticket resuelto</label>
-                        </div>
+              <div class="content-responder" id="btnEnviarMsj">
+                <div>
+                  <input type="submit" id="submitButton" value="Enviar mensaje" class="btn-primary rounded-0 py-2 px-4 btnResponder" >
+                </div>
+              </div>
+
+              <div class="textoTicketResuelto shadow-sm p-3 mb-5 bg-body rounded" id="txtTicketResuelto">
+                  <p><i class="fa-solid fa-circle-check fa-xl"></i>Ticket resuelto, esperando calificación de la asistencia.</p>
+              </div>
+
+              @if($ticket->calificaciones()->exists())
+                  <!-- Cuadro cuando ya esta cerrado el ticket -->
+                  <div class="textoTicketCerrado shadow-sm p-3 mb-5 bg-body rounded" id="txtTicketCerrado">
+                    <p><i class="fa-solid fa-circle-check fa-xl"></i>Ticket resuelto</p>
+                      <div class="container-stars" >
+                            <div class="stars"></div>
                           
-                        <div class="container-estrellas" >
-                          <div class="estrellas"></div>
-                          <a href="/calificaciones/ticket/{{$idTicket}}" class="ml-2">Ver calificación(es)</a>
-                        </div>
-                    </div>
-                </div>
-
-            
-                
-                <div class="content-responder" id="btnEnviarMsj">
-                  <div>
-                    <input type="submit" id="submitButton" value="Enviar mensaje" class="btn-primary rounded-0 py-2 px-4 btnResponder" >
+                            <span class="calificacion_nivel" id="nivel_calif">{{$ticket->ultimaCalificacion->nivel_satisfaccion}}</span>
+                            <a href="/calificaciones/ticket/{{$idTicket}}" class="text-calificacionCerrado ml-2">Ver calificación(es)</a>
+                      </div>
                   </div>
-                </div>
-
-                <div class="textoTicketResuelto shadow-sm p-3 mb-5 bg-body rounded" id="txtTicketResuelto">
-                    <p><i class="fa-solid fa-circle-check fa-xl"></i>Ticket resuelto, esperando calificación de la asistencia.</p>
-                </div>
-
-                @if($ticket->calificaciones()->exists())
-                    <!-- Cuadro cuando ya esta cerrado el ticket -->
-                    <div class="textoTicketCerrado shadow-sm p-3 mb-5 bg-body rounded" id="txtTicketCerrado">
-                      <p><i class="fa-solid fa-circle-check fa-xl"></i>Ticket resuelto</p>
-                        <div class="container-stars" >
-                              <div class="stars"></div>
-                            
-                              <span class="calificacion_nivel" id="nivel_calif">{{$ticket->ultimaCalificacion->nivel_satisfaccion}}</span>
-                              <a href="/calificaciones/ticket/{{$idTicket}}" class="text-calificacionCerrado ml-2">Ver calificación(es)</a>
-                        </div>
-                    </div>
-                @endif
-
-
-               
-              </form>
-            </div>
+              @endif
+            </form>
           </div>
         </div>
       </div>
@@ -271,33 +257,60 @@ document.addEventListener("DOMContentLoaded", function() {
 
           console.log(data);
           if (data.status === 'success') {
-                // Mostrar mensaje de éxito
-                let successMessageElement = document.createElement('p');
-                successMessageElement.className = 'alert alert-success message-alert';
-                successMessageElement.innerHTML = `<i class="fa-solid fa-circle-check fa-lg"></i>${data.msjSuccess}`;
-                document.getElementById('messagesContainer').innerHTML = '';
-                document.getElementById('messagesContainer').appendChild(successMessageElement);
+            // Mostrar mensaje de éxito
+            let successMessageElement = document.createElement('p');
+            successMessageElement.className = 'alert alert-success message-alert';
+            successMessageElement.innerHTML = `<i class="fa-solid fa-circle-check fa-lg"></i>${data.msjSuccess}`;
+            document.getElementById('messagesContainer').innerHTML = '';
+            document.getElementById('messagesContainer').appendChild(successMessageElement);
 
-                setTimeout(() => {
-                    document.getElementById('messagesContainer').innerHTML = '';
-                }, 5000); // Elimina el mensaje después de 5 segundos (5000 milisegundos)
-
-            } else if (data.errors) {
-                // Mostrar mensaje de error
-                let errorMessageElement = document.createElement('p');
-                errorMessageElement.className = 'alert alert-danger message-alert';
-    
-                let errorValidation=Object.values(data)[0];
-                let mensajeError=Object.values(errorValidation)[0];
-                errorMessageElement.className = 'alert alert-danger message-alert';
-                errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
+            setTimeout(() => {
                 document.getElementById('messagesContainer').innerHTML = '';
-                document.getElementById('messagesContainer').appendChild(errorMessageElement);
-                
-                setTimeout(() => {
-                    document.getElementById('messagesContainer').innerHTML = '';
-                }, 5000)
-            }
+            }, 5000); // Elimina el mensaje después de 5 segundos (5000 milisegundos)
+
+            // Limpiar los campos de entrada
+            document.getElementById('mensaje').value = ''; // Limpia el textarea de mensaje
+            document.getElementById('imagenMsj').value = ''; // Limpia el input de imagen
+
+          } else if (data.errors) {
+        
+            // Mostrar mensaje de error
+            let errorMessageElement = document.createElement('p');
+            errorMessageElement.className = 'alert alert-danger message-alert';
+
+            let errorValidation=Object.values(data)[0];
+            let mensajeError=Object.values(errorValidation)[0];
+      
+            errorMessageElement.className = 'alert alert-danger message-alert';
+            errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
+            document.getElementById('messagesContainer').innerHTML = '';
+            document.getElementById('messagesContainer').appendChild(errorMessageElement);
+
+            alert('{{ session('error') }}');
+
+            setTimeout(() => {
+                document.getElementById('messagesContainer').innerHTML = '';
+            }, 5000)
+            
+
+          }else if(data.animoNegativo){
+
+            // Mostrar mensaje de error de estado de animo negativo
+            let errorMessageElement = document.createElement('p');
+            errorMessageElement.className = 'alert alert-danger message-alert';
+
+            let mensajeError=data.animoNegativo;
+      
+            errorMessageElement.className = 'alert alert-danger message-alert';
+            errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
+            document.getElementById('messagesContainer').innerHTML = '';
+            document.getElementById('messagesContainer').appendChild(errorMessageElement);
+
+            setTimeout(() => {
+                document.getElementById('messagesContainer').innerHTML = '';
+            }, 5000)
+
+          }
 
           if(!data.hasOwnProperty('errors')){
             // Crear elementos HTML para el mensaje y la imagen
@@ -332,9 +345,7 @@ document.addEventListener("DOMContentLoaded", function() {
               document.getElementById('chat').appendChild(messageElement);
           }
 
-            // Limpiar los campos de entrada
-            document.getElementById('mensaje').value = ''; // Limpia el textarea de mensaje
-            document.getElementById('imagenMsj').value = ''; // Limpia el input de imagen
+     
             document.getElementById('submitButton').value = 'Enviar mensaje'; 
             document.getElementById('submitButton').disabled = false; 
 
@@ -345,6 +356,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
+
 <script>
   $(document).ready(function() {
       checkTicketStatus();
@@ -410,6 +422,44 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const mensajeInput = document.getElementById('mensaje');
+    let typingTimer; // Temporizador para detectar inactividad
+    const doneTypingInterval = 1000; // Tiempo en milisegundos (1 segundo)
+
+    mensajeInput.addEventListener('input', function() {
+        clearTimeout(typingTimer); // Limpiar el temporizador si el usuario sigue escribiendo
+        typingTimer = setTimeout(doneTyping, doneTypingInterval); // Establecer un nuevo temporizador
+    });
+
+    function doneTyping() {
+        const mensaje = mensajeInput.value;
+
+        // Aquí puedes llamar a la API de Gemini IA para analizar el estado de ánimo
+        fetch('/api/gemini/analyze', { // Asegúrate de que esta URL sea correcta
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Asegúrate de incluir el token CSRF
+            },
+            body: JSON.stringify({ text: mensaje })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Aquí puedes manejar la respuesta de la API
+            console.log(data);
+            // Por ejemplo, podrías mostrar el estado de ánimo en la interfaz
+            if (data.mood) {
+                // Mostrar el estado de ánimo en algún lugar de tu interfaz
+                document.getElementById('moodDisplay').innerText = `Estado de ánimo: ${data.mood}`;
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+});
 </script>
 
 

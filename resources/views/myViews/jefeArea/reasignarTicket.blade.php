@@ -11,7 +11,7 @@
 <div>
     <div class="card">
         <div class="card-body car-body-reasignar"> 
-            <div class="content-btnVolver volver-Reasignar">
+            <div class="content-btnVolverTable volver-Reasignar">
               <a style="margin-top:8px;" href="/area_usuario/tickets" class="btn btn-dark btn-volver">
               <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
           </div>

@@ -119,7 +119,10 @@
                 <a href="{{ $url }}" class="dropdown-item" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 
                         @if($notificacion->type ==='App\Notifications\CalificacionNotification')
-                            <i class="fas fa-star mr-4  iconStyle "> Calificación - Ticket #{{ $notificacion->data['calificacion_idTicket'] }} </i>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-star iconStyle "></i>
+                                <h6 class="titleNoti d-flex">Calificación - Ticket #{{ $notificacion->data['calificacion_idTicket'] }}</h6> 
+                            </div>
                             <span class="float-right text-muted text-sm">{{ $notificacion->data['calificacion_satisfaccion'] }}</span>
                             <span class="float-right text-muted text-sm">Usuario: {{ $usuarioNombre }}</span>
                             <span class="float-right text-muted text-sm">{{ $notificacion->created_at->diffForHumans() }}</span>

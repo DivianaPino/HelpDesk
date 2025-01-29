@@ -21,6 +21,26 @@
                   <input type="text" class="form-control" name="nombre" id="nombre"  value="{{$area->nombre}}" >
                 </div>
               </div>
+              <div class="col-md-12 form-group mb-3">
+                  <label for="nombre" class="col-form-label">Notificación al correo de:</label>
+                  <div class="select-containerCorreo w-100"> 
+                      <select class="select-box w-100" name="opcionCorreo" id="opcionCorreo" style="height:40px;">
+                          <option value="">Seleccionar</option>
+                          <option value="Todos" data-stars="5" {{ (old('opcionCorreo', $area->notif_correo) == 'Todos') ? 'selected' : '' }}>Todos</option> 
+                          <option value="Jefe de area" data-stars="4" {{ (old('opcionCorreo', $area->notif_correo) == 'Jefe de area') ? 'selected' : '' }}>Jefe de área</option>
+                      </select>
+                  </div>
+              </div>
+              <div class="col-md-12 form-group mb-3">
+                  <label for="nombre" class="col-form-label">Notificación al telegram de:</label>
+                  <div class="select-containerTelegram"> 
+                    <select class="select-box w-100" name="opcionTelegram" id="opcionTelegram" style="height:40px;">
+                        <option value="">Seleccionar</option>
+                        <option value="Todos" data-stars="5" {{ (old('opcionTelegram', $area->notif_telegram) == 'Todos') ? 'selected' : '' }}>Todos</option> 
+                        <option value="Jefe de area" data-stars="4" {{ (old('opcionTelegram', $area->notif_telegram) == 'Jefe de area') ? 'selected' : '' }}>Jefe de área</option>
+                    </select>
+                  </div>
+              </div>
               
               <div class="msj_error">
                  @error('nombre')

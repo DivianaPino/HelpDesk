@@ -37,6 +37,8 @@ use App\Services\TelegramService;
 
 
 use App\Http\Controllers\IA\SentimentController;
+use App\Http\Controllers\IA\SpellingErrorController;
+use App\Http\Controllers\IA\CorrectErrorsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -109,8 +111,8 @@ Route::middleware([
     Route::get('/alltickets', [TicketsController::class, 'tickets'])->name('tickets.all');
 
     
-    Route::get('/formSentiment', [SentimentController::class, 'formSentiment'] )->name('/form.sentimiento');
-    Route::post('/sentimiento', [SentimentController::class, 'index'] )->name('sentimiento');
+    Route::get('/formSentiment', [CorrectErrorsController::class, 'formSentiment'] )->name('form.sentimiento');
+    Route::post('/sentimiento', [CorrectErrorsController::class, 'index'] )->name('sentimiento');
 
 
    

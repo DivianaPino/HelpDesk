@@ -43,10 +43,6 @@ class TicketsController extends Controller
     public function __construct(GeminiService $geminiService){
 
         $this->geminiService = $geminiService;
-        // $this->middleware('can:tickets.index')->only('index');
-        // $this->middleware('can:tickets.edit')->only('edit', 'update');
-        // $this->middleware('can:todos_tecnicos');
-
     }
     /**
      * Display a listing of the resource.
@@ -85,7 +81,8 @@ class TicketsController extends Controller
         }
 
       
-        return view('myViews.Admin.tickets.index', compact('usuario', 'tickets', 'areas', 'serviciosArea'));
+        return view('myViews.Admin.tickets.index', compact('usuario', 'tickets', 'areas', 'serviciosArea', 
+                                                            'selectedAreaId',  'selectedServicioId'));
     }
 
 public function filtrarTickets(Request $request)
@@ -132,7 +129,7 @@ public function filtrarTickets(Request $request)
             $cant_tkt_reAbiertos=$tickets->where('estado_id', 5)->count();
             $cant_tkt_cerrados=$tickets->where('estado_id', 6)->count();
 
-            // Canti
+            // cantidad de tickets vencidos
             $estados = Estado::whereIn('nombre', ['Nuevo', 'Abierto', 'Reabierto'])->pluck('id');
             $fecha_actual=Carbon::now();
             $cant_tkt_vencidos = $tickets->whereIn('estado_id', $estados)->where('fecha_caducidad', '<', $fecha_actual)->count();
@@ -252,51 +249,6 @@ public function filtrarTickets(Request $request)
         $tecnico = Auth::user();
 
 
-        if($request->input('resuelto') === 'on') {
-
-            try{
-
-                $validator = $request->validate([
-                        'imagen' => 'image|nullable',
-                    ],
-                    [
-                        'imagen.image' => 'El archivo debe ser una imagen',
-                    ]
-                );
-
-
-                $mensaje = new Mensaje();
-                $mensaje->user_id = $tecnico->id;
-                $mensaje->ticket_id = $idTicket;
-                $mensaje->mensaje = $request->mensaje;
-            
-                if ($request->hasFile('imagen')) {
-                    $filename = $this->subirImagen($request->file('imagen'));
-                    $mensaje->imagen = $filename;
-                }
-            
-                $mensaje->save();
-
-                $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
-                $ticket->save();
-            
-                $this->notificacionClienteResuelto($mensaje, $cliente, $tecnico, $idTicket);
-            
-                return response()->json([
-                    'mensaje' => $request->mensaje,
-                    'imagen' => $mensaje->imagen ?? null,
-                    'status' => 'success',
-                    'msjSuccess' => 'Ticket resuelto!, el cliente calificará la asistencia.',
-                ]);
-            
-            }catch (\Illuminate\Validation\ValidationException $e) {
-                return response()->json([
-                    'errors' => $e->validator->errors()->toArray(),
-                ], 422);
-            }
-
-        }else{    
-            
             try{
 
                 $validator = $request->validate(
@@ -315,29 +267,61 @@ public function filtrarTickets(Request $request)
                 $mensaje->user_id = $tecnico->id;
                 $mensaje->ticket_id = $idTicket;
 
+                // Guardad imagen si hay
                 if ($request->hasFile('imagen')) {
                     $filename = $this->subirImagen($request->file('imagen'));
                     $mensaje->imagen = $filename;
                 }
 
+                $textAnalizado ='';
+                $textErrores='';
+
+                // Fecha del mensaje
+                // $mensaje->created_at =  Carbon::now()->addHours(5);
+                // $mensaje->updated_at =  Carbon::now()->addHours(5);
+
                 // Analizar el sentimiento o estado de ánimo que transmite el mensaje
                 $geminiService = new GeminiService();
-                $result=$geminiService->generateSentiment($request->mensaje);
-                $textAnalizado = $result['candidates'][0]['content']['parts'][0]['text'];
-                
-                // si el estado de ánimo es negativo mostrar mensaje de error y no guardarlo
-                if($textAnalizado === "Negativo.\n"){
-                    session(['mensaje' => $request->mensaje]);
-                    session(['imagen' => $mensaje->imagen ?? null]);
+                $resultSentimiento=$geminiService->generateSentiment($request->mensaje);
+                $textAnalizado = $resultSentimiento['candidates'][0]['content']['parts'][0]['text'];
+
+                 //Texto reescrito con un estado de ánimo positivo
+                 $resultRewrite=$geminiService->rewriteText($request->mensaje);
+                 $textRewrite =  $resultRewrite['candidates'][0]['content']['parts'][0]['text'];
+
+                // Verificar si el texto tiene errores ortográficos o gramaticales
+                $resultErrores=$geminiService->SpellingError($request->mensaje);
+                $textErrores = $resultErrores['candidates'][0]['content']['parts'][0]['text'];
+
+                //Texto corregido
+                $resultCorreccion=$geminiService->CorrectErrors($request->mensaje);
+                $textCorregido = $resultCorreccion['candidates'][0]['content']['parts'][0]['text'];
+
+                // si el estado de ánimo no es positivo y tiene errores ortograficos o gramaticales
+                // mostrar mensaje de error y no guardarlo
+                if($textAnalizado === "Negativo.\n" && $textErrores === "No\n"){
+                   
                     return response()->json([
-                        'animoNegativo' => 'El estado de ánimo del mensaje es negativo',
+                        'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
+                        'textoReescrito' => $textRewrite,
                     ]);
                     
-                }elseif($textAnalizado === "Positivo.\n" || $textAnalizado === "Neutral.\n"){
+                }elseif($textAnalizado === "Neutral.\n" && $textErrores === "No\n"){
+                    return response()->json([
+                        'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
+                        'textoReescrito' => $textRewrite,
+                    ]);
+
+                }elseif($textAnalizado === "Positivo.\n" && $textErrores === "No\n"){
                     $mensaje->mensaje = $request->mensaje;
                     $mensaje->save();
-                }
 
+                }elseif($textErrores === "Sí\n"){
+                    return response()->json([
+                        'textoErrores' => 'El texto tiene errores ortográficos o gramaticales',
+                        'textoCorregido' => $textCorregido,
+                    ]);
+                }
                 $estadoTicket = Estado::find($ticket->estado_id);
 
                 if($estadoTicket->nombre != "En espera" && $ticket->mensajes){
@@ -348,6 +332,11 @@ public function filtrarTickets(Request $request)
                             break;
                         }  
                     }
+                }
+
+                if($request->input('resuelto') === 'on') {
+                    $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
+                    $ticket->save();
                 }
 
                 $this->notificacionCliente($mensaje, $cliente, $tecnico, $idTicket);
@@ -365,7 +354,7 @@ public function filtrarTickets(Request $request)
                     'errors' => $e->validator->errors()->toArray(),
                 ], 422);
             }
-        }
+        
        
     }
 
@@ -441,7 +430,7 @@ public function filtrarTickets(Request $request)
         $usuario= Auth::user();
         $areasUsuario=$usuario->areas()->pluck('area_id');
 
-        $estados = Estado::whereIn('nombre', ['nuevo', 'abierto'])->pluck('id');
+        $estados = Estado::whereIn('nombre', ['Nuevo', 'Abierto', 'Reabierto'])->pluck('id');
         
         $fecha_actual=Carbon::now();
 

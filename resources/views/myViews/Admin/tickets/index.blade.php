@@ -20,7 +20,7 @@
                 <select id="areaFilter" class="form-control">
                   <option value="">Seleccionar área</option>
                   @foreach($areas as $area)
-                      <option value="{{ $area->id }}" {{ old('area') == $area->id ? 'selected' : '' }}>{{ $area->nombre }}</option>
+                      <option value="{{ $area->id }}" {{ $selectedAreaId  == $area->id  ? 'selected' : '' }}>{{ $area->nombre }}</option>
                   @endforeach
                   <option value="">Todas</option>
                 </select>
@@ -29,7 +29,7 @@
               <select id="servicioFilter" class="form-control custom-select">
                   <option value="">Seleccionar servicio</option>
                   @foreach($serviciosArea as $servicio)
-                      <option value="{{ $servicio->id }}" {{ old('servicio') == $servicio->id?'selected' : '' }}>{{ $servicio->nombre }}</option>
+                      <option value="{{ $servicio->id }}" {{ $selectedServicioId  == $servicio->id  ? 'selected' : '' }}>{{ $servicio->nombre }}</option>
                   @endforeach
               </select>
           </div>
@@ -278,23 +278,22 @@ $(document).ready(function() {
         
         });
 
-
-        $('#areaFilter').on('change', function() {
-    var selectedAreaId = $(this).val();
-    var url = '{{ route('tickets.index') }}?area=' + selectedAreaId;
-    
-    // Actualizar la tabla con el nuevo filtro
-    window.location.href = url;
-    
-    // Habilitar el servicioFilter
-    $('#servicioFilter').prop('disabled', false);
+  $('#areaFilter').on('change', function() {
+      var selectedAreaId = $(this).val();
+      var url = '{{ route('tickets.index') }}?area=' + selectedAreaId;
+      
+      // Actualizar la tabla con el nuevo filtro
+      window.location.href = url;
+      
+      // Habilitar el servicioFilter
+      $('#servicioFilter').prop('disabled', false);
   });
+   
 
   // Evento de cambio para servicioFilter
   $('#servicioFilter').on('change', function() {
     var selectedServicioId = $(this).val();
-    var url = '{{ route('tickets.index') }}?servicio=' + selectedServicioId;
-    
+    var url =  '{{ route('tickets.index') }}?area=' + $('#areaFilter').val() + '&servicio=' + selectedServicioId;
     // Actualizar la tabla con el nuevo filtro
     window.location.href = url;
   });

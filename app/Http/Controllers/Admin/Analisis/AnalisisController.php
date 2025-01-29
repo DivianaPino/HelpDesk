@@ -26,10 +26,9 @@ class AnalisisController extends Controller
         $cant_tkt_nuevos=Ticket::where('estado_id', 1)->count();
         $cant_tkt_abiertos=Ticket::where('estado_id', 2)->count();
         $cant_tkt_enEspera=Ticket::where('estado_id', 3)->count();
-        $cant_tkt_enRevision=Ticket::where('estado_id', 4)->count();
-        $cant_tkt_resueltos=Ticket::where('estado_id', 5)->count();
-        $cant_tkt_reAbiertos=Ticket::where('estado_id', 6)->count();
-        $cant_tkt_cerrados=Ticket::where('estado_id', 7)->count();
+        $cant_tkt_resueltos=Ticket::where('estado_id', 4)->count();
+        $cant_tkt_reAbiertos=Ticket::where('estado_id', 5)->count();
+        $cant_tkt_cerrados=Ticket::where('estado_id', 6)->count();
 
         // Cantidad de tickets vencidos 
         $estados = Estado::whereIn('nombre', ['Nuevo', 'Abierto', 'Reabierto'])->pluck('id');
@@ -38,7 +37,6 @@ class AnalisisController extends Controller
         return view('myViews.Admin.analisis.index', compact('cant_tkt_nuevos',
                                                             'cant_tkt_abiertos',
                                                             'cant_tkt_enEspera',
-                                                            'cant_tkt_enRevision', 
                                                             'cant_tkt_resueltos',
                                                             'cant_tkt_reAbiertos',
                                                             'cant_tkt_cerrados',

@@ -10,6 +10,7 @@ use App\Services\GeminiService;
 class SentimentController extends Controller
 {
 
+    // form para pruebas
     public function formSentiment(){
          return view('myViews.Admin.sentiment');
     }

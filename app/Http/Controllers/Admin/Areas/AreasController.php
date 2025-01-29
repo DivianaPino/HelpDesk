@@ -125,6 +125,8 @@ class AreasController extends Controller
 
         $area=Area::find($id);
         $area->nombre=$request->nombre;
+        $area->notif_correo=$request->opcionCorreo;
+        $area->notif_telegram=$request->opcionTelegram;
         $area->save();
 
         return redirect('/areas')->with('status', 'Área editada exitosamente :)');

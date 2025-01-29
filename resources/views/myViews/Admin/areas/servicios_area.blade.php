@@ -7,7 +7,7 @@
 @stop
 
 @section('content')
-<h1 class="titulo_prin">Servicios del área de <span>{{$area->nombre}}</span></h1>
+<h1 class="titulo_prin tituloServiciosArea">Servicios del área de <span>{{$area->nombre}}</span></h1>
 <div>   
      <div  class="card">
         <div  class="card-body" >

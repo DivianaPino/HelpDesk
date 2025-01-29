@@ -12,7 +12,7 @@
      <div class="card">
         <div class="card-body">
             <div style="margin-bottom:30px;">
-                <div class="content-btnVolver">
+                <div class="content-btnVolverTable">
                     <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volver">
                     <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
                 </div>

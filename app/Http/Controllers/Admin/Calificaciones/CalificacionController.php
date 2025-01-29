@@ -20,7 +20,6 @@ class CalificacionController extends Controller
 
      public function nivel_satisfaccion($idTicket)
      {
-         // Aquí puedes agregar lógica para obtener la información del ticket
          $ticket = Ticket::find($idTicket); // Ejemplo de cómo podrías obtener la información
          $ultimaCalif=$ticket->ultimaCalificacion;
          $nivelSatisfaccion=$ultimaCalif->nivel_satisfaccion;
@@ -104,6 +103,7 @@ class CalificacionController extends Controller
         elseif($usuario->hasRole(['Usuario estándar'])){
 
             $usuario=Auth::user();
+            $allCalificaciones = [];
         
             $tickets=Ticket::where('user_id', $usuario->id)->get();
      
@@ -131,6 +131,7 @@ class CalificacionController extends Controller
     
     public function calificaciones_tk_jefeArea(){
        $usuario=Auth::user();
+       $allCalificaciones = [];
        
        $tickets=Ticket::where('asignado_a', $usuario->name)->get();
 

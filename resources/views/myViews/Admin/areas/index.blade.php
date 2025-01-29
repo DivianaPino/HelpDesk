@@ -21,6 +21,8 @@
                    <tr>
                       <th>ID</th>
                       <th>Nombre</th>
+                      <th>Notif. Correo</th>
+                      <th>Notif. Telegram</th>
                       <th>Acciones</th>
                    </tr>
                </thead>
@@ -30,6 +32,8 @@
                         <tr>
                             <td>{{$area->id}}</td>
                             <td>{{$area->nombre}}</td>
+                            <td>{{$area->notif_correo}}</td>
+                            <td>{{$area->notif_telegram}}</td>
                             <td  class="align-items-center">
                                 <div>
 

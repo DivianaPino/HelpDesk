@@ -11,7 +11,7 @@
         <div class="col-md-12 ">
           <div class="form h-100  content-fondo" >
             <div class="content-btnVolver">
-                <a style="margin-top:8px;" href="javascript:void(0);" class="btn btn-dark btn-volver" onclick="checkPreviousUrl({{ $ticket->id }})">
+                <a  href="javascript:void(0);" class="btn btn-dark btn-volver" onclick="checkPreviousUrl({{ $ticket->id }})">
                     <i class="fa-solid fa-arrow-left fa-lg"></i>Volver
                 </a>
             </div>
@@ -94,34 +94,39 @@
                   </div>
             
                   <div class="card col-md-12 form-group mb-3 overflow-auto chat" id="chat">
+
                     @if($ticket->mensajes()->exists())
                       @foreach($ticket->mensajes as $msj)
-                        @if($msj->user_id == Auth::user()->id)
+                        @if($msj->user_id == Auth::user()->id || auth()->user()->hasRole('Administrador'))
                           @if($msj->mensaje || isset($msj['imagen']))
-                            <div class="mensajesRight">
-                                <h5>{{$msj->mensaje}}</h5>
-                                @if(isset($msj['imagen']))
-                                    <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
-                                    <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" style="font-size:12px;" download>Descargar Imagen</a>   
-                                @else
-                                    <img src="{{asset('images/msjTecnico/default.png')}}" class="img-fluid img-rounded" width="60px" hidden> 
-                                    <a href="{{ asset('images/msjTecnico/default.png') }}" download hidden>Descargar Imagen</a>   
-                                @endif    
-                                <span class="fecha_mensajes">{{$msj->created_at->format('d-m-Y')}}, {{$msj->created_at->format('H:i:s')}} </span>
+                            <div class="container-msjRight">
+                              <div class="mensajesRight">
+                                  <p class="msjChat">{{$msj->mensaje}}</p>
+                                  @if(isset($msj['imagen']))
+                                      <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
+                                      <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" class="txtImagen"  download>Descargar Imagen</a>   
+                                  @else
+                                      <img src="{{asset('images/msjTecnico/default.png')}}" class="img-fluid img-rounded" hidden> 
+                                      <a href="{{ asset('images/msjTecnico/default.png') }}" download hidden>Descargar Imagen</a>   
+                                  @endif    
+                                  <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}} </span>
+                              </div>
                             </div>
                           @endif
                         @else
                           @if($msj->mensaje || isset($msj['imagen']))
-                            <div class="mensajesLeft">
-                                <h5>{{$msj->mensaje}}</h5>
-                                @if(isset($msj['imagen']))
-                                    <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
-                                    <a href="{{ asset('images/msjCliente/'.$msj['imagen']) }}" style="font-size:12px;" download>Descargar Imagen</a>   
-                                @else
-                                    <img src="{{asset('images/msjCliente/default.png')}}" class="img-fluid img-rounded" width="60px" hidden> 
-                                    <a href="{{ asset('images/msjCliente/default.png') }}" download hidden>Descargar Imagen</a>   
-                              @endif    
-                              <span class="fecha_mensajes">{{$msj->created_at->format('d-m-Y')}}, {{$msj->created_at->format('H:i:s')}}</span>
+                            <div class="container-msjLeft">
+                              <div class="mensajesLeft">
+                                  <p class="msjChat">{{$msj->mensaje}}</p>
+                                  @if(isset($msj['imagen']))
+                                      <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj" > 
+                                      <a href="{{ asset('images/msjCliente/'.$msj['imagen']) }}" class="txtImagen"  download>Descargar Imagen</a>   
+                                  @else
+                                      <img src="{{asset('images/msjTecnico/default.png')}}" class="img-fluid img-rounded" hidden> 
+                                      <a href="{{ asset('images/msjTecnico/default.png') }}" download hidden>Descargar Imagen</a>   
+                                  @endif    
+                                  <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}} </span>
+                              </div>
                             </div>
                           @endif
                         @endif
@@ -147,31 +152,39 @@
             
                 <div class="row" id="rowMensaje">
                   <div class="col-md-12 form-group mb-3 " style="padding:0px;">
-                    <textarea  class="form-control"  name="mensaje" id="mensaje" cols="40" rows="4"  placeholder="Escribe el mensaje" >Buen día, {{$cliente->name}}, </textarea>
+                    <textarea  class="form-control"  name="mensaje" id="mensaje" cols="40" rows="4"  placeholder="Escribe el mensaje" ></textarea>
                   </div>
                 </div>
               </div>
-              <div class="row contentCheckbox-Resuelto" id="rowImagenBox">
-                  <div class="col-md-8 form-group mb-3 content-file">
-                    <input type="file" name="imagen" accept="image/*" id="imagenMsj">
-                  </div>
+              <div class="row contentCheckbox-Resuelto w-100" id="rowImagenBox">
+                <div class="col-md-8 form-group mb-3 content-file">
+                  <input type="file" name="imagen" accept="image/*" id="imagenMsj" class="msjFile">
+                </div>
 
-                  <div class="col-md-4 content_starsCheckbox d-flex justify-content-end">
-                    <div class="checkbox-containerResuelto"  id="checkboxContainerResuelto">
-                        <input class="checkbox" type="checkbox" id="resuelto" name="resuelto"  value="on">
-                        <label class="labelResuelto" for="resuelto" >Ticket resuelto</label>
-                      </div>
-                        
-                      <div class="container-estrellas" >
-                        <div class="estrellas"></div>
-                        <a href="/calificaciones/ticket/{{$idTicket}}" class="ml-2">Ver calificación(es)</a>
-                      </div>
+                <div class="col-md-4 content_starsCheckbox d-flex justify-content-end">
+                  <div class="checkbox-containerResuelto"  id="checkboxContainerResuelto">
+                    <input class="checkbox" type="checkbox" id="resuelto" name="resuelto"  value="on">
+                    <label class="labelResuelto" for="resuelto" >Ticket resuelto</label>
                   </div>
+                  
+                  <div class="stars-calif">
+                    <div class="container-estrellas" >
+                      <div class="estrellas estrellasTicket"></div>
+                      <a href="/calificaciones/ticket/{{$idTicket}}" class="ml-2 link-calif">Ver calificación(es)</a>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="content-responder" id="btnEnviarMsj">
                 <div>
                   <input type="submit" id="submitButton" value="Enviar mensaje" class="btn-primary rounded-0 py-2 px-4 btnResponder" >
+                </div>
+                <div>
+                   <button id="btnReescribir" class="btn-info btnReescribir" type="button" style="display: none;">Reescribir</button>
+                </div>
+                <div>
+                   <button id="btnCorregir" class="btn-info btnCorregir" type="button" style="display: none;">Corregir</button>
                 </div>
               </div>
 
@@ -197,6 +210,10 @@
       </div>
     </div>
   </div>
+
+  @php
+    $estadoTkt = $ticket->estado->nombre;
+  @endphp
 @stop
 
 @section('css')
@@ -236,17 +253,24 @@
         }
     });
   </script>
+  
 <script>
 document.addEventListener("DOMContentLoaded", function() {
+
+    const chatContainer = document.getElementById('chat');
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+
     document.getElementById('contactForm').addEventListener('submit', function(event) {
         event.preventDefault(); // Evita que el formulario se envíe por defecto
 
-        
         document.getElementById('submitButton').value = 'Enviando...'; 
         document.getElementById('submitButton').disabled = true; 
         
         var formData = new FormData(this);
         document.getElementById('mensaje').disabled = true; 
+
+
+
 
         fetch('/mensaje/tecnico/ticket/{{$ticket->id}}', { 
             method: 'POST',
@@ -256,6 +280,10 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(data => {
 
           console.log(data);
+
+          const checkbox=document.getElementById('resuelto');
+
+
           if (data.status === 'success') {
             // Mostrar mensaje de éxito
             let successMessageElement = document.createElement('p');
@@ -273,7 +301,7 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('imagenMsj').value = ''; // Limpia el input de imagen
 
           } else if (data.errors) {
-        
+           
             // Mostrar mensaje de error
             let errorMessageElement = document.createElement('p');
             errorMessageElement.className = 'alert alert-danger message-alert';
@@ -291,10 +319,15 @@ document.addEventListener("DOMContentLoaded", function() {
             setTimeout(() => {
                 document.getElementById('messagesContainer').innerHTML = '';
             }, 5000)
-            
+
+
 
           }else if(data.animoNegativo){
 
+            if (checkbox.checked) {
+              checkbox.checked = true;
+            } 
+            
             // Mostrar mensaje de error de estado de animo negativo
             let errorMessageElement = document.createElement('p');
             errorMessageElement.className = 'alert alert-danger message-alert';
@@ -310,17 +343,72 @@ document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById('messagesContainer').innerHTML = '';
             }, 5000)
 
+            const btnReescribir = document.getElementById('btnReescribir');
+            const mensajeTextarea = document.getElementById('mensaje');
+
+            btnReescribir.style.display = 'block';
+
+            btnReescribir.addEventListener('click', function() {
+                const nuevoMensaje = data.textoReescrito;
+                mensajeTextarea.value =  nuevoMensaje;
+                btnReescribir.style.display = 'none';
+            });
+
+            mensajeError='';
+
+          }else if(data.textoErrores){
+
+            if (checkbox.checked) {
+                  checkbox.checked = true;
+            } 
+
+            // console.log(data.textoErrores);
+
+            // Mostrar mensaje de error de estado de animo negativo
+            let errorMessageElement = document.createElement('p');
+            errorMessageElement.className = 'alert alert-danger message-alert';
+
+            let mensajeError=data.textoErrores;
+
+            errorMessageElement.className = 'alert alert-danger message-alert';
+            errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
+            document.getElementById('messagesContainer').innerHTML = '';
+            document.getElementById('messagesContainer').appendChild(errorMessageElement);
+
+            setTimeout(() => {
+                document.getElementById('messagesContainer').innerHTML = '';
+            }, 5000)
+
+            const btnCorregir = document.getElementById('btnCorregir');
+            const mensajeTextarea = document.getElementById('mensaje');
+
+            btnCorregir.style.display = 'block';
+
+            btnCorregir.addEventListener('click', function() {
+                const nuevoMensaje = data.textoCorregido;
+                mensajeTextarea.value =  nuevoMensaje;
+                btnCorregir.style.display = 'none';
+
+                mensajeError = ''; 
+
+               
+            });
+
+     
           }
 
           if(!data.hasOwnProperty('errors')){
+
+            mensajeError = ''; 
             // Crear elementos HTML para el mensaje y la imagen
-            
             const messageElement = document.createElement('div');
-    
-            if(data.mensaje){
-               messageElement.innerHTML = `<h5>${data.mensaje}</h5>`;
-            }
-            
+
+            chatContainer.classList.add('contenedorRight');
+            messageElement.classList.add('msjUserRight');
+           
+              if(data.mensaje){
+                messageElement.innerHTML = `<p class="msjChat">${data.mensaje}</p>`;
+              }
             
               if (data.imagen) {
                   const imageElement = document.createElement('img');
@@ -328,24 +416,37 @@ document.addEventListener("DOMContentLoaded", function() {
                   imageElement.classList.add('img-fluid', 'img-rounded');
                   imageElement.style.width = '60px';
                   messageElement.appendChild(imageElement);
-                  messageElement.innerHTML += `<br><a href="/images/msjTecnico/${data.imagen}" style="font-size:12px;" download>Descargar Imagen</a>`;
+                  messageElement.innerHTML += `<br><a href="/images/msjTecnico/${data.imagen}"  class="txtImagen" download>Descargar Imagen</a>`;
               }
 
               if(data.mensaje || data.imagen){
-                const fechaActual= new Date().toLocaleString('es-Es');
-                messageElement.innerHTML += `<span class="fecha_mensajes">${fechaActual}</span>`;
+                const fechaActual = new Date().toLocaleString('es-ES', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: true
+                }).toUpperCase().replace(/\./g, '').replace(/\s+(AM|PM)/g, '$1').replace(/(A)\s+(M)/g, '$1$2').replace(/(P)\s+(M)/g, '$1$2'); // Elimina el espacio entre A y M, y P y M
+
+                
+                messageElement.innerHTML += `<span class="fecha_mensajes" style="text-align:right;">${fechaActual}</span>`;
                 $('#sinMsj').hide();
 
                 messageElement.classList.add('mensajesRight');
                
               }
          
-
               // Insertar el mensaje y la imagen en el div "chat"
-              document.getElementById('chat').appendChild(messageElement);
+              chatContainer.appendChild(messageElement);
+
+              chatContainer.scrollTop = chatContainer.scrollHeight;
+
+              mensajeError='';
+
           }
 
-     
+          
             document.getElementById('submitButton').value = 'Enviar mensaje'; 
             document.getElementById('submitButton').disabled = false; 
 
@@ -371,8 +472,6 @@ document.addEventListener("DOMContentLoaded", function() {
           type: 'GET',
 
           success: function(response) {
-
-            console.log(response);
 
               if (response.estado === 'Resuelto') {
 
@@ -400,6 +499,7 @@ document.addEventListener("DOMContentLoaded", function() {
                   $('#txtTicketCerrado').hide();
                   $('.container-estrellas').show();
                   $('#checkboxContainerResuelto').addClass('alinear-checkbox');
+                 
 
               } else {
                   $('#rowMensaje').show();
@@ -423,45 +523,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
   
 </script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const mensajeInput = document.getElementById('mensaje');
-    let typingTimer; // Temporizador para detectar inactividad
-    const doneTypingInterval = 1000; // Tiempo en milisegundos (1 segundo)
-
-    mensajeInput.addEventListener('input', function() {
-        clearTimeout(typingTimer); // Limpiar el temporizador si el usuario sigue escribiendo
-        typingTimer = setTimeout(doneTyping, doneTypingInterval); // Establecer un nuevo temporizador
-    });
-
-    function doneTyping() {
-        const mensaje = mensajeInput.value;
-
-        // Aquí puedes llamar a la API de Gemini IA para analizar el estado de ánimo
-        fetch('/api/gemini/analyze', { // Asegúrate de que esta URL sea correcta
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Asegúrate de incluir el token CSRF
-            },
-            body: JSON.stringify({ text: mensaje })
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Aquí puedes manejar la respuesta de la API
-            console.log(data);
-            // Por ejemplo, podrías mostrar el estado de ánimo en la interfaz
-            if (data.mood) {
-                // Mostrar el estado de ánimo en algún lugar de tu interfaz
-                document.getElementById('moodDisplay').innerText = `Estado de ánimo: ${data.mood}`;
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    }
-});
-</script>
-
 
 <!-- al cargar la página -->
 <script>

@@ -7,12 +7,12 @@
 @stop
 
 @section('content') 
-<div class="content-btnVolver btnVolver_TecArea">
+<div class="content-btnVolverTable "  style="padding-top:30px !important;">
     <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volver">
     <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
 </div>
 
-<h1 class="titulo_prin">Técnicos que pertenecen al área: {{ $area->nombre }} </h1>
+<h1 class="titulo_prin tituloTecnicosArea">Técnicos que pertenecen al área: {{ $area->nombre }} </h1>
 <div>
      <div  class="card">
         <div  class="card-body" >

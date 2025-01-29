@@ -31,7 +31,7 @@
                 <div class="encabezado">
                     <div class="logo-header">
                             <div class="logo">
-                                <img src="../../assets/logoUneg.jpg" alt="">
+                                <img src="../../assets/logosUneg.png" alt="">
                             </div>
                     </div>
 

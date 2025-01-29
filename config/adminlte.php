@@ -340,7 +340,7 @@ return [
         // ],
         ['header' => 'CONFIGURACIÓN'],
         [
-            'text' => 'Mi Perfil',
+            'text' => 'MI PERFIL',
             'url'  => 'user/profile',
             'icon' => 'fas fa-fw fa-user',
         ],

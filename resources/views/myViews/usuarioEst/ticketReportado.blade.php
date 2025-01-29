@@ -14,15 +14,11 @@
                       <i class="fa-solid fa-arrow-left fa-lg"></i>Volver
                   </a>
               </div>
-              <h3 class="tituloMsjTecnico">Ticket #{{$idTicket}} </h3>
+              <h3 class="tituloMsjCliente">Ticket #{{$idTicket}} </h3>
           
 
               <form action="/mensaje/cliente/ticket/{{$ticket->id}}" class="mb-5" method="post" id="contactForm" name="contactForm" enctype="multipart/form-data">
               @csrf
-
-                <div class="cuadro1">
-                      INFORMACIÓN DEL TICKET
-                </div>
                 <div class="row">
                     <div class="col-md-8 form-group mb-3">
                       <label for="user_id" class="col-form-label">Usuario:</label>
@@ -98,7 +94,7 @@
                   <div class="content-chat">
                       <div class="row">
                         <div class="col-md-12 form-group mb-3 cuadro2">
-                            CHAT CON EL TÉCNICO DE SOPORTE "{{strtoupper($tecnico->name)}}"
+                            CHAT CON EL TÉCNICO "{{strtoupper($tecnico->name)}}"
                         </div>
                       </div>
 
@@ -108,30 +104,34 @@
                             @foreach($ticket->mensajes as $msj)
                               @if($msj->user_id == Auth::user()->id)
                                 @if($msj->mensaje || isset($msj['imagen']))
-                                  <div class="mensajesRight">
-                                      <h5>{{$msj->mensaje}}</h5>
-                                      @if(isset($msj['imagen']))
-                                          <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
-                                          <a href="{{ asset('images/msjCliente/'.$msj['imagen']) }}" style="font-size:12px;" download>Descargar Imagen</a>   
-                                      @else
-                                          <img src="{{asset('images/msjCliente/default.png')}}" class="img-fluid img-rounded" width="60px" hidden> 
-                                          <a href="{{ asset('images/msjCliente/default.png') }}" download hidden>Descargar Imagen</a>   
-                                      @endif    
-                                      <span class="fecha_mensajes">{{$msj->created_at->format('d-m-Y')}}, {{$msj->created_at->format('H:i:s')}} </span>
+                                  <div class="container-msjRight">
+                                    <div class="mensajesRight">
+                                        <p class="msjChat">{{$msj->mensaje}}</p>
+                                        @if(isset($msj['imagen']))
+                                            <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
+                                            <a href="{{ asset('images/msjCliente/'.$msj['imagen']) }}" style="font-size:12px;" download>Descargar Imagen</a>   
+                                        @else
+                                            <img src="{{asset('images/msjCliente/default.png')}}" class="img-fluid img-rounded" width="60px" hidden> 
+                                            <a href="{{ asset('images/msjCliente/default.png') }}" download hidden>Descargar Imagen</a>   
+                                        @endif    
+                                        <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}} </span>
+                                    </div>
                                   </div>
                                 @endif
                               @else
                                 @if($msj->mensaje || isset($msj['imagen']))
-                                  <div class="mensajesLeft">
-                                      <h5>{{$msj->mensaje}}</h5>
-                                      @if(isset($msj['imagen']))
-                                          <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
-                                          <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" style="font-size:12px;" download>Descargar Imagen</a>   
-                                      @else
-                                          <img src="{{asset('images/msjTecnico/default.png')}}" class="img-fluid img-rounded" width="60px" hidden> 
-                                          <a href="{{ asset('images/msjTecnico/default.png') }}" download hidden>Descargar Imagen</a>   
-                                    @endif    
-                                    <span class="fecha_mensajes">{{$msj->created_at->format('d-m-Y')}}, {{$msj->created_at->format('H:i:s')}}</span>
+                                  <div class="container-msjLeft">
+                                    <div class="mensajesLeft">
+                                        <p class="msjChat">{{$msj->mensaje}}</p>
+                                        @if(isset($msj['imagen']))
+                                            <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
+                                            <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" style="font-size:12px;" download>Descargar Imagen</a>   
+                                        @else
+                                            <img src="{{asset('images/msjTecnico/default.png')}}" class="img-fluid img-rounded" width="60px" hidden> 
+                                            <a href="{{ asset('images/msjTecnico/default.png') }}" download hidden>Descargar Imagen</a>   
+                                        @endif    
+                                      <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}}</span>
+                                    </div>
                                   </div>
                                 @endif
                               @endif
@@ -151,27 +151,29 @@
                             <p class="alert alert-danger message-alert" >{{ Session('error') }}</p>
                           @endif
                         </div>
-                    </div>   
-                    
-                  </div>
-      
-                    <div class="row"  id="rowMensaje">
+                    </div>  
+
+                    <div class="row mt-2"  id="rowMensaje">
                       <div class="col-md-12 form-group mb-3 " style="padding:0px;">
                         <textarea class="form-control" name="mensaje" id="mensaje" cols="40" rows="4"  placeholder="Escribe el mensaje" >{{old('mensaje')}}</textarea>
                       </div>
-                    </div>
+                    </div> 
+                    
+                  </div>
+      
+          
 
                     <div class="row" id="rowImagen">
                         <div class="col-md-6 form-group mb-3 content-file">
-                          <input type="file" name="imagen" accept="image/*" id="imagenMsj">
+                          <input type="file" name="imagen" accept="image/*" id="imagenMsj" class="msjFile">
                         </div>
                         
                         @if($ticket->calificaciones()->exists())
-                          <div  class="col-md-6 d-flex justify-content-end" >
+                          <div  class="col-md-6 d-flex justify-content-end content-stars" >
                             <div class="container-estrellas" >
                                 <div class="estrellas"></div>
 
-                                <a href="/calificaciones/ticket/{{$idTicket}}" class="ml-2">Ver calificación(es)</a>
+                                <a href="/calificaciones/ticket/{{$idTicket}}" class="ml-2 link-calificaciones">Ver calificación(es)</a>
                             </div>
                           </div>
                         @endif
@@ -186,13 +188,13 @@
                 
                     <div class="col-md-6  content-opcionesResuelto mx-auto" id="content-opcionesResuelto" >
                         <h5 class="texto_ticketResuelto">El ticket ha sido resuelto</h5>
-                        <div class="row">
+                        <div class="row rowOpcionesResuelto" >
                           <div class="col-md-3">
                             <h6 class="textoSeleccionar">Seleccionar:</h6>
                           </div>
                           <div class="col-md-3">
                               <div class="select-container"> 
-                                  <select class="select-box" name="opcion" id="opcion">
+                                  <select class="select-box select-satisfaccion" name="opcion" id="opcion">
                                       <option value="">Nivel de satisfacción</option>
                                       <option value="Totalmente satisfecho" data-stars="5">Totalmente satisfecho</option> 
                                       <option value="Satisfecho" data-stars="4">Satisfecho</option>
@@ -204,8 +206,7 @@
                           </div>
                         </div>
 
-                          <h6 class="preguntaCheckbox">¿Qué quieres hacer?</h6>
-                    
+                        <h6 class="preguntaCheckbox">¿Qué quieres hacer?</h6>
                         <div class="content-checkbox">
                           <div class="checkboxReabrir">
                               <input class="checkbox" type="checkbox" id="reabrir" name="accion" value="Reabrirlo">
@@ -275,41 +276,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 
-<script>
-  function cargarPaginaAnterior() {
-      window.location.href = document.referrer;
-      return false;
-  }
-</script>
-
-<!-- <script>
-document.addEventListener('DOMContentLoaded', function() {
-   const backButton = document.querySelector('.btn-volver');
-   
-   backButton.addEventListener('click', function() {
-       const previousUrl = document.referrer;
-       
-       // Verifica si el referrer es diferente de la misma página
-       if (previousUrl !== window.location.href) {
-           window.history.back();
-       } else {
-           // Si es la misma página, busca una vista diferente en la historia
-           let currentUrl = window.location.href;
-           while (currentUrl === previousUrl) {
-               previousUrl = history.go(-1);
-               currentUrl = window.location.href;
-               
-               // Si llega al inicio de la historia y aún no encontró una vista diferente, redirige a una ruta específica
-               if (history.length <= 1 && currentUrl === previousUrl) {
-                   window.location.href = '/dashboard'; // Reemplaza con la ruta que desees
-                   break;
-               }
-           }
-       }
-       
-   });
-});
-</script> -->
+  <script>
+    function cargarPaginaAnterior() {
+        window.location.href = document.referrer;
+        return false;
+    }
+  </script>
 
   <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -406,9 +378,14 @@ document.addEventListener("DOMContentLoaded", function() {
           if(!data.hasOwnProperty('errors')){
             // Crear elementos HTML para el mensaje y la imagen
             const messageElement = document.createElement('div');
+            const chatContainer = document.getElementById('chat');
+
+            chatContainer.classList.add('contenedorRight');
+            messageElement.classList.add('msjUserRight');
+
     
             if(data.mensaje){
-             messageElement.innerHTML = `<h5>${data.mensaje}</h5>`;
+             messageElement.innerHTML = `<p class="msjChat">${data.mensaje}</p>`;
             }
             
             
@@ -418,12 +395,21 @@ document.addEventListener("DOMContentLoaded", function() {
                 imageElement.classList.add('img-fluid', 'img-rounded');
                 imageElement.style.width = '60px';
                 messageElement.appendChild(imageElement);
-                messageElement.innerHTML += `<br><a href="/images/msjCliente/${data.imagen}" style="font-size:12px;" download>Descargar Imagen</a>`;
+                messageElement.innerHTML += `<br><a href="/images/msjCliente/${data.imagen}"  class="txtImagen" download>Descargar Imagen</a>`;
             }
 
             if(data.mensaje || data.imagen){
-              const fechaActual= new Date().toLocaleString('es-Es');
-              messageElement.innerHTML += `<span class="fecha_mensajes">${fechaActual}</span>`;
+              const fechaActual = new Date().toLocaleString('es-ES', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: true
+                }).toUpperCase().replace(/\./g, '').replace(/\s+(AM|PM)/g, '$1').replace(/(A)\s+(M)/g, '$1$2').replace(/(P)\s+(M)/g, '$1$2'); // Elimina el espacio entre A y M, y P y M
+
+                
+                messageElement.innerHTML += `<span class="fecha_mensajes" style="text-align:right;">${fechaActual}</span>`;
                 $('#sinMsj').hide();
 
                 messageElement.classList.add('mensajesRight');

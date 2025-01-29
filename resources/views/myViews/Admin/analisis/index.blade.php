@@ -57,22 +57,6 @@
                     <a href="enEspera" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
-            <!-- ./col -->
-            <!-- <div class="col-lg-3 col-6"> -->
-            <!-- small box -->
-            <!-- <div class="small-box bg-danger enRevision">
-                    <div class="inner">
-                        <h3>{{$cant_tkt_enRevision}}</h3>
-                        <p class="estados_analisis">En revisión</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-fw fa-eye"></i>
-                    </div>
-                    <a href="enRevision" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div> -->
-            <!-- ./col -->
-
              <!-- small box -->
             <div class="col-lg-3 col-6">
                 <!-- small box -->

@@ -57,7 +57,7 @@ body {
     /* border-radius: 0;  */
   }
 
-  .form-group input.form-control, .form-group textarea {
+  .form-group input.form-control, .form-group #msj {
     font-size: 16px !important;
   }
 
@@ -214,7 +214,6 @@ body {
 }
 
 
-
 .spanTitulo{
   color: #B90B0B;
   font-size: 16px;
@@ -235,7 +234,7 @@ body {
 
 .btnResponder{
   font-size: 20px;
-  width: 300px;
+  width: 250px;
   height: 45px;
   border: none;
   border-radius: 5px !important;
@@ -244,16 +243,22 @@ body {
   background-color: #2175f2;
 }
 
-.btn-volver{
+.btnCorregir, .btnReescribir{
+  color:#302f2f;
   font-size: 20px;
-  width: 200px;
-  height: 40px;
+  width: 250px;
+  height: 45px;
   border: none;
   border-radius: 5px !important;
-  padding: 4px 1px 1px 1px !important;
+  padding: 1px !important;
   margin-top: 15px;
-  margin-left: 30px;
-  background-color: #37393c;
+  margin-left: 5px !important;
+  background-color: #21c8f2;
+}
+
+.btnCorregir:hover{
+  color:#000;
+  background-color: #1cabcf;
 }
 
 .containermsj{
@@ -297,9 +302,6 @@ body {
   color: #2a71dcad;
   margin-bottom: 5px;
 }
-
-
-
 
 .cuadro2, .cuadro2 i{
   display: flex;
@@ -418,24 +420,88 @@ body {
 
 }
 
-
 .content-btnVolver{
   text-align: center;
 }
 
 .content-btnVolver .btn-volver{
-  width: 120px;
-  font-size: 18px;
+  font-size: 20px;
   float: right;
-  padding: 6px !important;
+  width: 150px;
+  height: 40px;
+  border: none;
+  border-radius: 5px !important;
+  padding: 6px;
+  background-color: #37393c;
 }
 
 .content-btnVolver i{
   color:#b8bdc2;
+  margin-right: 6px;
 }
 
-.content-btnVolver i{
-  margin-right: 6px;
+@media(max-width: 1024px){
+  .content-btnVolver .btn-volver{
+    width: 110px;
+    height: 35px;
+    font-size: 15px;
+  }
+
+  .content-btnVolver .btn-volver i{
+    font-size: 18px;
+  }
+}
+
+@media(max-width: 768px){
+  .content-btnVolver .btn-volver{
+    width: 90px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .content-btnVolver .btn-volver i{
+    font-size: 15px;
+  }
+}
+
+@media(max-width: 520px){
+  .content-btnVolver .btn-volver{
+    width: 90px;
+    height: 30px;
+    font-size: 12px;
+  }
+
+  .content-btnVolver .btn-volver i{
+    font-size: 13px;
+  }
+}
+
+@media(max-width: 425px){
+  .content-btnVolver .btn-volver{
+    width: 75px;
+    height: 25px;
+    font-size: 10px;
+    padding: 4px;
+  }
+
+  .content-btnVolver .btn-volver i{
+    font-size: 10px;
+  }
+}
+
+@media(max-width: 325px){
+  .content-btnVolver .btn-volver{
+    width: 50px;
+    height: 20px;
+    font-size: 8px;
+    padding: 2px;
+    margin-top: 0px !important;
+  }
+
+  .content-btnVolver .btn-volver i{
+    font-size: 8px;
+    margin-right: 3px !important;
+  }
 }
 
 
@@ -464,7 +530,6 @@ body {
   background-color:#1bb1a9;
   border: none;
   padding: 10px 0 10px 10px ;
- 
   font-size: 16px;
   cursor: pointer;
   margin-left: 30px;
@@ -521,6 +586,170 @@ body {
   text-decoration: underline !important;
 }
 
+@media(max-width: 1160px){
+  .select-container select {
+    margin-left:30px;
+  }
+}
+
+@media(max-width: 1105px){
+  .select-container select {
+    margin-left:40px;
+  }
+}
+
+@media(max-width: 1020px){
+  .select-container select {
+    margin-left:50px;
+  }
+}
+
+@media(max-width: 767px){
+  .content-opcionesResuelto{
+    width: 300px;
+  }
+
+  .texto_ticketResuelto{
+    font-size: 16px;
+    padding: 5px;
+  }
+
+  .select-satisfaccion option{
+    font-size:12px
+  }
+
+  .textoSeleccionar, .preguntaCheckbox, 
+  .checkboxReabrir, .checkboxCerrar,
+  .mensajeResuelto #comentario, #btnResponder_resuelto{
+    font-size: 14px;
+  }
+
+  .content-opcionesResuelto .textoSeleccionar{
+    margin-left: 100px !important;
+  }
+
+  .content-opcionesResuelto .rowOpcionesResuelto{
+    display: inline-block;
+    flex-wrap: nowrap;
+    width:80px;
+  }
+
+  .select-container .select-satisfaccion{
+    margin-left: 60px;
+  }
+
+  #btnResponder_resuelto{
+    margin-top: 0px;
+  }
+ 
+
+}
+
+@media(max-width: 425px){
+  .content-opcionesResuelto{
+    width: 200px;
+  }
+
+  .texto_ticketResuelto{
+    font-size: 12px;
+    padding: 5px;
+  }
+
+  .select-satisfaccion option{
+    font-size:10px
+  }
+
+  .textoSeleccionar, .preguntaCheckbox, 
+  .checkboxReabrir, .checkboxCerrar,
+  .mensajeResuelto #comentario, #btnResponder_resuelto{
+    font-size: 12px;
+  }
+
+  .textoSeleccionar{
+    margin-top: 0px !important;
+  }
+
+  .checkboxReabrir #reabrir, .checkboxCerrar #cerrar{
+    width: 12px;
+    height: 8px;
+  }
+
+  .content-opcionesResuelto .textoSeleccionar{
+    margin-left: 55px !important;
+  }
+
+  .select-container .select-satisfaccion{
+    font-size: 12px !important;
+    margin-left: 20px;
+  }
+
+  #btnResponder_resuelto{
+    margin-top: 10px;
+    width: 80px;
+    height: 30px;
+  }
+
+ .mensajeResuelto  #comentario{
+    height: 60px;
+  }
+ 
+
+}
+
+@media(max-width: 375px){
+  .content-opcionesResuelto{
+    width: 150px;
+  }
+
+  .texto_ticketResuelto{
+    font-size: 10px;
+  }
+
+  .select-satisfaccion option{
+    font-size:8px
+  }
+
+  .textoSeleccionar, .preguntaCheckbox, 
+  .mensajeResuelto #comentario, #btnResponder_resuelto{
+    font-size: 10px;
+  }
+
+  .preguntaCheckbox{
+    margin-top: 10px !important;
+  }
+
+  .checkboxReabrir, .checkboxCerrar{
+    font-size: 7px;
+  }
+
+  .content-opcionesResuelto .textoSeleccionar{
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+    margin-left: 40px !important;
+  }
+
+  .select-container .select-satisfaccion{
+    font-size: 8px !important;
+    margin-left: 15px;
+    padding: 5px;
+  }
+
+  #btnResponder_resuelto{
+    margin-top: 0px;
+    width: 60px;
+    height: 20px;
+  }
+
+ .mensajeResuelto  #comentario{
+    margin-top: 0px;
+    font-size: 8px;
+    height: 40px;
+  }
+ 
+
+}
+
+
 
 
 /* checkboxs */
@@ -547,6 +776,8 @@ body {
 .content-checkbox{
   display: flex;
   justify-content: center;
+  margin-left: 10px;
+  margin-right: 10px;
   border: solid 2px #fff;
   
 }
@@ -575,8 +806,15 @@ body {
 .checkbox-containerResuelto{
   text-align: center;
   background-color: #dcdcdcb4;
-  padding: 12px 10px 0px 10px ;
+  padding: 8px 10px 2px 10px ;
   border-radius: 2px;
+  display: flex;
+  align-items: center; /* Alinea verticalmente*/
+}
+
+.checkbox-containerResuelto .checkbox{
+  margin-bottom: 8px;
+  margin-right: 2px;
 }
 
 .alinear-checkbox{
@@ -585,6 +823,7 @@ body {
 
 .checkbox-containerResuelto .labelResuelto{
   color: #13104b;
+  margin-left: 5px;
 }
 
 .textoTicketResuelto, .textoTicketCerrado{
@@ -611,8 +850,6 @@ body {
   }
 }
 
-
-
 @media(max-width: 1060px){
  
   .select-container{
@@ -622,27 +859,6 @@ body {
   .select-container .select-box{
     font-size: 14px;
   }
-}
-
-@media(max-width: 700px){
-
-  .select-container{
-    width: 150px;
-  }
-
-  .select-container .select-box{
-    font-size: 10px;
-  }
-
-  .select-container .icon-container{
-    width: 30px !important;
-  }
-
-  .icon-container i {
-    font-size: 20px !important;
-  }
-
-
 }
 
 
@@ -662,7 +878,7 @@ body {
   color: white;
 }
 
-/** CHAT */
+/** FORM TICKET */
 
 .content-chat{
   margin: 7px 7px 16px 7px ;
@@ -670,26 +886,62 @@ body {
 }
 
 .chat{
-  background-color: #d7ecf3;
+  background-color:aliceblue;
   height: 400px;
   margin-bottom: 0 !important;
 }
 
+.imagenMsj{
+  width: 60px;
+  height: 60px;
+}
+
+.txtImagen{
+  font-size: 12px;
+}
+
+.msjChat{
+  font-size: 16px !important;
+  color: #000;
+}
+
+.container-msjRight{
+  display: flex;
+  justify-content: end;
+}
+
 .mensajesRight{
-  text-align: right;
-  background-color:#66d887;
+  width: 500px;
+  background-color:#9cebb2;
   margin: 10px;
   padding: 10px;
   border-radius: 5px;
 }
 
+.container-msjLeft{
+  display: flex;
+  justify-content: start;
+}
+
 .mensajesLeft{
-  text-align: left;
-  background-color:#c7cac8;
+  width: 500px;
+  background-color:#bec0c073;
   margin: 10px;
   padding: 10px;
-  border-radius: 5x;
+  border-radius: 5px;
 }
+
+.contenedorRight{
+  display: flex;
+}
+.msjUserRight{
+  margin-left: auto;
+}
+
+.fechaRight{
+  text-align: right;
+}
+
 .sinmensajes{
   display:flex;
   justify-content:center;
@@ -703,16 +955,708 @@ body {
   font-size: 14px;
 }
 
+
+@media(max-width: 1024px){
+
+  .tituloMsjTecnico, .tituloMsjCliente{
+    font-size: 24px !important;
+    margin: 0px;
+    padding: 0px;
+  }
+
+  .mensajesRight, .mensajesLeft{
+    width: 300px;
+  }
+
+  .msjChat{
+    font-size: 14px !important;
+  }
+
+  .imagenMsj{
+    width: 50px;
+    height: 50px;
+  }
+
+  .txtImagen{
+    font-size: 10px;
+  }
+
+  .fecha_mensajes{
+    font-size: 12px;
+  }
+
+  .btnResponder, .btnCorregir, .btnReescribir{
+    font-size: 15px;
+    width: 200px;
+    height: 35px;
+  }
+
+  .checkbox-containerResuelto{
+    font-size: 12px;
+  }
+}
+
+@media(max-width: 768px){
+  .form-group input.form-control, .form-group #msj {
+    font-size: 14px !important;
+  }
+
+  .tituloMsjTecnico, .tituloMsjCliente{
+    font-size: 20px !important;
+  }
+
+  .cuadro2{
+    font-size: 16px;
+  }
+
+  .content-chat{
+    margin-bottom: 0px;
+  }
+
+  .mensajesRight, .mensajesLeft{
+    width: 270px;
+  }
+
+  .msjChat{
+    font-size: 12px !important;
+  }
+
+  .imagenMsj{
+    width: 40px;
+    height: 40px;
+  }
+
+  .txtImagen{
+    font-size: 8px;
+  }
+
+  .fecha_mensajes{
+    font-size: 10px;
+  }
+
+  .msjFile{
+    font-size: 12px;
+  }
+
+  .contentCheckbox-Resuelto{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+
+  .checkbox-containerResuelto {
+    height: 35px;
+  }
+
+  .checkbox-containerResuelto .labelResuelto{
+    font-size: 10px;
+  }
+
+  .checkbox-containerResuelto .checkbox{
+    width: 10px;
+    height: 10px;
+    font-size: 8px;
+  }
+
+  .btnResponder, .btnCorregir, .btnReescribir{
+    font-size: 14px;
+    width: 140px;
+    height: 35px;
+  }
+
+  .textoTicketResuelto{
+    font-size: 16px;
+  }
+
+  .textoTicketCerrado{
+   font-size:  20px;
+  }
+
+  .textoTicketCerrado p{
+    margin-bottom: 0px !important;
+  }
+
+  .textoTicketCerrado .container-stars .fa-lg{
+    font-size: 1em !important;
+  } 
+
+}
+
+@media(max-width: 1255px){
+  
+  .content_starsCheckbox {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .checkbox-containerResuelto{
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .checkbox-containerResuelto .labelResuelto {
+    margin-left: 10px;
+  }
+  .container-estrellas .estrellasTicket{
+    margin-right: 15px;
+  }
+}
+
+
+@media(max-width: 767px){
+
+  .content-stars {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .container-estrellas {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .container-estrellas .estrellas{
+    margin-left: 0px;
+  }
+   
+  .container-estrellas .estrellas .fa-lg{
+    font-size: 1em !important;
+  }
+
+  .container-estrellas .link-calificaciones{
+    font-size: 12px !important;
+    margin-left: 0px !important;
+  }
+  
+
+  .content_starsCheckbox {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-end; 
+  }
+
+  .checkbox-containerResuelto{
+    font-size: 12px;
+    margin: 0px;
+    padding-left: 8px;
+    padding-bottom: 8px;
+  }
+
+  .checkbox-containerResuelto .labelResuelto {
+    margin-left: 0px;
+  }
+
+  .checkbox-containerResuelto .checkbox{
+    margin-right: 4px;
+  }
+
+  .stars-calif{
+    margin-bottom: 15px;
+  }
+
+  .stars-calif .container-estrellas .estrellasTicket {
+    margin-left: 20px;
+    margin-right: 6px;
+  }
+
+  .container-estrellas .link-calif{
+     font-size: 12px !important;
+     margin-left: 20px !important;
+  }
+}
+
+@media(max-width: 540px){
+  .form-group input.form-control, .form-group #msj {
+    font-size: 12px !important;
+  }
+
+  .tituloMsjTecnico, .tituloMsjCliente{
+    font-size: 18px !important;
+  }
+
+  .cuadro2{
+    font-size: 15px;
+  }
+
+  .content-chat{
+    margin-top: 10px;
+  }
+
+  .chat{
+    height: 300px;
+  }
+
+  .mensajesRight, .mensajesLeft{
+    width: 200px;
+    margin-bottom: 2px;
+  }
+
+  .msjChat{
+    font-size: 10px !important;
+    margin: 0px;
+    padding: 0px;
+  }
+
+  .imagenMsj{
+    width: 30px;
+    height: 30px;
+  }
+
+  .txtImagen{
+    font-size: 6px;
+  }
+
+  .fecha_mensajes{
+    font-size: 8px;
+  }
+
+  .msjFile{
+    font-size: 10px;
+  }
+
+  .checkbox-containerResuelto {
+    height: 30px;
+    margin-top: 4px;
+  }
+
+  .checkbox-containerResuelto .labelResuelto{
+    font-size: 9px;
+  }
+
+  .checkbox-containerResuelto .checkbox{
+    width: 10px;
+    height: 10px;
+    font-size: 8px;
+  }
+
+  .btnResponder, .btnCorregir, .btnReescribir{
+    font-size: 12px;
+    width: 120px;
+    height: 30px;
+  }
+
+  .textoTicketResuelto{
+    font-size: 12px;
+  }
+
+}
+
+@media(max-width: 500px){
+  .cuadro2{
+    font-size: 12px;
+  }
+
+  .container-estrellas .link-calificaciones{
+    font-size: 8px !important;
+  }
+
+
+  .container-estrellas .estrellas{
+    padding-left: 0px;
+    padding-right: 15px !important;
+  }
+
+  .container-estrellas .estrellas .fa-lg{
+    font-size: 0.7em !important;
+  }
+
+  .container-estrellas .link-calif{
+    font-size: 10px !important;
+    margin-left: 10px !important;
+    padding-left: 4px !important;
+  }
+}
+
+@media(max-width: 485px){
+
+  .msjFile{
+    font-size: 8px;
+  }
+
+  .checkbox-containerResuelto {
+    height: 25px;
+  }
+
+  .checkbox-containerResuelto .labelResuelto{
+    font-size: 8px;
+  }
+
+  .checkbox-containerResuelto .checkbox{
+    width: 8px;
+    height: 8px;
+    font-size: 6px;
+  }
+
+  .container-estrellas .estrellas .fa-lg{
+    font-size: 0.6em !important;
+  }
+
+  .container-estrellas .link-calif{
+    font-size: 9px !important;
+    margin-left: 12px !important;
+  }
+
+}
+
+@media(max-width: 445px){
+
+  .container-estrellas .estrellas .fa-lg{
+    font-size: 0.55em !important;
+  }
+
+  .container-estrellas .link-calif{
+    margin-right: 8px !important;
+  }
+
+  .stars-calif .container-estrellas .estrellasTicket{
+    text-wrap: nowrap;
+  }
+
+  .container-estrellas .link-calif{
+    text-wrap: nowrap;
+  }
+
+}
+
+
+@media(max-width: 425px){
+
+  .form-group input.form-control, .form-group #msj {
+    font-size: 10px !important;
+  }
+
+  .tituloMsjTecnico, .tituloMsjCliente{
+    font-size: 14px !important;
+  } 
+
+  .cuadro2{
+    font-size: 10px;
+  }
+
+  .msjFile{
+    font-size: 6px;
+  }
+
+  .contact-wrap .col-form-label {
+    font-size: 10px;
+    color: #333435;
+    margin: 0 0 4px 0;
+    display: inline-block;
+    padding: 0px;
+  }
+
+  .form-group input.form-control{
+    font-size: 10px !important;
+    height: 30px;
+  }
+
+  .row.mb-3, .row .my-3 {
+    margin-bottom: 0px !important;
+  }
+  .row .form-group{
+    margin-bottom: 0px !important;
+  }
+
+  #rowMensaje textarea{
+    font-size: 10px !important;
+    margin-top: 0px !important;
+    margin-bottom: 5px;
+  }
+
+  .btnResponder, .btnCorregir, .btnReescribir{
+    font-size: 10px;
+    width: 100px;
+    height: 25px;
+  }
+
+  .textoTicketResuelto{
+    font-size: 9px;
+  }
+
+  .calificacion_nivel{
+    font-size:  10px;
+  }
+
+  .textoTicketCerrado, .text-calificacionCerrado{
+    font-size:  12px;
+  }
+
+  .container-estrellas .link-calificaciones{
+    font-size: 6px !important;
+  }
+
+  .checkbox-containerResuelto .labelResuelto{
+    font-size: 6px;
+  }
+
+  .stars-calif .container-estrellas .estrellasTicket{
+    padding-left: 20px;
+    padding-right: 15px !important;
+    margin-right: 0px !important;
+  }
+
+  .container-estrellas .estrellas .fa-lg{
+    font-size: 0.4em !important;
+  }
+  .container-estrellas .link-calif{
+    font-size: 7px !important;
+    margin-left: 26px !important;
+    margin-right: 0px !important;
+  }
+
+}
+
+@media(max-width: 375px){
+
+  .form-group input.form-control, .form-group #msj {
+    font-size: 8px !important;
+  }
+
+  .cuadro2{
+    font-size: 8px;
+  }
+
+  .contact-wrap .col-form-label {
+    font-size: 8px;
+  }
+
+  .form-group input.form-control{
+    font-size: 8px !important;
+    height: 25px;
+  }
+
+  .mensajesRight, .mensajesLeft{
+    width: 150px;
+  }
+
+  .msjChat{
+    font-size: 8px !important;
+  }
+
+  .imagenMsj{
+    width: 20px;
+    height: 20px;
+  }
+
+  .txtImagen{
+    font-size: 4px;
+  }
+
+  .fecha_mensajes{
+    font-size: 6px;
+  }
+  
+  #rowMensaje textarea{
+    font-size: 8px !important;
+    margin-top: 0px !important;
+    margin-bottom: 5px;
+  }
+
+  .msjFile{
+    font-size: 5px;
+  }
+
+  .checkbox-containerResuelto {
+    height: 20px;
+    margin-top: 2px !important;
+  }
+
+  .content_starsCheckbox{
+    width: 50px;
+    text-wrap: nowrap;
+  }
+
+  .checkbox-containerResuelto{
+    margin-top: 2px !important;
+    padding: 12px 8px 4px 8px  !important;
+  }
+
+  .checkbox-containerResuelto .labelResuelto{
+    font-size: 6px;
+    padding-top: 3px;
+  }
+
+  .checkbox-containerResuelto .checkbox{
+    width: 4px;
+    height: 4px;
+    font-size: 4px;
+    margin-top: 4px;
+    margin-bottom: 12px;
+  }
+
+  .textoTicketResuelto{
+    font-size: 7px;
+  }
+
+  .calificacion_nivel{
+    font-size:  8px;
+  }
+
+  .textoTicketCerrado, .text-calificacionCerrado{
+    font-size:  10px;
+  }
+
+  .container-estrellas .estrellas{
+    margin-top: 10px;
+    padding-bottom: 0;
+    margin-right: 5px; 
+  }
+   
+  .container-estrellas .estrellas .fa-lg{
+    font-size: 0.60em !important;
+  }
+  .container-estrellas .link-calificaciones{
+    font-size: 8px !important;
+  }
+
+  .container-estrellas .estrellasTicket .fa-lg{
+    font-size: 0.50em !important;
+  }
+
+  .stars-calif .container-estrellas .estrellasTicket{
+    margin-top: 0px;
+    padding-right: 5px !important;
+    padding-left: 20px;
+  }
+
+  .container-estrellas .link-calif{
+    padding-left: 10px !important;
+  }
+}
+
+@media(max-width: 350px){
+  .chat{
+    height: 200px;
+  }
+
+  .msjFile{
+    font-size: 4px;
+  }
+
+  .checkbox-containerResuelto {
+    height: 15px;
+    margin-top: 3px !important;
+    padding: 6px 4px 2px 6px;
+  }
+
+  .checkbox-containerResuelto .labelResuelto{
+    font-size: 5px;
+    padding-top: 3px;
+  }
+
+  .checkbox-containerResuelto .checkbox{
+    width: 4px;
+    height: 4px;
+    font-size: 4px;
+    margin-top: 4px;
+  }
+}
+
+@media(max-width: 325px){
+
+  .tituloMsjTecnico, .tituloMsjCliente{
+    font-size: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .cuadro2{
+    font-size: 7px;
+  }
+
+  .chat{
+    height: 150px;
+  }
+
+  .mensajesRight, .mensajesLeft{
+    width: 120px;
+    margin-bottom: 0px;
+  }
+
+  .msjChat{
+    font-size: 8px !important;
+  }
+
+  .msjFile{
+    font-size: 4.5px;
+  }
+
+  .checkbox-containerResuelto {
+    width: 60px;
+    height: 15px;
+    margin-top: 3px !important;
+  }
+
+  .checkbox-containerResuelto .labelResuelto{
+    font-size: 5px;
+    padding-top: 5px;
+    padding-bottom: 4px;
+  }
+
+  .checkbox-containerResuelto .checkbox{
+    width: 4px;
+    height: 4px;
+    font-size: 4px;
+    margin-top: 4px;
+  }
+
+  .btnResponder, .btnCorregir, .btnReescribir{
+    font-size: 8px;
+    width: 80px;
+    height: 20px;
+  }
+
+  .textoTicketResuelto{
+    font-size: 5px;
+  }
+
+  .calificacion_nivel{
+    font-size:  6px;
+  }
+
+  .textoTicketCerrado, .text-calificacionCerrado{
+    font-size:  8px;
+  }
+  
+  .container-estrellas .estrellas{
+    margin-top: 8px;
+  }
+   
+  .container-estrellas .estrellas .fa-lg{
+    font-size: 0.50em !important;
+  }
+  .container-estrellas .link-calificaciones{
+    font-size: 6px !important;
+  }
+
+  .container-estrellas .estrellasTicket .fa-lg{
+    font-size: 0.40em !important;
+  }
+
+  .stars-calif .container-estrellas .estrellasTicket{
+    margin-top: 0px;
+    padding-right: 12px !important;
+    padding-left: 20px;
+    height: 25px;
+  }
+
+  .container-estrellas .link-calif{
+    font-size: 5.5px !important;
+    padding-left: 10px !important;
+  }
+
+  
+}
+
 .fa-solid, .fa-regular{
   color: #000;
 }
 
-
-
 .custom-file-input:hover::before {
   content: attr(data-content);
 }
-
 
 .btnVolver-verTicket{
   font-size: 15px;

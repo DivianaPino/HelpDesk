@@ -7,12 +7,12 @@
 @stop
 
 @section('content')
-<h1 class="titulo_prin">Mis calificaciones</h1>
+<h1 class="titulo_prin tituloCalificaciones">Mis calificaciones</h1>
 <div>
      <div  class="card">
         <div  class="card-body" >
             <table id="tabla_todasCalificaciones" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap" style="width:100%;" >
-               <div class="content-btnVolver">
+               <div class="content-btnVolverTable">
                     <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volver">
                     <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
                 </div>

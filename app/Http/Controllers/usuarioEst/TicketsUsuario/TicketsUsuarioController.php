@@ -254,14 +254,21 @@ class TicketsUsuarioController extends Controller
                 $mensaje->ticket_id = $idTicket;
                 $mensaje->mensaje = $request->mensaje;
                 
+                //Guardar imagen si hay
                 if ($request->hasFile('imagen')) {
                     $filename = time() . '-' . $request->file('imagen')->getClientOriginalName();
                     $request->file('imagen')->move('images/msjCliente', $filename);
                     $mensaje->imagen = $filename;
                 }
-                
+
+                //Fecha del msj
+                // $mensaje->created_at =  Carbon::now()->addHours(5);
+                // $mensaje->updated_at =  Carbon::now()->addHours(5);
+
+                //Guardar
                 $mensaje->save();
                 
+                // Cambiar la fecha de caducidad agregando el tiempo de Resolucion
                 $ticket = Ticket::find($idTicket);
                 $ticket->fecha_caducidad = Carbon::now()->addDays($tiempoResolucion);
                 $ticket->save();

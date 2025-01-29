@@ -20,6 +20,7 @@
     
     <!-- CSS -->
     <link rel="stylesheet" href="../css/app.css">
+    <link rel="stylesheet" href="../css/logo.css">
 </head>
 
 <body>

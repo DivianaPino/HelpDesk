@@ -33,6 +33,6 @@ class calificacionMailable extends Mailable
     public function build()
     {
         return $this->markdown('emails.calificacionMail')
-            ->subject('La asistencia del ticket ha sido calificada - ' . Carbon::now()->format('d/M/Y H:i:s'));
+            ->subject('La asistencia del ticket ha sido calificada - ' . Carbon::now()->format('d/m/Y H:i:s'));
     }
 }

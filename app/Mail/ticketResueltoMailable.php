@@ -39,6 +39,6 @@ class ticketResueltoMailable extends Mailable
     public function build()
     {
         return $this->markdown('emails.ticketResueltoMail')
-        ->subject('El ticket ha sido resuelto - ' . Carbon::now()->format('d/M/Y H:i:s'));
+        ->subject('El ticket ha sido resuelto - ' . Carbon::now()->format('d/m/Y H:i:s'));
     }
 }

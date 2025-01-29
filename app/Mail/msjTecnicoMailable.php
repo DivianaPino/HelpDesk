@@ -41,7 +41,7 @@ public function __construct($mensaje, $cliente, $tecnico, $idTicket)
 public function build()
 {
     return $this->markdown('emails.msjTecnicoMail')
-        ->subject('El técnico ha enviado un mensaje - ' . Carbon::now()->format('d/M/Y H:i:s'));
+        ->subject('El técnico ha enviado un mensaje - ' . Carbon::now()->format('d/m/Y H:i:s'));
 }
 
 }

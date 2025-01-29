@@ -32,7 +32,7 @@ class ticketAsignadoMailable extends Mailable
     public function build()
     {
         return $this->markdown('emails.ticketAsignadoMail')   
-        ->subject('Se te ha asignado un ticket - '.Carbon::now()->format('d/M/Y H:i:s'));
+        ->subject('Se te ha asignado un ticket - '.Carbon::now()->format('d/m/Y H:i:s'));
 
     }
 }

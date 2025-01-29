@@ -22,7 +22,7 @@ class ticketMailable extends Mailable
     public function build()
     {
         return $this->markdown('emails.ticketMail')   
-        ->subject('Nuevo ticket - ' . Carbon::now()->format('d/M/Y H:i:s'));
+        ->subject('Nuevo ticket - ' . Carbon::now()->format('d/m/Y H:i:s'));
 
         
     }

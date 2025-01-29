@@ -32,6 +32,6 @@ class ticketReasignadoMailable extends Mailable
     public function build()
     {
         return $this->markdown('emails.ticketReasignadoMail')   
-        ->subject('Se te ha reasignado un ticket - '. Carbon::now()->format('d/M/Y H:i:s'));
+        ->subject('Se te ha reasignado un ticket - '. Carbon::now()->format('d/m/Y H:i:s'));
     }
 }

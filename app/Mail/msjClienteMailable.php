@@ -38,6 +38,6 @@ class msjClienteMailable extends Mailable
     public function build()
     {
         return $this->markdown('emails.msjClienteMail')
-        ->subject('El cliente ha enviado un mensaje - ' . Carbon::now()->format('d/M/Y H:i:s'));
+        ->subject('El cliente ha enviado un mensaje - ' . Carbon::now()->format('d/m/Y H:i:s'));
     }
 }

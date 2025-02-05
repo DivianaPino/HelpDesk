@@ -15,15 +15,14 @@ use App\Events\MensajeClienteEvent;
 use App\Events\MsjClienteCorreoEvent;
 use App\Events\CalificacionCorreoEvent;
 use App\Services\TelegramService;
+use App\Services\GeminiService;
 use Carbon\Carbon;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Models\Area;
 use App\Models\Servicio;
-use App\Models\Clasificacion;
 use App\Models\Prioridad;
 use App\Models\Estado;
-use App\Models\TicketHistorial;
 use App\Models\Mensaje;
 use App\Models\Calificacion;
 
@@ -35,6 +34,15 @@ class TicketsUsuarioController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    protected $geminiService;
+
+    public function __construct(GeminiService $geminiService){
+ 
+         $this->geminiService = $geminiService;
+    }
+
+
     public function index()
     {
         $tickets=Ticket::where('user_id', auth()->user()->id)->get();
@@ -139,23 +147,12 @@ class TicketsUsuarioController extends Controller
             $ticketLink = route('detalles_ticket', ['idTicket' => $ticket->id]);
             $message = "Nuevo ticket creado: {$ticket->asunto}: ({$ticketLink})";
             $telegramService = app(TelegramService::class);
-            $telegramService->sendMessage($tecnico->telegram, $message);
+            $telegramService->sendMessage($tecnico->telegram_id, $message);
         }
     
         $tickets=Ticket::where('user_id', auth()->user()->id)->orderBy('id', 'desc')->get();
         return  redirect()->route('usuarios_tickets.index')->with(['tickets'=> $tickets, 'status'=> 'Ticket enviado exitosamente :)' ]);
     }
-
-    // public function historial($idTicket){
-        
-    //     //Historial del ticket que viene por parametro
-    //     $tickets = TicketHistorial::where('ticket_id', $idTicket)->get();
-       
-    //     $mensajes=MasInformacion::where('ticket_id', $idTicket)->get();
-
-    //     return view('myViews.usuarioEst.historial' , compact ('idTicket', 'tickets', 'mensajes'));
-    // }
-    
 
 
     public function ver_ticketReportado($idTicket){
@@ -164,7 +161,7 @@ class TicketsUsuarioController extends Controller
         return view('myViews.usuarioEst.ticketReportado', compact('ticket', 'idTicket', 'tecnico'));
     }
 
-    public function guardar_mensajeCliente(Request $request, $idTicket){
+    public function guardar_mensajeCliente(GeminiService $geminiService, Request $request, $idTicket){
 
        $tick=Ticket::find($idTicket);
        $estadoTick=$tick->estado->nombre;
@@ -175,19 +172,19 @@ class TicketsUsuarioController extends Controller
 
        if($estadoTick == "Resuelto"){
 
-         try{
+            try{
 
-            $validator = $request->validate([
-                    'opcion' =>'required',
-                    'accion' => 'required'
-                    
-                ],
-                [
-                    'opcion.required' => 'El campo nivel de satisfacción es requerido.',
-                    'accion.required' => 'Debes indicar que quieres hacer con el ticket.',
-                ]
-            
-            );
+                $validator = $request->validate([
+                        'opcion' =>'required',
+                        'accion' => 'required'
+                        
+                    ],
+                    [
+                        'opcion.required' => 'El campo nivel de satisfacción es requerido.',
+                        'accion.required' => 'Debes indicar que quieres hacer con el ticket.',
+                    ]
+                
+                );
 
               $accionSelect=$request->input('accion_seleccionada');
 
@@ -218,7 +215,7 @@ class TicketsUsuarioController extends Controller
                 $ticketLink = route('form_msjTecnico', ['idTicket' => $tick->id]); 
                 $message = "El cliente {$cliente->name} ha calificado la asistencia del ticket: {$calificacion->nivel_satisfaccion}: ({$ticketLink})";
                 $telegramService = app(TelegramService::class);
-                $response = $telegramService->sendMessage($tecnico->telegram, $message);
+                $response = $telegramService->sendMessage($tecnico->telegram_id, $message);
 
 
                 return response()->json([
@@ -241,13 +238,28 @@ class TicketsUsuarioController extends Controller
        }else{
 
             try{
-                $validator = $request->validate([
-                    'mensaje' => 'required',
-                    'imagen' => 'image|nullable',
-                ], [
-                    'mensaje.required' => 'El campo mensaje es requerido',
-                    'imagen.image' => 'El archivo debe ser una imagen',
-                ]);
+                if (empty($request->input('mensaje')) && $request->hasFile('imagen')) {
+                    $validator = $request->validate(
+                        [
+                            'mensaje' => 'nullable',
+                            'imagen' => 'image',
+                        ],
+                        [
+                            'imagen.image' => 'El archivo debe ser una imagen',
+                        ]
+                    );
+                } else {
+                    $validator = $request->validate(
+                        [
+                            'mensaje' => 'required',
+                            'imagen' => 'image|nullable',
+                        ],
+                        [
+                            'mensaje.required' => 'El campo mensaje es requerido',
+                            'imagen.image' => 'El archivo debe ser una imagen',
+                        ]
+                    );
+                }
                 
                 $mensaje = new Mensaje();
                 $mensaje->user_id = Auth::user()->id;
@@ -261,12 +273,51 @@ class TicketsUsuarioController extends Controller
                     $mensaje->imagen = $filename;
                 }
 
-                //Fecha del msj
-                // $mensaje->created_at =  Carbon::now()->addHours(5);
-                // $mensaje->updated_at =  Carbon::now()->addHours(5);
+                $textAnalizado ='';
+                $textErrores='';
 
-                //Guardar
-                $mensaje->save();
+                // Analizar el sentimiento o estado de ánimo que transmite el mensaje
+                $geminiService = new GeminiService();
+                $resultSentimiento=$geminiService->generateSentiment($request->mensaje);
+                $textAnalizado = $resultSentimiento['candidates'][0]['content']['parts'][0]['text'];
+
+                 //Texto reescrito con un estado de ánimo positivo
+                 $resultRewrite=$geminiService->rewriteTextClient($request->mensaje);
+                 $textRewrite =  $resultRewrite['candidates'][0]['content']['parts'][0]['text'];
+
+                // Verificar si el texto tiene errores ortográficos o gramaticales
+                $resultErrores=$geminiService->SpellingError($request->mensaje);
+                $textErrores = $resultErrores['candidates'][0]['content']['parts'][0]['text'];
+
+                //Texto corregido
+                $resultCorreccion=$geminiService->CorrectErrors($request->mensaje);
+                $textCorregido = $resultCorreccion['candidates'][0]['content']['parts'][0]['text'];
+
+                // si el estado de ánimo no es positivo y tiene errores ortograficos o gramaticales
+                // mostrar mensaje de error y no guardarlo
+                if($textAnalizado === "Negativo.\n" && $textErrores === "No\n"){
+                   
+                    return response()->json([
+                        'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
+                        'textoReescrito' => $textRewrite,
+                    ]);
+                    
+                }elseif($textAnalizado === "Neutral.\n" && $textErrores === "No\n"){
+                    $mensaje->mensaje = $request->mensaje;
+                    $mensaje->save();
+
+                }elseif($textAnalizado === "Positivo.\n" && $textErrores === "No\n"){
+                    $mensaje->mensaje = $request->mensaje;
+                    $mensaje->save();
+
+                }elseif($textErrores === "Sí\n"){
+                    return response()->json([
+                        'textoErrores' => 'El texto tiene errores ortográficos o gramaticales',
+                        'textoCorregido' => $textCorregido,
+                    ]);
+                }elseif(empty($request->input('mensaje')) && $request->hasFile('imagen')){
+                    $mensaje->save();
+                }
                 
                 // Cambiar la fecha de caducidad agregando el tiempo de Resolucion
                 $ticket = Ticket::find($idTicket);
@@ -282,13 +333,14 @@ class TicketsUsuarioController extends Controller
                 $ticketLink = route('form_msjTecnico', ['idTicket' => $ticket->id]);
                 $message = "Nuevo mensaje del cliente {$cliente->name}: {$mensaje->mensaje}: ({$ticketLink})";
                 $telegramService = app(TelegramService::class);
-                $telegramService->sendMessage($tecnico->telegram, $message);
+                $telegramService->sendMessage($tecnico->telegram_id, $message);
                 
                 return response()->json([
                     'mensaje' => $request->mensaje,
                     'imagen' => $mensaje->imagen ?? null,
                     'status' => 'success',
                     'msjSuccess' => 'Mensaje enviado exitosamente.',
+                    'msjId' => $mensaje->id
                 ]);
                 
 
@@ -310,84 +362,8 @@ class TicketsUsuarioController extends Controller
         return ['estado' => $ticket ? $ticket->estado->nombre : null];
     }
 
-    
 
-
-
-
-    // public function verRespuesta($idTicket, $idMensaje){
-      
-    //     $ticket=Ticket::find($idTicket);
-       
-
-    //     $ticketResueltos=TicketHistorial::where('ticket_id', $idTicket)->where('estado_id', 5)->get();
-
-    //     // Obtener el ticket basado en la posición
-    //     $registroMensaje = $ticketResueltos->skip($idMensaje - 1)->first();
-                        
-    //     $idMsj= $registroMensaje->mensaje_id;
-    // dd($registroMensaje);  
-    //     $respuestaTicket= Mensaje::find($idResp);
-     
-    //     return view('myViews.usuarioEst.respuesta')->with(['idTicket'=>$idTicket, 'ticket'=> $ticket,'respuesta' => $respuestaTicket]);
-    // }
-
-
-    // public function comentar_Respuesta(Request $request,$idRespuesta, $idTicket){
-
-    //     $request->validate([
-    //         'mensaje' =>'required',
-    //         'opcion' => 'required',
-    //     ],
-    //     [
-    //         'mensaje.required' => 'El campo mensaje es requerido',
-    //         'opcion.required' => 'Debe seleccionar una opción',
-    //     ]);
-
-    //     $usuarioId=auth()->user()->id;
-   
-    //     $comentario=new Comentario();
-    //     $comentario->respuesta_id=$idRespuesta;   
-    //     $comentario->ticket_id=$idTicket;   
-    //     $comentario->mensaje=$request->mensaje;
-    //     $comentario->nivel_satisfaccion=$request->opcion;
-    //     $comentario->bool_reabrir=$request->has('reabrir')? true : false;;
-    //     $comentario->save();
-
-     
-       
-    //     if($comentario->bool_reabrir){
-    //         $ticket= Ticket::find($idTicket);
-    //         $ticket->estado_id=6;
-    //         $ticket->save();
-    //     }
-
-    //     $historial= new TicketHistorial();
-    //     $historial->ticket_id= $idTicket;
-    //     $historial->estado_id=6;
-    //     $historial->updated_at= Carbon::now();
-    //     $historial->save();
-
-    //     //*NOTIFICACION A LOS USUARIOS AL COMENTAR
-    //     // User::all()
-    //     //     ->except($usuarioId)
-    //     //     ->each(function(User $user) use ($comentario){
-    //     //         $user->notify(new ComentarioNotification($comentario));
-    //     //     });
-
-    //     //* NOTIFICACION A LOS USUARIOS PERO UTILIZANDO EVENT Y LISTENER (más simplificado)
-    //     // Enviamos el comentario al event,para luego crear la notificación
-    //     event(new ComentarioEvent($comentario));
-
-    //     return back()->with('status', 'Comentario enviado exitosamente :)');
-       
-    // }
-
-
-
-   
-
-
+  
     /**
      * Display the specified resource.
      *

@@ -83,9 +83,9 @@
         </div>
 
         <div class="col-span-6 sm:col-span-6">
-            <x-jet-label for="telegram" value="{{ __('Telegram') }}" />
-            <x-jet-input id="telegram" type="text" class="mt-1 block w-full" wire:model.defer="state.telegram" autocomplete="telegram" />
-            <x-jet-input-error for="telegram" class="mt-2" />
+            <x-jet-label for="telegram_id" value="{{ __('Telegram id') }}" />
+            <x-jet-input id="telegram_id" type="text" class="mt-1 block w-full" wire:model.defer="state.telegram_id" autocomplete="telegram_id" />
+            <x-jet-input-error for="telegram_id" class="mt-2" />
         </div>
     </x-slot>
 

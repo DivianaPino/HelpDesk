@@ -49,7 +49,7 @@
               </div>
               
             
-              <div class="row">
+              <div class="row content-btn-area">
                 <div class="col-md-8 form-group">
                   <input type="submit" id="submitButton" value="Editar" class="btnForm btn-primary rounded-0 py-2 px-4">
                 </div>

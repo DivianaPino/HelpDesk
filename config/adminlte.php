@@ -314,10 +314,6 @@ return [
             'topnav_right' => true,                   // Or "topnav => true" to place on the left (required).
             'dropdown_mode' => true,                  // Enables the dropdown mode (optional).
             'dropdown_flabel' => 'All notifications', // The label for the dropdown footer link (optional).
-            // 'update_cfg' => [
-            //     'url' => '/notificacion/{idNotificacion}/ticket/{idticket}, /notificacion/{idNotificacion}/ticket/{idticket}/respmasInfo',         // The url to periodically fetch new data (optional).
-            //     'period' => 10,                       // The update period for get new data (in seconds, optional).
-            // ],
             
         ],
 
@@ -390,6 +386,27 @@ return [
         ['header' => 'OPCIONES'],
 
         [
+            'text'        => 'CREAR TICKET',
+            'url'         => '/usuario/tickets/create',
+            'icon'        => 'fas fa-fw fa-plus-circle',
+            'icon_color'  => 'info',
+             'can'         => 'usuarios_tickets.create',
+        ],
+        [
+            'text'        => 'CONSULTAR TICKETS',
+            'url'         => '/usuario/tickets',
+            'icon'        => 'fas fa-fw  fa-search',
+            'icon_color'  => 'info',
+            'can'         => 'usuarios_tickets.index',
+        ],
+        [
+            'text'        => 'MIS TICKETS REPORTADOS',
+            'url'         => '/usuario/tickets',
+            'icon'        => 'fas fa-fw  fa-search',
+            'icon_color'  => 'info',
+            'can'         => 'admin_tickets',
+        ],
+        [
             'text'        => 'GESTIONAR',
             'text_color'  => 'primary',
             'icon'        => 'fas fa-fw fa-cog',
@@ -428,26 +445,12 @@ return [
 
         ],
 
-
         [
-            'text'        => 'TICKETS',
+            'text'        => 'TICKETS CLIENTES',
             'icon'        => 'fas fa-fw fa-tags',
+            'can'         => 'admin_tickets',
             'submenu' => [
 
-                [
-                    'text'        => 'CREAR TICKET',
-                    'url'         => '/usuario/tickets/create',
-                    'icon'        => 'fas fa-fw fa-plus-circle',
-                    'icon_color'  => 'info',
-                     'can'         => 'usuarios_tickets.create',
-                ],
-                [
-                    'text'        => 'CONSULTAR TICKETS',
-                    'url'         => '/usuario/tickets',
-                    'icon'        => 'fas fa-fw  fa-search',
-                    'icon_color'  => 'info',
-                    'can'         => 'usuarios_tickets.index',
-                ],
                 [
                     'text'        => 'TICKETS AREA',
                     'url'         => '/area_usuario/tickets',
@@ -456,7 +459,81 @@ return [
                     'can'         => 'areaUsuario_tickets',
                 ],
                 [
-                    'text'        => 'Mis tickets',
+                    'text'        => 'Tickets asistidos (Por mi)',
+                    'url'         => '/misTickets',
+                    'icon'        => 'fas fa-fw fa-tags',
+                    'icon_color'  => 'info',
+                    'can'         => 'misTickets',
+                ],
+                [
+                    'text'        => 'Tickets no asignados',
+                    'url'         => '/noasignados',
+                    'icon'        => 'fas fa-fw fa-user-times',
+                    'icon_color'  => 'info',
+                    'can'         => 'tickets_noasignados',
+                ],
+                [
+                    'text'        => 'Tickets abiertos',
+                    'url'         => '/abiertos',
+                    'icon'        => 'fas fa-fw fa-unlock-alt',
+                    'icon_color'  => 'info',
+                    'can'         => 'tickets_abiertos',
+                ],
+
+                [
+                    'text'        => 'Tickets en espera',
+                    'url'         => '/enEspera',
+                    'icon'        => 'fas fa-fw fa-clock',
+                    'icon_color'  => 'info',
+                    'can'         => 'tickets_enEspera',
+                ],
+                [
+                    'text'        => 'Tickets resueltos',
+                    'url'         => '/resueltos',
+                    'icon'        => 'fas fa-fw fa-check-circle',
+                    'icon_color'  => 'info',
+                    'can'         => 'tickets_resueltos',
+                ],
+                [
+                    'text'        => 'Tickets reabiertos',
+                    'url'         => '/reabiertos',
+                    'icon'        => 'fas fa-fw fa-redo',
+                    'icon_color'  => 'info',
+                    'can'         => 'tickets_reabiertos',
+                ],
+                [
+                    'text'        => 'Tickets cerrados',
+                    'url'         => '/cerrados',
+                    'icon'        => 'fas fa-fw fa-lock',
+                    'icon_color'  => 'info',
+                    'can'         => 'tickets_cerrados',
+                ],
+                [
+                    'text'        => 'Tickets vencidos',
+                    'url'         => '/vencidos',
+                    'icon'        => 'fas fa-fw fa-hourglass-end',
+                    'icon_color'  => 'info',
+                    'can'         => 'tickets_vencidos',
+                ],
+                
+            ],
+
+        ],
+        [
+            'text'        => 'TICKETS',
+            'icon'        => 'fas fa-fw fa-tags',
+            'can'         => 'jefe_tec_tickets',
+            'submenu' => [
+
+                [
+                    'text'        => 'TICKETS AREA',
+                    'url'         => '/area_usuario/tickets',
+                    'icon'        => 'fas fa-fw fa-map-marker',
+                    'icon_color'  => 'info',
+                    'can'         => 'areaUsuario_tickets',
+                ],
+                [
+                    'text'        => 'Tickets asistidos (Por mi)',
                     'url'         => '/misTickets',
                     'icon'        => 'fas fa-fw fa-tags',
                     'icon_color'  => 'info',

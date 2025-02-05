@@ -38,7 +38,15 @@
 
                     <div class="enlaces">
                         @auth
-                        <a href="{{url('/usuarios')}}" class=" btn txt-btn ">Dashboard</a>
+                            @if(auth()->user()->hasRole('Administrador'))
+                                <a href="{{url('/analisis')}}" class=" btn txt-btn ">Dashboard</a>
+                            @elseif(auth()->user()->hasRole('Jefe de área'))
+                                <a href="{{url('/area_usuario/tickets')}}" class=" btn txt-btn ">Dashboard</a>
+                            @elseif(auth()->user()->hasRole('Técnico de soporte'))
+                                <a href="{{url('/misTickets')}}" class=" btn txt-btn ">Dashboard</a>
+                            @elseif(auth()->user()->hasRole('Usuario estándar'))
+                                <a href="{{url('/usuario/tickets')}}" class=" btn txt-btn ">Dashboard</a>
+                            @endif
                         @else
                         <a href="{{ route('login') }}" class=" btn txt-btn ">Iniciar sesión</a>
 

@@ -92,22 +92,21 @@
                   <div class="col-md-12 form-group mb-3 cuadro2">
                       CHAT CON EL CLIENTE "{{strtoupper($cliente->name)}}"
                   </div>
+
+
             
                   <div class="card col-md-12 form-group mb-3 overflow-auto chat" id="chat">
-
                     @if($ticket->mensajes()->exists())
                       @foreach($ticket->mensajes as $msj)
                         @if($msj->user_id == Auth::user()->id || auth()->user()->hasRole('Administrador'))
                           @if($msj->mensaje || isset($msj['imagen']))
                             <div class="container-msjRight">
                               <div class="mensajesRight">
-                                  <p class="msjChat">{{$msj->mensaje}}</p>
+                                  <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
                                   @if(isset($msj['imagen']))
                                       <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
                                       <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" class="txtImagen"  download>Descargar Imagen</a>   
-                                  @else
-                                      <img src="{{asset('images/msjTecnico/default.png')}}" class="img-fluid img-rounded" hidden> 
-                                      <a href="{{ asset('images/msjTecnico/default.png') }}" download hidden>Descargar Imagen</a>   
+                              
                                   @endif    
                                   <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}} </span>
                               </div>
@@ -117,13 +116,11 @@
                           @if($msj->mensaje || isset($msj['imagen']))
                             <div class="container-msjLeft">
                               <div class="mensajesLeft">
-                                  <p class="msjChat">{{$msj->mensaje}}</p>
+                                  <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
                                   @if(isset($msj['imagen']))
                                       <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj" > 
                                       <a href="{{ asset('images/msjCliente/'.$msj['imagen']) }}" class="txtImagen"  download>Descargar Imagen</a>   
-                                  @else
-                                      <img src="{{asset('images/msjTecnico/default.png')}}" class="img-fluid img-rounded" hidden> 
-                                      <a href="{{ asset('images/msjTecnico/default.png') }}" download hidden>Descargar Imagen</a>   
+                                 
                                   @endif    
                                   <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}} </span>
                               </div>
@@ -230,14 +227,8 @@
 
     <script src="https://kit.fontawesome.com/6f3d5551a7.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script  type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
-<script>
-  function cargarPaginaAnterior() {
-      window.location.href = document.referrer;
-      return false;
-  }
-</script>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
         // Verifica si hay un mensaje de sesión
@@ -255,21 +246,41 @@
   </script>
   
 <script>
+// Función para validar el checkbox
+function validarCheckboxResuelto() {
+    const checkbox = document.getElementById('resuelto');
+    if (!checkbox.checked) return true; // Si no está marcado, permitimos enviar
+    
+    return Swal.fire({
+        title: '¿Seguro que el ticket está resuelto?',
+        text: 'Esta acción marcará el ticket como resuelto',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: 'Sí, está resuelto',
+        cancelButtonText: 'Cancelar'
+    }).then(result => result.isConfirmed); // Devolvemos true solo si confirma
+}
+
+
 document.addEventListener("DOMContentLoaded", function() {
 
     const chatContainer = document.getElementById('chat');
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    document.getElementById('contactForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Evita que el formulario se envíe por defecto
-
+    document.getElementById('contactForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+    
+    // Validar el checkbox primero
+    const esTicketResuelto = await validarCheckboxResuelto();
+    
+    // Solo continuar si el usuario confirmó o el checkbox no está marcado
+    if (esTicketResuelto === true || !document.getElementById('resuelto').checked) {
         document.getElementById('submitButton').value = 'Enviando...'; 
         document.getElementById('submitButton').disabled = true; 
         
         var formData = new FormData(this);
         document.getElementById('mensaje').disabled = true; 
-
-
 
 
         fetch('/mensaje/tecnico/ticket/{{$ticket->id}}', { 
@@ -279,7 +290,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(response => response.json())
         .then(data => {
 
-          console.log(data);
+          // console.log(data);
 
           const checkbox=document.getElementById('resuelto');
 
@@ -292,9 +303,9 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('messagesContainer').innerHTML = '';
             document.getElementById('messagesContainer').appendChild(successMessageElement);
 
-            setTimeout(() => {
-                document.getElementById('messagesContainer').innerHTML = '';
-            }, 5000); // Elimina el mensaje después de 5 segundos (5000 milisegundos)
+            // setTimeout(() => {
+            //     document.getElementById('messagesContainer').innerHTML = '';
+            // }, 5000); // Elimina el mensaje después de 5 segundos (5000 milisegundos)
 
             // Limpiar los campos de entrada
             document.getElementById('mensaje').value = ''; // Limpia el textarea de mensaje
@@ -316,9 +327,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
             alert('{{ session('error') }}');
 
-            setTimeout(() => {
-                document.getElementById('messagesContainer').innerHTML = '';
-            }, 5000)
+            // setTimeout(() => {
+            //     document.getElementById('messagesContainer').innerHTML = '';
+            // }, 5000)
 
 
 
@@ -339,9 +350,9 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('messagesContainer').innerHTML = '';
             document.getElementById('messagesContainer').appendChild(errorMessageElement);
 
-            setTimeout(() => {
-                document.getElementById('messagesContainer').innerHTML = '';
-            }, 5000)
+            // setTimeout(() => {
+            //     document.getElementById('messagesContainer').innerHTML = '';
+            // }, 5000)
 
             const btnReescribir = document.getElementById('btnReescribir');
             const mensajeTextarea = document.getElementById('mensaje');
@@ -375,9 +386,9 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('messagesContainer').innerHTML = '';
             document.getElementById('messagesContainer').appendChild(errorMessageElement);
 
-            setTimeout(() => {
-                document.getElementById('messagesContainer').innerHTML = '';
-            }, 5000)
+            // setTimeout(() => {
+            //     document.getElementById('messagesContainer').innerHTML = '';
+            // }, 5000)
 
             const btnCorregir = document.getElementById('btnCorregir');
             const mensajeTextarea = document.getElementById('mensaje');
@@ -407,14 +418,18 @@ document.addEventListener("DOMContentLoaded", function() {
             messageElement.classList.add('msjUserRight');
            
               if(data.mensaje){
-                messageElement.innerHTML = `<p class="msjChat">${data.mensaje}</p>`;
+                const paragraph = document.createElement('p');
+                paragraph.id = data.msjId;
+                paragraph.className = 'msjChat';
+                paragraph.textContent = data.mensaje;
+                messageElement.appendChild(paragraph);
               }
             
               if (data.imagen) {
                   const imageElement = document.createElement('img');
+                  imageElement.id = data.msjId;
                   imageElement.src = `/images/msjTecnico/${data.imagen}`;
-                  imageElement.classList.add('img-fluid', 'img-rounded');
-                  imageElement.style.width = '60px';
+                  imageElement.classList.add('img-fluid', 'img-rounded', 'imagenMsj');
                   messageElement.appendChild(imageElement);
                   messageElement.innerHTML += `<br><a href="/images/msjTecnico/${data.imagen}"  class="txtImagen" download>Descargar Imagen</a>`;
               }
@@ -454,16 +469,112 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .catch(error => console.error('Error:', error));
 
+      }
     });
 });
+</script>
+
+<script>
+
+   $(document).ready(function() {
+    fetchNewMessages();
+
+      // Verificar el estado del ticket cada 5 segundos
+      setInterval(fetchNewMessages, 5000);
+  });
+
+// Función para obtener nuevos mensajes
+function fetchNewMessages() {
+
+  const chatContainer = document.getElementById('chat');
+
+  $.ajax({
+    url: '{{ route('mensajes.nuevos', $idTicket) }}',
+          type: 'GET',
+
+          success: function(response) {
+            // console.log(response);
+
+            response.messages.forEach(message => {
+
+               // Verifica si el mensaje ya está en el chat y si pertenece al ticket correcto
+              if(!document.getElementById(`${message.id}`) && message.ticket_id === {{$idTicket}}){
+
+                  const messageElement = document.createElement('div')
+                  chatContainer.classList.add('container-msjleft');
+                  messageElement.classList.add('mensajesLeft');
+            
+
+                    // Agregar el mensaje al chat
+                  if(message.mensaje){
+                    const paragraph = document.createElement('p');
+                    paragraph.id = message.id;
+                    paragraph.className = 'msjChat';
+                    paragraph.textContent = message.mensaje;
+                    messageElement.appendChild(paragraph);
+                  }
+                
+                  if (message.imagen) {
+                      const imageElement = document.createElement('img');
+                      imageElement.id = message.id;
+                      imageElement.src = `/images/msjCliente/${message.imagen}`;
+                      imageElement.classList.add('img-fluid', 'img-rounded', 'imagenMsj');
+                      messageElement.appendChild(imageElement);
+                      messageElement.innerHTML += `<br><a href="/images/msjTecnico/${message.imagen}"  class="txtImagen" download>Descargar Imagen</a>`;
+                  }
+
+                  if(message.mensaje || message.imagen){
+                    const fechaActual = new Date().toLocaleString('es-ES', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true
+                    }).toUpperCase().replace(/\./g, '').replace(/\s+(AM|PM)/g, '$1').replace(/(A)\s+(M)/g, '$1$2').replace(/(P)\s+(M)/g, '$1$2'); // Elimina el espacio entre A y M, y P y M
+
+                    
+                    messageElement.innerHTML += `<span class="fecha_mensajes" style="text-align:right;">${fechaActual}</span>`;
+                    $('#sinMsj').hide();
+
+                    messageElement.classList.add('mensajesRight');
+                  
+                  }
+
+                  //añadir el nuevo mensaje al chat
+                  chatContainer.appendChild(messageElement);
+
+                  //Colocar el scroll al final del chat
+                  chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                  //sombra al mensaje nuevo
+                  messageElement.style.boxShadow = '5px 5px 15px rgba(0, 0, 0, 0.5)';
+
+                  // Quitar la sombra a los 5 segundos
+                  setTimeout(() => {
+                      messageElement.style.boxShadow = 'none';
+                  }, 5000);
+                }
+
+                
+                
+            });
+          
+    },
+    error: function (xhr, status, error) {
+        console.error("Error al cargar mensajes nuevos al chat:", status, error);
+    }
+});
+}
+
 </script>
 
 <script>
   $(document).ready(function() {
       checkTicketStatus();
 
-      // Verificar el estado del ticket cada 10 segundos
-      setInterval(checkTicketStatus, 10000);
+      // Verificar el estado del ticket cada 5 segundos
+      setInterval(checkTicketStatus, 5000);
   });
 
   function checkTicketStatus() {
@@ -524,96 +635,103 @@ document.addEventListener("DOMContentLoaded", function() {
   
 </script>
 
+
 <!-- al cargar la página -->
 <script>
   $(document).ready(function() {
       checkNivelSatisfaccion();
+      setInterval(checkNivelSatisfaccion, 5000);
 
   });
 
   function  checkNivelSatisfaccion() {
 
-    const form = document.getElementById('contactForm');
-    const starContainer = document.querySelector('.estrellas');
-    const starContent = document.querySelector('.stars');
+const form = document.getElementById('contactForm');
+const starContainer = document.querySelector('.estrellas');
+const starContent = document.querySelector('.stars');
 
-      $.ajax({
-          url: '{{ route('nivelSatisfaccion', $idTicket) }}',
-          type: 'GET',
+  $.ajax({
+      url: '{{ route('nivelSatisfaccion', $idTicket) }}',
+      type: 'GET',
 
-          success: function(response) {
+      success: function(response) {
 
-        //  console.log(response.nivel);
+        if (response?.nivel) {
+          let num = 0;
 
-              let num = 0;
-
-              switch (response.nivel) {
-                case "Totalmente satisfecho":
-                  num = 5;
-                break;
-                case "Satisfecho":
-                  num = 4;
-                break;
-                case "Neutral":
-                  num = 3;
-                break;
-                case "Poco satisfecho":
-                  num = 2;
-                break;
-                case "Nada satisfecho":
-                  num = 1;
-                break;
-              
-                default:
-                  break;
-              }
-
-   
-              starContainer.innerHTML = '';
-              starContent.innerHTML = '';
-              
-              // Mostrar estrellas seleccionadas
-              for (let i = 0; i < num; i++) {
-                  const star = document.createElement('i');
-                  star.className = 'fa-solid fa-star fa-lg';
-                  star.style.color = '#FFD700'; // Color amarillo para estrellas completas
-                  starContainer.appendChild(star);
-              }
-
-              // Mostrar estrellas incompletas
-              for (let i = 0; i < 5 - num; i++) {
-                  const star = document.createElement('i');
-                  star.className = 'fa-solid fa-star fa-lg';
-                  star.style.color = '#ccc'; // Color gris para estrellas incompletas
-                  starContainer.appendChild(star);
-              }
-
-              // ------------------------------
-              for (let i = 0; i < num; i++) {
-                  const star = document.createElement('i');
-                  star.className = 'fa-solid fa-star fa-lg';
-                  star.style.color = '#FFD700'; // Color amarillo para estrellas completas
-                  starContent.appendChild(star);
-              }
-
-              // Mostrar estrellas incompletas
-              for (let i = 0; i < 5 - num; i++) {
-                  const star = document.createElement('i');
-                  star.className = 'fa-solid fa-star fa-lg';
-                  star.style.color = '#ccc'; // Color gris para estrellas incompletas
-                  starContent.appendChild(star);
-              }
-
-              
-             
-
+          switch (response.nivel) {
+            case "Totalmente satisfecho":
+              num = 5;
+            break;
+            case "Satisfecho":
+              num = 4;
+            break;
+            case "Neutral":
+              num = 3;
+            break;
+            case "Poco satisfecho":
+              num = 2;
+            break;
+            case "Nada satisfecho":
+              num = 1;
+            break;
           
-          },
-          error: function( error) {
-              console.error("Error al obtener la calificacion del ticket:", error);
+            default:
+              break;
           }
-      });
-  }
+
+
+          starContainer.innerHTML = '';
+          starContent.innerHTML = '';
+          
+          // Mostrar estrellas seleccionadas
+          for (let i = 0; i < num; i++) {
+              const star = document.createElement('i');
+              star.className = 'fa-solid fa-star fa-lg';
+              star.style.color = '#FFD700'; // Color amarillo para estrellas completas
+              starContainer.appendChild(star);
+          }
+
+          // Mostrar estrellas incompletas
+          for (let i = 0; i < 5 - num; i++) {
+              const star = document.createElement('i');
+              star.className = 'fa-solid fa-star fa-lg';
+              star.style.color = '#ccc'; // Color gris para estrellas incompletas
+              starContainer.appendChild(star);
+          }
+
+          // ------------------------------
+          for (let i = 0; i < num; i++) {
+              const star = document.createElement('i');
+              star.className = 'fa-solid fa-star fa-lg';
+              star.style.color = '#FFD700'; // Color amarillo para estrellas completas
+              starContent.appendChild(star);
+          }
+
+          // Mostrar estrellas incompletas
+          for (let i = 0; i < 5 - num; i++) {
+              const star = document.createElement('i');
+              star.className = 'fa-solid fa-star fa-lg';
+              star.style.color = '#ccc'; // Color gris para estrellas incompletas
+              starContent.appendChild(star);
+          }
+
+          const nivelCalificacionSpan = document.getElementById('nivel_calif');
+          nivelCalificacionSpan.textContent = response.nivel;
+
+
+        } else {
+            console.log("No se recibió nivel de satisfacción");
+        }
+
+        
+      
+      },
+      error: function( error) {
+          console.error("Error al obtener la calificacion del ticket:", error);
+      }
+  });
+}
 </script>
 <script>
 function checkPreviousUrl(ticketId) {

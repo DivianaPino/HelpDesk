@@ -19,7 +19,7 @@
                   <input type="text" class="form-control" name="user_id" id="user_id"   value="{{$usuarios->name}}" disabled >
                 </div>
                 <div class="col-md-4 form-group mb-3 ml-auto">
-                  <label for="fecha_inicio" class="col-form-label">Fecha:</label>
+                  <label for="fecha_inicio" class="col-form-label">Fecha de creación:</label>
                   <input type="text" class="form-control" name="fecha_inicio" id="fecha_inicio" value="{{$fecha_actual}}"  disabled>
                 </div>
               </div>
@@ -114,7 +114,7 @@
               </div>
 
               <div class="row">
-                <div class="col-md-6 form-group mb-3 content-file">
+                <div class="col-md-6 form-group mb-3 content-file file-crearTicket">
                     <input type="file" name="imagen" accept="image/*" >
                 </div>
               </div>
@@ -127,7 +127,7 @@
 
               <div class="row">
                   <div class="col-md-12 form-group mb-3">
-                      <input type="submit" id="submitButton" value="Enviar incidencia" class="btnForm btn-primary rounded-0 py-2 px-4" >
+                      <input type="submit" id="submitButton" value="Enviar incidencia" class="btnForm btn-primary rounded-0 py-2 px-4 btn-enviarTicket" >
                   </div>
               </div>
 

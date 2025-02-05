@@ -36,9 +36,9 @@
                     
                 <div class="row">
                     <div class="col-md-4 form-group mb-3">
-                        <label for="clasificacion_id" class="col-form-label">Clasificación:</label>
-                        <select class="custom-select" id="clasificacion_id" name="clasificacion_id"  value="{{old('clasificacion_id')}}" disabled >
-                            <option value="">{{ $ticket->clasificacion->nombre }}</option>
+                        <label for="area_id" class="col-form-label">Área:</label>
+                        <select class="custom-select" id="area_id" name="area_id"  value="{{old('area_id')}}" disabled >
+                            <option value="">{{ $ticket->area->nombre }}</option>
                         </select>
 
                     </div>

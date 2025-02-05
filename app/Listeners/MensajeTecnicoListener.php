@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Notification;
 use App\Notifications\MensajeTecnicoNotification;
 use App\Models\User;
 use App\Models\Ticket;
-use App\Models\Clasificacion;
 use App\Models\Area;
 
 class MensajeTecnicoListener

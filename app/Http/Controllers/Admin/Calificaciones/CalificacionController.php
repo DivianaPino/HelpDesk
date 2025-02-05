@@ -20,17 +20,17 @@ class CalificacionController extends Controller
 
      public function nivel_satisfaccion($idTicket)
      {
-         $ticket = Ticket::find($idTicket); // Ejemplo de cómo podrías obtener la información
-         $ultimaCalif=$ticket->ultimaCalificacion;
-         $nivelSatisfaccion=$ultimaCalif->nivel_satisfaccion;
-         
-         return ['nivel' => $nivelSatisfaccion];
+        $ticket = Ticket::find($idTicket);
+    
+        return [
+            'nivel' => optional($ticket->ultimaCalificacion)->nivel_satisfaccion
+        ];
      }
 
      public function calificaciones_ticketCliente($idTicket)
      {
-         // Aquí puedes agregar lógica para obtener la información del ticket
-         $ticket = Ticket::find($idTicket); // Ejemplo de cómo podrías obtener la información
+         //información del ticket
+         $ticket = Ticket::find($idTicket); //  obtener la información
          $cliente=$ticket->user->name;
          $calificacionesticket=$ticket->calificaciones;
 

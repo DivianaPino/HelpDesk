@@ -56,16 +56,6 @@ class Ticket extends Model
         return $this->hasMany('App\Models\Mensaje');
     }
 
-    // public function masInformacions()
-    // {
-    //   return $this->hasMany('App\Models\MasInformacion');
-    // }
-
-    // public function respMasInfo()
-    // {
-    //     return $this->hasMany('App\Models\RespMasInfo');
-    // }
-
     public function calificaciones() 
     {
         return $this->hasMany('App\Models\Calificacion');
@@ -76,10 +66,6 @@ class Ticket extends Model
       return $this->hasOne('App\Models\Calificacion')->latest();
     }
 
-    public function ticketHistorials()
-    {
-        return $this->hasMany('App\Models\TicketHistorial'); 
-    }
 
     public function comments()
     {

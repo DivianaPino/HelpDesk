@@ -15,8 +15,9 @@
                <thead class="text-center bg-dark text-white">
                    <tr>
                       <th>ID</th>
-                      <th>Usuario</th>
+                      <th>Cliente</th>
                       <th>Área</th>
+                      <th>Servicio</th>
                       <th>Prioridad</th>
                       <th>Estado</th>
                       <th>Agente</th>
@@ -34,6 +35,7 @@
                              <td>{{$ticket->id}}</td>
                              <td>{{$ticket->user->name}}</td>
                              <td>{{$ticket->area->nombre}}</td>
+                             <td>{{$ticket->servicio->nombre}}</td>
                             
                              <!-- Prioridades -->
                              @if($ticket->prioridad->nombre == "Urgente")
@@ -146,10 +148,10 @@ $(document).ready(function() {
             "infoFiltered":"",
         },
 
-        "order": [[7, 'desc']],
+        "order": [[8, 'desc']],
         "columnDefs": [
             {
-                "targets": 7, 
+                "targets": 8, 
                 "type": "date",
                 "render": function (data, type, row) {
                     // Asegurar de que 'data' esté en el formato 'YYYY-MM-DD'

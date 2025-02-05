@@ -33,8 +33,9 @@
                <thead class="text-center bg-dark text-white">
                    <tr>
                       <th>ID</th>
-                      <th>Usuario</th>
+                      <th>Cliente</th>
                       <th>Área</th>
+                      <th>Servicio</th>
                       <th>Asunto</th>
                       <th>Agente</th>
                       <th>Prioridad</th>
@@ -53,6 +54,7 @@
                             <td>{{$ticket->id}}</td>
                             <td>{{$ticket->user->name}}</td>
                             <td>{{$ticket->area->nombre}}</td>
+                            <td>{{$ticket->servicio->nombre}}</td>
                             <td>{{$ticket->asunto}}</td>
                             <td>{{$ticket->asignado_a}}</td>
                             
@@ -101,9 +103,11 @@
                             <!-- Opciones - Botones  -->
                             <td class="content-btnInfo">
                                 <a class="btn btn-info" href="/form/mensaje/tec/ticket/{{$ticket->id}}">Ver</a>
-                                @can('reasignar_ticket')
-                                    <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
-                                @endcan
+                                @if($ticket->estado->nombre == "En espera" || $ticket->estado->nombre == "Reabierto" || $ticket->estado->nombre == "Abierto")
+                                    @can('reasignar_ticket')
+                                        <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                                    @endcan
+                                @endif
                             </td>
                         </tr>
                     @endforeach

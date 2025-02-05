@@ -24,8 +24,8 @@
             </div>
 
             <div class="mt-4">
-                <x-jet-label for="telegram" value="{{ __('Telegram:') }}"  class="texto-formulario" />
-                <x-jet-input id="telegram" class="block mt-1 w-full" type="text" name="telegram" :value="old('telegram')" required />
+                <x-jet-label for="telegram_id" value="{{ __('Telegram id:') }}"  class="texto-formulario" />
+                <x-jet-input id="telegram_id" class="block mt-1 w-full" type="text" name="telegram_id" :value="old('telegram_id')" required />
             </div>
 
             <div class="mt-4">

@@ -15,6 +15,7 @@
 <div>
   <div class="card">
       <div  class="card-body" >
+          <p class="d-flex justify-content-center" style="font-size:1.5rem;color:#2980B9">Filtrar</p>
           <div class="row mb-4 justify-content-center">
             <div class="col-md-4">
                 <select id="areaFilter" class="form-control">
@@ -26,19 +27,19 @@
                 </select>
             </div>
             <div class="col-md-4">
-              <select id="servicioFilter" class="form-control custom-select">
+              <select id="servicioFilter" class="form-control ">
                   <option value="">Seleccionar servicio</option>
                   @foreach($serviciosArea as $servicio)
                       <option value="{{ $servicio->id }}" {{ $selectedServicioId  == $servicio->id  ? 'selected' : '' }}>{{ $servicio->nombre }}</option>
                   @endforeach
               </select>
-          </div>
+            </div>
           </div>
           <table id="tabla_tickets" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap"  style="width:100%;" >
                <thead class="text-center bg-dark text-white">
                    <tr>
                       <th>ID</th>
-                      <th>Usuario</th>
+                      <th>Cliente</th>
                       <th>Área</th>
                       <th>Servicio</th>
                       <th>Asunto</th>

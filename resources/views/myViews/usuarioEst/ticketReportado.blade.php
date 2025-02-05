@@ -106,13 +106,11 @@
                                 @if($msj->mensaje || isset($msj['imagen']))
                                   <div class="container-msjRight">
                                     <div class="mensajesRight">
-                                        <p class="msjChat">{{$msj->mensaje}}</p>
+                                        <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
                                         @if(isset($msj['imagen']))
-                                            <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
+                                            <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
                                             <a href="{{ asset('images/msjCliente/'.$msj['imagen']) }}" style="font-size:12px;" download>Descargar Imagen</a>   
-                                        @else
-                                            <img src="{{asset('images/msjCliente/default.png')}}" class="img-fluid img-rounded" width="60px" hidden> 
-                                            <a href="{{ asset('images/msjCliente/default.png') }}" download hidden>Descargar Imagen</a>   
+                                        
                                         @endif    
                                         <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}} </span>
                                     </div>
@@ -122,13 +120,11 @@
                                 @if($msj->mensaje || isset($msj['imagen']))
                                   <div class="container-msjLeft">
                                     <div class="mensajesLeft">
-                                        <p class="msjChat">{{$msj->mensaje}}</p>
+                                        <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
                                         @if(isset($msj['imagen']))
-                                            <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded" width="60px"> 
+                                            <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
                                             <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" style="font-size:12px;" download>Descargar Imagen</a>   
-                                        @else
-                                            <img src="{{asset('images/msjTecnico/default.png')}}" class="img-fluid img-rounded" width="60px" hidden> 
-                                            <a href="{{ asset('images/msjTecnico/default.png') }}" download hidden>Descargar Imagen</a>   
+                                      
                                         @endif    
                                       <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}}</span>
                                     </div>
@@ -182,6 +178,12 @@
                     <div class="content-responder" id="botonEnviarMensaje">
                       <div>
                         <input type="submit" id="submitButton" value="Enviar mensaje" class="btn-primary rounded-0 py-2 px-4 btnResponder" >
+                      </div>
+                      <div>
+                        <button id="btnReescribir" class="btn-info btnReescribir" type="button" style="display: none;">Reescribir</button>
+                      </div>
+                      <div>
+                        <button id="btnCorregir" class="btn-info btnCorregir" type="button" style="display: none;">Corregir</button>
                       </div>
                     </div>
 
@@ -345,55 +347,132 @@ document.addEventListener("DOMContentLoaded", function() {
           // console.log(data.accion);
 
           if (data.status === 'success') {
-                // Mostrar mensaje de éxito
-                let successMessageElement = document.createElement('p');
-                successMessageElement.className = 'alert alert-success message-alert';
-                successMessageElement.innerHTML = `<i class="fa-solid fa-circle-check fa-lg"></i>${data.msjSuccess}`;
-                document.getElementById('messagesContainer').innerHTML = '';
-                document.getElementById('messagesContainer').appendChild(successMessageElement);
+              // Mostrar mensaje de éxito
+              let successMessageElement = document.createElement('p');
+              successMessageElement.className = 'alert alert-success message-alert';
+              successMessageElement.innerHTML = `<i class="fa-solid fa-circle-check fa-lg"></i>${data.msjSuccess}`;
+              document.getElementById('messagesContainer').innerHTML = '';
+              document.getElementById('messagesContainer').appendChild(successMessageElement);
 
-                setTimeout(() => {
-                    document.getElementById('messagesContainer').innerHTML = '';
-                }, 5000); // Elimina el mensaje después de 5 segundos (5000 milisegundos)
+              // setTimeout(() => {
+              //     document.getElementById('messagesContainer').innerHTML = '';
+              // }, 5000); // Elimina el mensaje después de 5 segundos (5000 milisegundos)
 
-                $('#content-opcionesResuelto').hide();
+              $('#content-opcionesResuelto').hide();
+                          // Limpiar los campos de entrada
+            document.getElementById('mensaje').value = ''; // Limpia el textarea de mensaje
+            document.getElementById('imagenMsj').value = ''; // Limpia el input de imagen
 
-            } else if (data.errors) {
-                // Mostrar mensaje de error
-                let errorMessageElement = document.createElement('p');
-                errorMessageElement.className = 'alert alert-danger message-alert';
-    
-                let errorValidation=Object.values(data)[0];
-                let mensajeError=Object.values(errorValidation)[0];
-                errorMessageElement.className = 'alert alert-danger message-alert';
-                errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
-                document.getElementById('messagesContainer').innerHTML = '';
-                document.getElementById('messagesContainer').appendChild(errorMessageElement);
-                
-                setTimeout(() => {
-                    document.getElementById('messagesContainer').innerHTML = '';
-                }, 5000)
-            }
+          } else if (data.errors) {
+            // Mostrar mensaje de error
+            let errorMessageElement = document.createElement('p');
+            errorMessageElement.className = 'alert alert-danger message-alert';
+
+            let errorValidation=Object.values(data)[0];
+            let mensajeError=Object.values(errorValidation)[0];
+            errorMessageElement.className = 'alert alert-danger message-alert';
+            errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
+            document.getElementById('messagesContainer').innerHTML = '';
+            document.getElementById('messagesContainer').appendChild(errorMessageElement);
+
+            alert('{{ session('error') }}');
+            
+            // setTimeout(() => {
+            //     document.getElementById('messagesContainer').innerHTML = '';
+            // }, 5000)
+
+          }else if(data.animoNegativo){
+
+            // Mostrar mensaje de error de estado de animo negativo
+            let errorMessageElement = document.createElement('p');
+            errorMessageElement.className = 'alert alert-danger message-alert';
+
+            let mensajeError=data.animoNegativo;
+
+            errorMessageElement.className = 'alert alert-danger message-alert';
+            errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
+            document.getElementById('messagesContainer').innerHTML = '';
+            document.getElementById('messagesContainer').appendChild(errorMessageElement);
+
+            // setTimeout(() => {
+            //     document.getElementById('messagesContainer').innerHTML = '';
+            // }, 5000)
+
+            const btnReescribir = document.getElementById('btnReescribir');
+            const mensajeTextarea = document.getElementById('mensaje');
+
+            btnReescribir.style.display = 'block';
+
+            btnReescribir.addEventListener('click', function() {
+                const nuevoMensaje = data.textoReescrito;
+                mensajeTextarea.value =  nuevoMensaje;
+                btnReescribir.style.display = 'none';
+            });
+
+            mensajeError='';
+
+          }else if(data.textoErrores){
+
+            // console.log(data.textoErrores);
+
+            // Mostrar mensaje de error de estado de animo negativo
+            let errorMessageElement = document.createElement('p');
+            errorMessageElement.className = 'alert alert-danger message-alert';
+
+            let mensajeError=data.textoErrores;
+
+            errorMessageElement.className = 'alert alert-danger message-alert';
+            errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
+            document.getElementById('messagesContainer').innerHTML = '';
+            document.getElementById('messagesContainer').appendChild(errorMessageElement);
+
+            // setTimeout(() => {
+            //     document.getElementById('messagesContainer').innerHTML = '';
+            // }, 5000)
+
+            const btnCorregir = document.getElementById('btnCorregir');
+            const mensajeTextarea = document.getElementById('mensaje');
+
+            btnCorregir.style.display = 'block';
+
+            btnCorregir.addEventListener('click', function() {
+                const nuevoMensaje = data.textoCorregido;
+                mensajeTextarea.value =  nuevoMensaje;
+                btnCorregir.style.display = 'none';
+
+                mensajeError = ''; 
+ 
+            });
+
+          
+          }
+
 
           if(!data.hasOwnProperty('errors')){
+
+            mensajeError = ''; 
             // Crear elementos HTML para el mensaje y la imagen
             const messageElement = document.createElement('div');
             const chatContainer = document.getElementById('chat');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
 
             chatContainer.classList.add('contenedorRight');
             messageElement.classList.add('msjUserRight');
 
     
             if(data.mensaje){
-             messageElement.innerHTML = `<p class="msjChat">${data.mensaje}</p>`;
+              const paragraph = document.createElement('p');
+                paragraph.id = data.msjId;
+                paragraph.className = 'msjChat';
+                paragraph.textContent = data.mensaje;
+                messageElement.appendChild(paragraph);
             }
-            
             
             if (data.imagen) {
                 const imageElement = document.createElement('img');
+                imageElement.id = data.msjId;
                 imageElement.src = `/images/msjCliente/${data.imagen}`;
-                imageElement.classList.add('img-fluid', 'img-rounded');
-                imageElement.style.width = '60px';
+                imageElement.classList.add('img-fluid', 'img-rounded', 'imagenMsj');
                 messageElement.appendChild(imageElement);
                 messageElement.innerHTML += `<br><a href="/images/msjCliente/${data.imagen}"  class="txtImagen" download>Descargar Imagen</a>`;
             }
@@ -414,6 +493,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 messageElement.classList.add('mensajesRight');
             }
+
 
             if(data.accion === 'Reabrirlo'){
                   $('#content-opcionesResuelto').hide();
@@ -440,15 +520,19 @@ document.addEventListener("DOMContentLoaded", function() {
           
             // Insertar el mensaje y la imagen en el div "chat"
             document.getElementById('chat').appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+          
+            mensajeError='';
+
           }
 
             // Limpiar los campos de entrada
-            document.getElementById('mensaje').value = ''; // Limpia el textarea de mensaje
-            document.getElementById('imagenMsj').value = ''; // Limpia el input de imagen
             document.getElementById('submitButton').value = 'Enviar mensaje'; 
             document.getElementById('submitButton').disabled = false; 
             document.getElementById('btnResponder_resuelto').disabled = false; 
             document.getElementById('btnResponder_resuelto').value = 'Enviar'; 
+         
   
            
             toggleFormElements(false);
@@ -465,7 +549,7 @@ function toggleFormElements(disable) {
     '#opcion',
     '.checkbox',
     '#comentario',
-    '.btnResponder'
+    '#btnResponder_resuelto'
 ];
 
     formElements.forEach(element => {
@@ -474,17 +558,109 @@ function toggleFormElements(disable) {
             el.disabled = disable;
         }
       });
-      document.getElementById('mensaje').readOnly = disable;
+      document.getElementById('mensaje').disable = false;
+      
   }
   
+</script>
+
+<script>
+
+   $(document).ready(function() {
+    fetchNewMessages();
+
+      // Verificar el estado del ticket cada 5 segundos
+      setInterval(fetchNewMessages, 5000);
+  });
+
+// Función para obtener nuevos mensajes
+function fetchNewMessages() {
+
+  const chatContainer = document.getElementById('chat');
+
+  $.ajax({
+    url: '{{ route('mensajes.nuevos', $idTicket) }}',
+          type: 'GET',
+
+          success: function(response) {
+            response.messages.forEach(message => {
+                // Verifica si el mensaje ya está en el chat y si pertenece al ticket correcto
+                if (!document.getElementById(`${message.id}`) && message.ticket_id === {{$idTicket}}) {
+
+                  const messageElement = document.createElement('div')
+                  chatContainer.classList.add('container-msjLeft');
+                  messageElement.classList.add('mensajesLeft');
+
+                    // Agregar el mensaje al chat
+                  if(message.mensaje){
+                    const paragraph = document.createElement('p');
+                    paragraph.id = message.id;
+                    paragraph.className = 'msjChat';
+                    paragraph.textContent = message.mensaje;
+                    messageElement.appendChild(paragraph);
+                  }
+                
+                  if (message.imagen) {
+                      const imageElement = document.createElement('img');
+                      imageElement.id = message.id;
+                      imageElement.src = `/images/msjTecnico/${message.imagen}`;
+                      imageElement.classList.add('img-fluid', 'img-rounded', 'imagenMsj');
+                      messageElement.appendChild(imageElement);
+                      messageElement.innerHTML += `<br><a href="/images/msjTecnico/${message.imagen}"  class="txtImagen" download>Descargar Imagen</a>`;
+                  }
+
+                  if(message.mensaje || message.imagen){
+                    const fechaActual = new Date().toLocaleString('es-ES', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true
+                    }).toUpperCase().replace(/\./g, '').replace(/\s+(AM|PM)/g, '$1').replace(/(A)\s+(M)/g, '$1$2').replace(/(P)\s+(M)/g, '$1$2'); // Elimina el espacio entre A y M, y P y M
+
+                    
+                    messageElement.innerHTML += `<span class="fecha_mensajes" style="text-align:right;">${fechaActual}</span>`;
+                    $('#sinMsj').hide();
+
+                    messageElement.classList.add('mensajesRight');
+                  
+                  }
+
+                  //añadir el nuevo mensaje al chat
+                  chatContainer.appendChild(messageElement);
+
+                  //colocar el scroll hacia el final del chat
+                  chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                  //sombra al mensaje nuevo
+                  messageElement.style.boxShadow = '5px 5px 15px rgba(0, 0, 0, 0.5)';
+
+                  // Quitar la sombra a los 5 segundos
+                  setTimeout(() => {
+                      messageElement.style.boxShadow = 'none';
+                  }, 5000);
+                }
+
+                
+                
+            });
+          
+    },
+    error: function (xhr, status, error) {
+        console.error("Error al cargar mensajes nuevos al chat:", status, error);
+    }
+});
+}
+
 </script>
 
 <script>
   $(document).ready(function() {
       checkTicketStatus();
 
-      // Verificar el estado del ticket cada 10 segundos
-      setInterval(checkTicketStatus, 10000);
+      // Verificar el estado del ticket cada 5 segundos
+      setInterval(checkTicketStatus, 5000);
   });
 
   function checkTicketStatus() {
@@ -519,11 +695,18 @@ function toggleFormElements(disable) {
 
 
               } else {
+                  document.getElementById('submitButton').value = 'Enviar mensaje'; 
+                  document.getElementById('submitButton').disabled = false; 
+                  document.getElementById('btnResponder_resuelto').value = 'Enviar';
+                  document.getElementById('btnResponder_resuelto').disabled = false;  
                   $('#content-opcionesResuelto').hide();
                   $('#rowMensaje').show();
                   $('#rowImagen').show();
                   $('#botonEnviarMensaje').show();
                   $('#txtTicketCerrado').hide();
+                  toggleFormElements(false);
+                  
+            
               }
 
 
@@ -630,6 +813,7 @@ function toggleFormElements(disable) {
 <script>
   $(document).ready(function() {
       checkNivelSatisfaccion();
+      setInterval(checkNivelSatisfaccion, 5000);
 
   });
 
@@ -645,7 +829,7 @@ function toggleFormElements(disable) {
 
           success: function(response) {
 
-         
+            if (response?.nivel) {
               let num = 0;
 
               switch (response.nivel) {
@@ -704,10 +888,9 @@ function toggleFormElements(disable) {
                   star.style.color = '#ccc'; // Color gris para estrellas incompletas
                   starContent.appendChild(star);
               }
+            }
 
-              
-             
-
+            
           
           },
           error: function( error) {

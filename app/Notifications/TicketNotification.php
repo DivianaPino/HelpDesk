@@ -59,7 +59,7 @@ class TicketNotification extends Notification
         return [
                 'ticket_id' => $this->ticket->id,
                 'ticket_userId' => $this->ticket->user_id,
-                'ticket_clasificacionId' => $this->ticket->clasificacion_id,
+                'ticket_areaId' => $this->ticket->area_id,
                 'ticket_prioridadId' => $this->ticket->prioridad_id,
                 'ticket_asunto' => $this->ticket->asunto,
                 'ticket_mensaje' => $this->ticket->mensaje,

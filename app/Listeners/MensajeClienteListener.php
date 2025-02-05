@@ -29,8 +29,7 @@ class MensajeClienteListener
      */
     public function handle($event)
     {
-        //* ASIGNAR LA NOTIFICACION DE respMasInfo AL AGENTE TECNICO QUE TIENE ASIGNADO  EL TICKET
-
+        
         // Obtener la respuesta desde el evento
         
          $mensaje = $event->mensaje;

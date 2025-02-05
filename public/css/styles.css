@@ -396,6 +396,10 @@ table{
     margin-bottom: 6px !important;
     margin-top: 2px !important;
   }
+
+  .tituloAgenteT{
+    font-size:22px !important;
+  }
 }
 
 @media(max-width: 1230px){
@@ -457,6 +461,12 @@ table{
   }
 }
 
+@media(max-width:767px){
+  #areaFilter{
+    margin-bottom: 15px;
+  }
+}
+
 @media(max-width: 600px){
   
   #tabla_tickets th,  
@@ -480,6 +490,10 @@ table{
   #tabla_tickets .btn-darger{
     margin-top: 0 !important;
     margin-bottom: 4px !important;
+  }
+
+  .tituloAgenteT{
+    font-size:16px !important;
   }
 }
 
@@ -514,6 +528,16 @@ table{
     margin-top: 0 !important;
     margin-bottom: 4px !important;
   }
+
+  .tituloAgenteT{
+    font-size:14px !important;
+  }
+}
+
+@media(max-width: 375px){
+  .tituloAgenteT{
+    font-size:12px !important;
+  }
 }
 
 
@@ -541,6 +565,11 @@ table{
     margin-top: 0 !important;
     margin-bottom: 4px !important;
   }
+
+  .tituloAgenteT{
+    font-size:10px !important;
+  }
+  
 }
 
 /**--------TODAS LAS AREAS------------  */
@@ -646,7 +675,7 @@ table{
   #tabla_areas .btn-warning, 
   #tabla_areas .btn-danger,
   #tabla_areas .btn-secondary{
-    width: 100px !important;
+    width: 90px !important;
     font-size: 14px !important;
  
   }
@@ -656,7 +685,7 @@ table{
   }
 }
 
-@media(max-width: 1200px){
+@media(max-width: 1355px){
 
   #tabla_areas .linea{
     display:inline;
@@ -696,7 +725,7 @@ table{
 }
 
 
-@media(max-width: 1024px){
+@media(max-width: 1150px){
 
   .titulo_prin{
     text-align:center; 
@@ -748,6 +777,17 @@ table{
   #tabla_areas .btn-warning{
     margin-right: 2px !important;
   } 
+}
+
+@media(max-width: 1150px){
+  #tabla_areas .btn-info, 
+  #tabla_areas .btn-warning, 
+  #tabla_areas .btn-danger,
+  #tabla_areas .btn-secondary{
+    width: 60px !important;
+    font-size: 7px !important;
+    padding: 2px !important;
+  }
 }
 
  @media(max-width: 768px){
@@ -1108,7 +1148,7 @@ table{
   overflow: hidden;
   font-size: 14px;
   text-align:center !important;
-  white-space: nowrap;
+  white-space: wrap;
   word-wrap: break-word !important;
 
 }
@@ -1145,6 +1185,13 @@ table{
   }
 }
 
+@media(max-width: 1200px){
+  #tabla_tktReportados .btn-info{
+    width: 50px !important; 
+    font-size: 12px !important;
+    padding: 2px !important;
+  }
+}
 @media(max-width: 1024px){
   .text-EsperandoResp{
     font-size: 8px !important;
@@ -1999,13 +2046,7 @@ table{
     margin: 6px !important;
   }
 
-  #tabla_tktAbiertos .btn-info,
-  #tabla_enEspera .btn-info,
-  #tabla_tktVencidos .btn-info,
-  #tabla_tkt_Reabiertos .btn-info
-  {
-    margin-bottom: 0px !important;
-  }
+  
 
   #tabla_tktAbiertos .btn-warning,
   #tabla_enEspera .btn-warning,
@@ -2057,13 +2098,7 @@ table{
     margin: 6px !important;
   }
 
-  #tabla_tktAbiertos .btn-info,
-  #tabla_enEspera .btn-info,
-  #tabla_tktVencidos .btn-info,
-  #tabla_tkt_Reabiertos .btn-info
-  {
-    margin-bottom: 0px !important;
-  }
+  
 
   #tabla_tktAbiertos .btn-warning,
   #tabla_enEspera .btn-warning,
@@ -2115,13 +2150,7 @@ table{
     margin: 6px !important;
   }
 
-  #tabla_tktAbiertos .btn-info,
-  #tabla_enEspera .btn-info,
-  #tabla_tktVencidos .btn-info,
-  #tabla_tkt_Reabiertos .btn-info
-  {
-    margin-bottom: 0px !important;
-  }
+ 
 
   #tabla_tktAbiertos .btn-warning,
   #tabla_enEspera .btn-warning,
@@ -2174,9 +2203,7 @@ table{
   }
 
   #tabla_tktAbiertos .btn-info,
-  #tabla_enEspera .btn-info,
-  #tabla_tktVencidos .btn-info,
-  #tabla_tkt_Reabiertos .btn-info
+  #tabla_tktVencidos .btn-info
   {
     font-size: 6px !important;
     margin-bottom: 0px !important;
@@ -2238,14 +2265,7 @@ table{
     margin: 4px !important;
   }
 
-  #tabla_tktAbiertos .btn-info,
-  #tabla_enEspera .btn-info,
-  #tabla_tktVencidos .btn-info,
-  #tabla_tkt_Reabiertos .btn-info
-  {
-    font-size: 4px !important;
-    margin-bottom: 0px !important;
-  }
+  
 
   #tabla_tktAbiertos .btn-warning,
   #tabla_enEspera .btn-warning,
@@ -2297,14 +2317,7 @@ table{
     margin: 4px !important;
   }
 
-  #tabla_tktAbiertos .btn-info,
-  #tabla_enEspera .btn-info,
-  #tabla_tktVencidos .btn-info,
-  #tabla_tkt_Reabiertos .btn-info
-  {
-    font-size: 3px !important;
-    margin-bottom: 0px !important;
-  }
+  
 
   #tabla_tktAbiertos .btn-warning,
   #tabla_enEspera .btn-warning,
@@ -2323,32 +2336,6 @@ table{
     margin-bottom: 3px !important;
     margin-top: 6px !important;
   }
-}
-
-/** TABLA HISTORIAL */
-
-
-#tabla_historial th, 
-#tabla_historial td{
-   text-align: center !important;
-   font-size: 30px !important;
-}
-
-#tabla_historial th{
-  width: auto !important;
-  white-space: normal !important; 
-  overflow: hidden !important;
-  white-space: nowrap !important;
-  word-wrap: break-word !important;
-}
-
-#tabla_historial td{
-  white-space: normal !important;
-}
-
-#tabla_historial .btn-info,
-#tabla_historial .btn-success{
-  white-space: nowrap;
 }
 
 .content-btnVolver{
@@ -2444,142 +2431,18 @@ table{
 }
 
 
-@media(max-width: 2560px){
-  
-  #tabla_historial th{
-    font-size: 22px !important;
-  } 
-
-  #tabla_historial td{
-    font-size:20px !important ;
-  }
-
-  #tabla_historial td{
-    padding: 0 !important;
-    margin: 0 !important;
-  }  
-
-  #tabla_historial .btn-info,
-  #tabla_historial .btn-success{
-    width: 90px !important;
-    font-size: 12px !important;
-    padding: 2px !important;
-    margin-bottom: 3px !important;
-    margin-top: 6px !important;
-  }
-}
 
 @media(max-width: 1440px){
 
-  #tabla_historial td,
-  #tabla_historial th{
-    font-size: 14px !important;
-  } 
-
-  #tabla_historial td{
-    padding: 10px !important;
-  }
-
+ 
   table.dataTable>thead>tr>th:not(.sorting_disabled),
   table.dataTable>thead>tr>td:not(.sorting_disabled) {
     padding-right: 0px !important;
     padding-left: 0px !important;
   } 
 
-  #tabla_historial .btn-info, 
-  #tabla_historial .btn-success{
-    width: 120px !important;
-    font-size: 16px !important;
-    padding: 10px !important;
-    margin: 6px !important;
-  }
 }
 
-@media(max-width: 1230px){
-  
-  #tabla_historial td,
-  #tabla_historial th{
-    font-size: 10px !important;
-  } 
-
-  #tabla_historial .btn-info,
-  #tabla_historial .btn-success{
-    width: 100px !important;
-    font-size: 12px !important;
-    padding: 3px ;
-    margin: 6px !important;
-  }
-}
-
-@media(max-width: 1024px){
-  
-  #tabla_historial th,
-  #tabla_historial td{
-    font-size: 8px !important;
-  }
-
-  #tabla_historial .btn-info,
-  #tabla_historial .btn-success{
-    width: 90px !important;
-    font-size: 10px !important;
-    padding: 3px;
-    margin: 6px !important;
-  }
-}
-
-@media(max-width: 600px){
-  
-  #tabla_historial th,
-  #tabla_historial td{
-    font-size: 5px !important;
-  } 
-
-  #tabla_historial .btn-info,
-  #tabla_historial .btn-success{
-    width: 50px !important;
-    font-size: 5px !important;
-    padding: 3px !important;
-    margin: 6px !important;
-  }
-}
-
-@media(max-width: 425px){
-
-  #tabla_historial th,
-  #tabla_historial td {
-    font-size: 4.5px !important;
-  }
-
-  table.dataTable>thead>tr>th:not(.sorting_disabled),
-  table.dataTable>thead>tr>td:not(.sorting_disabled) {
-    padding-right: 0px !important;
-    padding-left: 0px !important;
-  }
-
-  #tabla_historial .btn-info,
-  #tabla_historial .btn-success{
-    width: 30px !important;
-    font-size: 4px !important;
-    padding: 2px !important;
-    margin: 4px !important;
-  }
-}
-
-@media(max-width: 325px){
-
-  #tabla_historial th,
-  #tabla_historial td{
-    font-size: 3.5px !important;
-  } 
-
-  #tabla_historial .btn-info,
-  #tabla_historial .btn-success{
-    width: 20px !important;
-    font-size: 2px !important;
-    padding: 0px !important;
-    margin: 4px !important;
-  }
-}
 
 
 /** ASIGNAR TECNICO */

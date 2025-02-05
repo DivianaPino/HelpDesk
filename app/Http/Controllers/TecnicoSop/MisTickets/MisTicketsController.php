@@ -9,7 +9,6 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Ticket;
 use App\Models\Estado;
-use App\Models\RespMasInfo;
 
 class MisTicketsController extends Controller
 {
@@ -58,7 +57,7 @@ class MisTicketsController extends Controller
  
         $estadoAbierto = Estado::where('nombre', 'abierto')->first();
         // Tickets que pertenecen a las areas del usuario auth con estado "Abierto"
-        $ticketsAbiertos = Ticket::where('asignado_a', $usuario->name )->whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estadoAbierto->id)->get();
+        $ticketsAbiertos = Ticket::where('asignado_a', $usuario->name )->whereIn('area_id', $areasUsuario)->where('estado_id', $estadoAbierto->id)->get();
 
 
         return view('myViews.tecnicoSop.misTickets.abiertos')->with('tickets', $ticketsAbiertos) ;
@@ -71,7 +70,7 @@ class MisTicketsController extends Controller
         
         $estado_enEspera = Estado::where('nombre', 'En espera')->first();
         // Tickets que pertenecen a las areas del usuario auth con estado "Abierto"
-        $tickets_enEspera = Ticket::where('asignado_a', $usuario->name )->whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estado_enEspera->id)->get();
+        $tickets_enEspera = Ticket::where('asignado_a', $usuario->name )->whereIn('area_id', $areasUsuario)->where('estado_id', $estado_enEspera->id)->get();
 
         return view('myViews.tecnicoSop.misTickets.enEspera')->with('tickets', $tickets_enEspera) ;
              
@@ -84,7 +83,7 @@ class MisTicketsController extends Controller
         
         $estado_enRevision = Estado::where('nombre', 'En revisión')->first();
         // Tickets que pertenecen a las areas del usuario auth con estado "Abierto"
-        $tickets_enRevision = Ticket::where('asignado_a', $usuario->name )->whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estado_enRevision->id)->get();
+        $tickets_enRevision = Ticket::where('asignado_a', $usuario->name )->whereIn('area_id', $areasUsuario)->where('estado_id', $estado_enRevision->id)->get();
 
         return view('myViews.tecnicoSop.misTickets.enRevision')->with('tickets', $tickets_enRevision) ;
              
@@ -100,7 +99,7 @@ class MisTicketsController extends Controller
         
         $fecha_actual=Carbon::now();
 
-        $ticketsVencidos = Ticket::where('asignado_a', $usuario->name )->whereIn('clasificacion_id', $areasUsuario)->whereIn('estado_id', $estados)->where('fecha_caducidad', '<', $fecha_actual)->get();
+        $ticketsVencidos = Ticket::where('asignado_a', $usuario->name )->whereIn('area_id', $areasUsuario)->whereIn('estado_id', $estados)->where('fecha_caducidad', '<', $fecha_actual)->get();
 
         return view('myViews.tecnicoSop.misTickets.vencidos')->with('tickets', $ticketsVencidos) ;
     }
@@ -113,7 +112,7 @@ class MisTicketsController extends Controller
         
         $estadoResuelto = Estado::where('nombre', 'Resuelto')->first();
         // Tickets que pertenecen a las areas del usuario auth con estado "Abierto"
-        $ticketsResueltos = Ticket::where('asignado_a', $usuario->name )->whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estadoResuelto->id)->get();
+        $ticketsResueltos = Ticket::where('asignado_a', $usuario->name )->whereIn('area_id', $areasUsuario)->where('estado_id', $estadoResuelto->id)->get();
 
         return view('myViews.tecnicoSop.misTickets.resueltos')->with('tickets', $ticketsResueltos) ;
     }
@@ -125,7 +124,7 @@ class MisTicketsController extends Controller
         
         $estadoCerrado = Estado::where('nombre', 'Cerrado')->first();
         // Tickets que pertenecen a las areas del usuario auth con estado "Abierto"
-        $ticketsCerrado =Ticket::where('asignado_a', $usuario->name )->whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estadoCerrado->id)->get();
+        $ticketsCerrado =Ticket::where('asignado_a', $usuario->name )->whereIn('area_id', $areasUsuario)->where('estado_id', $estadoCerrado->id)->get();
 
         return view('myViews.tecnicoSop.misTickets.cerrados')->with('tickets', $ticketsCerrado) ;
     }
@@ -137,7 +136,7 @@ class MisTicketsController extends Controller
         
         $estado_reAbierto = Estado::where('nombre', 'Reabierto')->first();
         // Tickets que pertenecen a las areas del usuario auth con estado "Abierto"
-        $tickets_reAbierto = Ticket::where('asignado_a', $usuario->name )->whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estado_reAbierto->id)->get();
+        $tickets_reAbierto = Ticket::where('asignado_a', $usuario->name )->whereIn('area_id', $areasUsuario)->where('estado_id', $estado_reAbierto->id)->get();
 
         return view('myViews.tecnicoSop.misTickets.reAbiertos')->with('tickets', $tickets_reAbierto) ;
     }

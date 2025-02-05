@@ -26,8 +26,8 @@
             @endif
                <thead class="text-center bg-dark text-white">
                    <tr>
-                      <th class="th-califCliente">ID</th>
-                      <th class="th-califCliente">Usuario</th>
+                      <th class="th-califCliente">ID Ticket</th>
+                      <th class="th-califCliente">Cliente</th>
                       <th >Nivel de <br> satisfacción</th>
                       <th class="th-califCliente">Acción</th>
                       <th class="th-califCliente">Comentario</th>
@@ -41,7 +41,7 @@
                     @foreach ($calificaciones as $calificacion)
                  
                             <tr>
-                                <td>{{$calificacion->id}}</td>
+                                <td>{{$idTicket}}</td>
                                 <td>{{$cliente}}</td>
                                 <td>{{$calificacion->nivel_satisfaccion}}</td>
 
@@ -129,7 +129,7 @@
 
 <script>
 $(document).ready(function() {
-    $('#tabla_calificacionesCliente').DataTable({
+    $('#tabla_calificacionesTicket').DataTable({
 
         responsive:true,
 

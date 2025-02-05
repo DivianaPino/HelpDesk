@@ -59,7 +59,7 @@ class MensajeTecnicoNotification extends Notification
         return [
             'mensaje_id' => $this->mensaje->id,
             'mensaje_ticketId' => $this->mensaje->ticket_id,
-            'mensaje_mensaje' => $this->mensaje->mensaje,
+            'mensaje_mensaje' => $this->mensaje->mensaje ?? "El ticket ha sido resuelto",
             'mensaje_fecha' => Carbon::now()->diffForHumans(),
         ];
     }

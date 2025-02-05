@@ -35,11 +35,6 @@ use App\Mail\ticketMailable;
 
 use App\Services\TelegramService;
 
-
-use App\Http\Controllers\IA\SentimentController;
-use App\Http\Controllers\IA\SpellingErrorController;
-use App\Http\Controllers\IA\CorrectErrorsController;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -52,8 +47,11 @@ use App\Http\Controllers\IA\CorrectErrorsController;
 */
 
 Route::get('/', [HomeController::class, 'index'] )->name('/');
+
 Route::get('ticketEstado/{idTicket}', [TicketsUsuarioController::class, 'ticketEstado'])->name('ticketEstado');
 Route::get('nivelSatisfaccion/{idTicket}', [CalificacionController::class, 'nivel_satisfaccion'] )->name('nivelSatisfaccion');
+Route::get('/tickets/{idTicket}/mensajes', [TicketsController::class, 'getMessagesNews'])->name('mensajes.nuevos');
+
 
 // Route::get('/emailTicket', function(){
 //   Mail::to('divianap96@gmail.com')->send(new ticketMailable);
@@ -61,17 +59,17 @@ Route::get('nivelSatisfaccion/{idTicket}', [CalificacionController::class, 'nive
 // })->name('ticket.email');
 
 
-
 Route::middleware([
   'auth:sanctum',
   config('jetstream.auth_session'),
   'verified',
   'calificacionNoti',
-  'ticketsNoComentados'
 ])->group(function () {
 
-Route::resource('/usuarios', UsuariosController::class)->names('usuarios');
-Route::put('/actualizar_area/{id}', [UsuariosController::class, 'actualizar_area'])->name('actualizar_area');
+  Route::middleware(['role:Administrador'])->group(function () {
+    Route::resource('/usuarios', UsuariosController::class)->names('usuarios');
+    Route::put('/actualizar_area/{id}', [UsuariosController::class, 'actualizar_area'])->name('actualizar_area');
+  });
 });
 
 Route::middleware([
@@ -82,20 +80,17 @@ Route::middleware([
     'mensajeClienteNoti',
     'mensajeTecnicoNoti',    
     'calificacionNoti',
-    'ticketsNoComentados'
 ])->group(function () {
 
-  Route::view('/email', 'emails.ticketMail');
-    
-    Route::get('/dashboard', [DashboardController::class, 'index'] )->name('dashboard');
 
-    // Rol: Admin
-    
-    Route::resource('/tickets', TicketsController::class)->names('tickets');  
+  Route::get('/dashboard', [DashboardController::class, 'index'] )->name('dashboard');
+
+  // Rol: Admin
+  Route::middleware(['role:Administrador'])->group(function () {
+    Route::resource('/tickets', TicketsController::class)->names('tickets');
     Route::resource('/areas', AreasController::class)->names('areas');
     Route::resource('/servicios', ServiciosController::class)->names('servicios');
     Route::resource('/prioridades', PrioridadesController::class)->names('prioridades');
-    Route::get('/misTickets', [MisTicketsController::class, 'misTickets_agenteTecnico'] )->name('misTickets');
     Route::get('/asignar_area/{id}', [UsuariosController::class, 'asignar_area'] )->name('asignar_area');
     Route::get('/area/{areaId}/tecnicos', [AreasController::class, 'area_tecnicos'] )->name('area_tecnicos');
     Route::get('/analisis', [AnalisisController::class, 'index'] )->name('indexAnalisis');
@@ -104,93 +99,78 @@ Route::middleware([
     Route::post('/tickets/filtrados', [ReporteController::class, 'reporteFiltrados'] )->name('reporteFiltrados');
     Route::post('/reporte-pdf',  [ReporteController::class, 'reporteCompletoPDF'] )->name('reporteCompletoPDF');
     Route::post('/reporteRango-pdf',  [ReporteController::class, 'reporteRangoPDF'] )->name('reporteRangoPDF');
-
-   
-    Route::post('/cargar-todos-tickets', [TicketController::class, 'cargarTodosTickets'])->name('tickets.filter.todos');
-
-    Route::get('/alltickets', [TicketsController::class, 'tickets'])->name('tickets.all');
-
-    
-    Route::get('/formSentiment', [CorrectErrorsController::class, 'formSentiment'] )->name('form.sentimiento');
-    Route::post('/sentimiento', [CorrectErrorsController::class, 'index'] )->name('sentimiento');
-
-
-   
     Route::get('/area/{areaId}/servicios', [AreasController::class, 'area_servicios'] )->name('area_servicios');
     Route::get('/crear/servicio/area/{areaId}', [ServiciosController::class, 'crear_servicio'] )->name('crear_servicio');
     Route::post('/guardar/servicio/{areaId}',  [ServiciosController::class, 'guardar_servicio'] )->name('guardar_servicio');
-    Route::get('/servicios/area/{idarea}', [TicketsUsuarioController::class, 'servicios_area'] )->name('servicios_area');
 
+  });
+
+
+    // Rol: Administrador, Usuario estandar
+    Route::middleware(['role.any:Administrador,Usuario estándar'])->group(function () {
+      Route::resource('/usuario/tickets', TicketsUsuarioController::class)->names('usuarios_tickets');
+      Route::get('/ticket/reportado/{idTicket}', [TicketsUsuarioController::class, 'ver_ticketReportado'])->name('ver_ticketReportado');
+      // *Mostrar los servicios pertenencientes al area (Crear un ticket)
+      Route::get('/servicios/area/{idarea}', [TicketsUsuarioController::class, 'servicios_area'] )->name('servicios_area');
+      Route::post('/mensaje/cliente/ticket/{idTicket}', [TicketsUsuarioController::class, 'guardar_mensajeCliente'] )->name('guardar_mensajeCliente');
+    
+    });
+
+    // Rol: Administrador,Jefe de área,Técnico de soporte
+    Route::middleware(['role.any:Administrador,Jefe de área,Técnico de soporte'])->group(function () {
+      Route::get('/misTickets', [MisTicketsController::class, 'misTickets_agenteTecnico'] )->name('misTickets');
+      Route::get('/area_usuario/tickets', [TicketsController::class, 'area_tickets'] )->name('areaUsuario_tickets');
+      Route::get('/mis_tickets/abiertos', [MisTicketsController::class, 'tickets_abiertos'] )->name('misTickets_abiertos');
+      Route::get('/mis_tickets/enEspera', [MisTicketsController::class, 'tickets_enEspera'] )->name('misTickets_enEspera');
+      Route::get('/mis_tickets/enRevision', [MisTicketsController::class, 'tickets_enRevision'] )->name('misTickets_enRevision');
+      Route::get('/mis_tickets/vencidos', [MisTicketsController::class, 'tickets_vencidos'] )->name('misTickets_vencidos');
+      Route::get('/mis_tickets/resueltos', [MisTicketsController::class, 'tickets_resueltos'] )->name('misTickets_resueltos');
+      Route::get('/mis_tickets/cerrados', [MisTicketsController::class, 'tickets_cerrados'] )->name('misTickets_cerrados');
+      Route::get('/mis_tickets/reabiertos', [MisTicketsController::class, 'tickets_reAbiertos'] )->name('misTickets_reAbiertos');
+
+      Route::get('/noasignados', [TicketsController::class, 'tickets_noasignados'] )->name('tickets_noasignados');
+      Route::get('/detalles/{idTicket}', [TicketsController::class, 'detalles_ticket'] )->name('detalles_ticket');
+      Route::put('/asignarTicket/{idTicket}', [TicketsController::class, 'asignar_ticket'] )->name('asignar_ticket');
+      Route::get('/abiertos', [TicketsController::class, 'tickets_abiertos'] )->name('tickets_abiertos');
+      Route::get('/form/mensaje/tec/ticket/{idTicket}', [TicketsController::class, 'form_msjTecnico'] )->name('form_msjTecnico');
+      //Route::get('/respuesta/ticket/{idTicket}', [TicketsController::class, 'form_Respuestaticket'] )->name('form_Respuestaticket');
+      Route::post('/mensaje/tecnico/ticket/{idTicket}', [TicketsController::class, 'guardar_mensajeTecnico'] )->name('guardar_mensajeTecnico');
+      Route::get('/enEspera', [TicketsController::class, 'tickets_enEspera'] )->name('tickets_enEspera');
+      Route::get('/enRevision', [TicketsController::class, 'tickets_enRevision'] )->name('tickets_enRevision');
+      Route::get('/vencidos', [TicketsController::class, 'tickets_vencidos'] )->name('tickets_vencidos');
+      Route::get('/resueltos', [TicketsController::class, 'tickets_resueltos'] )->name('tickets_resueltos');
+      Route::get('/reabiertos', [TicketsController::class, 'tickets_reabiertos'] )->name('tickets_reabiertos');
+      Route::get('/cerrados', [TicketsController::class, 'tickets_cerrados'] )->name('tickets_cerrados');
+      Route::get('/tecnicos/tickets/asignados/{idTicket}', [TicketsController::class, 'tecnicos_tktAsignados'] )->name('tecnicos_tkt_asignados');
+      Route::post('/asignar/tecnico/{user}/ticket', [TicketsController::class, 'asignar_ticket_a_tecnico'] )->name('asignar_tecnico_ticket');
   
+      Route::get('/tickets/abiertos/tecnico/{user}', [TicketsController::class, 'tkt_abierto_tecnico'] )->name('tkt_abierto_tecnico');
+      Route::get('/tickets/enEspera/tecnico/{user}', [TicketsController::class, 'tkt_enEspera_tecnico'] )->name('tkt_enEspera_tecnico');
   
+      Route::get('/ver/ticket/{idTicket}', [TicketsController::class, 'verTicket'] )->name('verTicket');
+    
+      Route::get('/agentes_tecnicos', [TicketsController::class, 'todos_tecnicos'] )->name('todos_tecnicos');
+  
+      Route::get('/mensaje/reabierto/ticket/{idTicket}', [TicketsController::class, 'mensajeReabierto'] )->name('mensajeReabierto');
+    });
 
-    // Rol: Usuario estandar
-    Route::resource('/usuario/tickets', TicketsUsuarioController::class)->names('usuarios_tickets');
-    // Route::get('/ticket/{idticket}/historial', [TicketsUsuarioController::class, 'historial'])->name('historial');
-    // Route::get('/ticket/{idticket}/mensaje/{idmensaje}', [TicketsUsuarioController::class, 'verMensaje'])->name('ver_mensaje');
-    // Route::get('/ticket/{idticket}/respuesta/{idrespuesta}', [TicketsUsuarioController::class, 'verRespuesta'])->name('ver_respuesta');
-    Route::get('/ticket/reportado/{idTicket}', [TicketsUsuarioController::class, 'ver_ticketReportado'])->name('ver_ticketReportado');
-    Route::post('/mensaje/cliente/ticket/{idTicket}', [TicketsUsuarioController::class, 'guardar_mensajeCliente'] )->name('guardar_mensajeCliente');
-    Route::post('/comentar/respuesta/{idrespuesta}/ticket/{idTicket}', [TicketsUsuarioController::class, 'comentar_Respuesta'])->name('comentar_Respuesta');
-
-   
-
-    // Rol: Técnico de soporte
-    Route::get('/area_usuario/tickets', [TicketsController::class, 'area_tickets'] )->name('areaUsuario_tickets');
-    Route::get('/mis_tickets/abiertos', [MisTicketsController::class, 'tickets_abiertos'] )->name('misTickets_abiertos');
-    Route::get('/mis_tickets/enEspera', [MisTicketsController::class, 'tickets_enEspera'] )->name('misTickets_enEspera');
-    Route::get('/mis_tickets/enRevision', [MisTicketsController::class, 'tickets_enRevision'] )->name('misTickets_enRevision');
-    Route::get('/mis_tickets/vencidos', [MisTicketsController::class, 'tickets_vencidos'] )->name('misTickets_vencidos');
-    Route::get('/mis_tickets/resueltos', [MisTicketsController::class, 'tickets_resueltos'] )->name('misTickets_resueltos');
-    Route::get('/mis_tickets/cerrados', [MisTicketsController::class, 'tickets_cerrados'] )->name('misTickets_cerrados');
-    Route::get('/mis_tickets/reabiertos', [MisTicketsController::class, 'tickets_reAbiertos'] )->name('misTickets_reAbiertos');
 
     // Rol: Jefe de area
-    Route::get('/calificaciones/tickets/jefeArea', [CalificacionController::class, 'calificaciones_tk_jefeArea'] )->name('calificaciones_tk_jefeArea');
+    Route::middleware(['role:Jefe de área'])->group(function () {
+      Route::get('/calificaciones/tickets/jefeArea', [CalificacionController::class, 'calificaciones_tk_jefeArea'] )->name('calificaciones_tk_jefeArea');
+    });
 
     // Roles: Admin y jefe de area 
-    Route::get('/area/{idarea}/agentes', [TicketsController::class, 'agentes_area'] )->name('agentes_area');
-    Route::get('/reasignar/ticket/{idTicket}', [TicketsController::class, 'reasignar_ticket'] )->name('reasignar_ticket');
-    Route::post('/guardar/reasignacion/ticket/{idTicket}', [TicketsController::class, 'guardar_reasignacion'] )->name('guardar_reasignacion');
+    Route::middleware(['role.any:Administrador,Jefe de área'])->group(function () {
+      Route::get('/area/{idarea}/agentes', [TicketsController::class, 'agentes_area'] )->name('agentes_area');
+      Route::get('/reasignar/ticket/{idTicket}', [TicketsController::class, 'reasignar_ticket'] )->name('reasignar_ticket');
+      Route::post('/guardar/reasignacion/ticket/{idTicket}', [TicketsController::class, 'guardar_reasignacion'] )->name('guardar_reasignacion');
+    });
 
-    //  Roles: Admin, Jefe de área, soporte técnico 
-    Route::get('/noasignados', [TicketsController::class, 'tickets_noasignados'] )->name('tickets_noasignados');
-    Route::get('/detalles/{idTicket}', [TicketsController::class, 'detalles_ticket'] )->name('detalles_ticket');
-    Route::put('/asignarTicket/{idTicket}', [TicketsController::class, 'asignar_ticket'] )->name('asignar_ticket');
-    Route::get('/abiertos', [TicketsController::class, 'tickets_abiertos'] )->name('tickets_abiertos');
-    Route::get('/form/mensaje/tec/ticket/{idTicket}', [TicketsController::class, 'form_msjTecnico'] )->name('form_msjTecnico');
-    //Route::get('/respuesta/ticket/{idTicket}', [TicketsController::class, 'form_Respuestaticket'] )->name('form_Respuestaticket');
-    Route::post('/mensaje/tecnico/ticket/{idTicket}', [TicketsController::class, 'guardar_mensajeTecnico'] )->name('guardar_mensajeTecnico');
-    Route::get('/masInformación/{idTicket}', [TicketsController::class, 'masInfo'] )->name('masInfo');
-    Route::post('/masInformacion/ticket/{idTicket}', [TicketsController::class, 'guardar_masInfo'] )->name('guardar_masInfo');
-    Route::get('/enEspera', [TicketsController::class, 'tickets_enEspera'] )->name('tickets_enEspera');
-    Route::get('/enRevision', [TicketsController::class, 'tickets_enRevision'] )->name('tickets_enRevision');
-    Route::get('/vencidos', [TicketsController::class, 'tickets_vencidos'] )->name('tickets_vencidos');
-    Route::get('/resueltos', [TicketsController::class, 'tickets_resueltos'] )->name('tickets_resueltos');
-    Route::get('/reabiertos', [TicketsController::class, 'tickets_reabiertos'] )->name('tickets_reabiertos');
-    Route::get('/cerrados', [TicketsController::class, 'tickets_cerrados'] )->name('tickets_cerrados');
-    Route::get('/tecnicos/tickets/asignados/{idTicket}', [TicketsController::class, 'tecnicos_tktAsignados'] )->name('tecnicos_tkt_asignados');
-    Route::post('/asignar/tecnico/{user}/ticket', [TicketsController::class, 'asignar_ticket_a_tecnico'] )->name('asignar_tecnico_ticket');
-
-    Route::get('/tickets/abiertos/tecnico/{user}', [TicketsController::class, 'tkt_abierto_tecnico'] )->name('tkt_abierto_tecnico');
-    Route::get('/tickets/enEspera/tecnico/{user}', [TicketsController::class, 'tkt_enEspera_tecnico'] )->name('tkt_enEspera_tecnico');
-
-    //Route::get('/respuesta/{idmensaje}/mas_info/ticket/{idTicket}', [TicketsController::class, 'verRespCliente_masInfo'] )->name('verRespCliente_masInfo');
-    
-    Route::get('/ver/ticket/{idTicket}', [TicketsController::class, 'verTicket'] )->name('verTicket');
-    Route::get('/historial/ticket/{ticket_id}', [TicketsController::class, 'historialTicket'] )->name('historial_ticket');
-    Route::get('/comentario/{comentario_id}', [CalificacionController::class, 'ver_comentario'] )->name('ver_comentario');
-
-    Route::get('/agentes_tecnicos', [TicketsController::class, 'todos_tecnicos'] )->name('todos_tecnicos');
-
-    Route::get('/mensaje/reabierto/ticket/{idTicket}', [TicketsController::class, 'mensajeReabierto'] )->name('mensajeReabierto');
-    
-
+  
     // Roles: Todos
 
     Route::get('/calificaciones', [CalificacionController::class, 'calificaciones'] )->name('calificaciones');
-
-    
     Route::get('/calificaciones/ticket/{idTicket}', [CalificacionController::class, 'calificaciones_ticketCliente'] )->name('calificacionesTicket');
     // Route::get('/calificacion_ticketCliente/{idCalificacion}', [CalificacionController::class, 'calificacion_ticketCliente'] )->name('calificacion');
    
@@ -203,26 +183,11 @@ Route::middleware([
     Route::post('/actualizar-notificaciones', [NotificationController::class, 'actualizarContador']);
     Route::get('/obtener-notificaciones', [NotificationController::class, 'obtenerNotificaciones']);
 
-
-
-  
-
-   
+    Route::get('/acceso-denegado', function () {
+      return view('errors.403');
+    })->name('acceso.denegado');
 
   });
 
 
-//   Route::middleware([
-//     'auth:sanctum',
-//     config('jetstream.auth_session'),
-//     'verified', 
-//     'mensajeClienteNoti',
-// ])->group(function () {
-
-//     Route::resource('/usuario/tickets', TicketsUsuarioController::class)->names('usuarios_tickets');
-   
-
-
-
-//   });
 

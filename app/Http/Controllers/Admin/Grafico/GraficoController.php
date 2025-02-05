@@ -93,31 +93,45 @@ class GraficoController extends Controller
             })->get();
         
             foreach($tecnicosArea as $tecnico) {
-                $ticketsTecnico = Ticket::where('area_id', $area->id)->where('asignado_a', $tecnico->name)->has('calificaciones')->get();
-        
-                $calificacionesValidas = [];
-                $nombresTecnicos[] = $tecnico->name;
-        
-                foreach($ticketsTecnico as $ticketTec) {
-                    $calificacionesSatisf = Calificacion::where('ticket_id', $ticketTec->id)
-                    ->whereIn('nivel_satisfaccion', ['Totalmente satisfecho', 'satisfecho', 'neutral'])
-                    ->get();
-
-                    $calificacionConDatos =  $calificacionesSatisf->isNotEmpty()?  $calificacionesSatisf : null; 
-                 
-                    if ($calificacionConDatos !== null) {
-                        $calificacionesValidas[] = $calificacionConDatos;
-                    }  
+                // Primero verificamos si es administrador y tiene tickets asignados
+                $tieneTickets = Ticket::where('asignado_a', $tecnico->name)->exists();
                 
+                // Solo procesamos si es administrador y tiene tickets asignados, o si no es administrador
+                if ($tecnico->hasRole('Administrador') && $tieneTickets || !$tecnico->hasRole('Administrador')) {
+                    $ticketsTecnico = Ticket::where('area_id', $area->id)
+                        ->where('asignado_a', $tecnico->name)
+                        ->has('calificaciones')
+                        ->get();
+                        
+                    $calificacionesValidas = [];
+                    foreach($ticketsTecnico as $ticketTec) {
+                        $calificacionesSatisf = Calificacion::where('ticket_id', $ticketTec->id)
+                            ->whereIn('nivel_satisfaccion', ['Totalmente satisfecho', 'satisfecho', 'neutral'])
+                            ->get();
+                            
+                        $calificacionConDatos = $calificacionesSatisf->isNotEmpty() ? $calificacionesSatisf : null;
+                        
+                        if ($calificacionConDatos !== null) {
+                            $calificacionesValidas[] = $calificacionConDatos;
+                        }
+                    }
+                    
+                    $cantidadCalificacionesValidas = count($calificacionesValidas);
+                    $porcentajeTicketTecnico = ($cantidadCalificacionesValidas / $cantidadTickets) * 100;
+                    
+                    // Agregamos los datos al array correspondiente
+                    if ($tecnico->hasRole('Administrador')) {
+                        $datosDrilldown[$claveArea]['data'][] = [
+                            'name' => $tecnico->name,
+                            'y' => $porcentajeTicketTecnico
+                        ];
+                    } else {
+                        $datosDrilldown[$claveArea]['data'][] = [
+                            'name' => $tecnico->name,
+                            'y' => $porcentajeTicketTecnico
+                        ];
+                    }
                 }
-        
-                $cantidadCalificacionesValidas = count($calificacionesValidas);
-                // dd($cantidadCalificacionesValidas);
-               
-                $porcentajeTicketTecnico = ($cantidadCalificacionesValidas / $cantidadTickets) * 100;  
-               
-               // Agrega los datos del técnico al arreglo correcto basado en la clave de área
-                $datosDrilldown[$claveArea]['data'][] = ['name' => $tecnico->name, 'y' => $porcentajeTicketTecnico];
             }
         }
 

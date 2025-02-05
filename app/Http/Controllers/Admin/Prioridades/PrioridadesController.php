@@ -38,17 +38,17 @@ class PrioridadesController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' =>'required',
-            'tiempo_resolucion' =>'required',
+            'nombre' => 'required',
+            'tiempo_resolucion' => 'required|integer|min:0', // Validación actualizada
         ],
         [
             'nombre.required' => 'El campo nombre es requerido',
             'tiempo_resolucion.required' => 'El campo tiempo de resolución es requerido',
-        ]
-    );
-
-  
+            'tiempo_resolucion.integer' => 'El campo tiempo de resolución debe ser un número entero',
+            'tiempo_resolucion.min' => 'El campo tiempo de resolución no puede ser negativo',
+        ]);
     
+
         $prioridad=new Prioridad();
         $prioridad->nombre=$request->nombre;
         $prioridad->tiempo_resolucion=$request->tiempo_resolucion;

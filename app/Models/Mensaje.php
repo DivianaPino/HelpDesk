@@ -20,9 +20,4 @@ class Mensaje extends Model
     } 
 
 
-
-    public function tcketHistorials()
-    {
-      return $this->hasMany('App\Models\TicketHistorial');
-    }
 }

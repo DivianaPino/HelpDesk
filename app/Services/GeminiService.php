@@ -101,7 +101,32 @@ class GeminiService
                 [
                     'parts' => [
                         [
-                            'text' => "¿Solo dime un solo ejemplo de como sería el siguiente texto con un estado de ánimo positivo, teniendo en cuenta que dicho texto es escrito por un tecnico de soporte de un sistema de mesa de ayuda?: $message"
+                            'text' => "¿Solo dime un solo ejemplo de como sería el siguiente texto con un estado de ánimo positivo, teniendo en cuenta que dicho texto es escrito por un técnico de soporte de un sistema de mesa de ayuda?: $message"
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $response = Http::withOptions(['verify'=>false])->post($apiUrl, $params);
+
+        if ($response->successful()) {
+            return $response->json(); // Retorna el JSON de la respuesta
+        }
+
+        throw new \Exception("Error al generar el contenido: " . $response->status());
+    }
+
+    public function rewriteTextClient($message) {
+
+        $apiUrl = config('gemini.base_url') . "/v1beta/models/gemini-1.5-flash-latest:generateContent?key={$this->geminiKey}";
+        
+        $params = [
+            'contents' => [
+                [
+                    'parts' => [
+                        [
+                            'text' => "¿Solo dime un solo ejemplo de como sería el siguiente texto con un estado de ánimo positivo, , teniendo en cuenta que dicho texto es escrito por un cliente a un técnico de soporte de un sistema de mesa de ayuda?: $message"
                         ]
                     ]
                 ]

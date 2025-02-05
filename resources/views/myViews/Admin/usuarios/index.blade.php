@@ -48,8 +48,10 @@
                                 </td>
                                 <td class="content-btnOpciones" >
                                 <a class="btn btn-info"  href="{{route('usuarios.edit', $usuario)}}">Editar rol</a>
+                    
+                                @if($usuario->hasRole(['Administrador', 'Técnico de soporte']))
                                 <a class="btn btn-warning" href="{{url('asignar_area', $usuario)}}">Asignar área</a>
-
+                                @endif
                                 <form action="{{route('usuarios.destroy',$usuario->id)}}" method="POST" class="formulario-eliminar">
                                     @csrf
                                     @method('DELETE')

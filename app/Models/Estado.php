@@ -14,8 +14,4 @@ class Estado extends Model
       return $this->hasMany('App\Models\Ticket');
     }
 
-    public function ticketHistorials()
-    {
-        return $this->hasMany('App\Models\TicketHistorial'); 
-    }
 }

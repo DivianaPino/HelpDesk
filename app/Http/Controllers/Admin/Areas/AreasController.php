@@ -6,18 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Area;
-use App\Models\Clasificacion;
 
 
 class AreasController extends Controller
 {
 
-    public function __construct(){
-
-        $this->middleware('can:areas.index')->only('index');
-        $this->middleware('can:areas.edit')->only('edit', 'update');
-
-    }
     /**
      * Display a listing of the resource.
      *
@@ -141,9 +134,7 @@ class AreasController extends Controller
     public function destroy($id)
     {
         $area= Area::find($id);
-        $clasificacion= Clasificacion::find($id);
         $area->delete(); 
-        $clasificacion->delete();
         return redirect()->route('areas.index')->with('eliminar' , 'ok');
     }
 }

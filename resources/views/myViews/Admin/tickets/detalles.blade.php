@@ -17,9 +17,9 @@
               @endif
           
               <div style="display:flex; justify-content:space-between;">
-                  <h3>Detalles de ticket</h3>
+                  <h3 class="titulo-detalles">Detalles de ticket</h3>
                   <div class="content-btnVolver">
-                      <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volver">
+                      <a  href="javascript:history.back()" class="btn btn-dark btn-volver">
                           <i class="fa-solid fa-arrow-left fa-lg"></i>Volver
                       </a>
                   </div>
@@ -111,11 +111,11 @@
                  
                   @if(is_null($ticket->asignado_a))
                     <div class="row content-row" >
-                      <div class="col-md-4 form-group btnAsistencia" >
+                      <div class="col-md-4 form-group btnAsistencia btn-darAsistencia" >
                         <input type="submit" value="Dar asistencia" id="btn-asignarTecnico" class="btnForm btn-primary ">
                       </div>
                       @can('tecnicos_tkt_asignados')
-                        <div class="col-md-4 form-group btnAsistencia" >
+                        <div class="col-md-4 form-group btnAsistencia btn-darAsistencia" >
                           <a href="/tecnicos/tickets/asignados/{{$ticket->id}}"  class="btn btn-info btn-asignarTec">ASIGNAR TÉCNICO</a>
                         </div>
                       @endcan 
@@ -124,11 +124,11 @@
                   
 
                   @if($usuario->name == $ticket->asignado_a && $ticket->estado->nombre == "Resuelto")
-                    <div class="col-md-4 form-group btnAsistencia" >
+                    <div class="col-md-4 form-group btnAsistencia btnResponderTicket" >
                         <a href="/form/mensaje/tec/ticket/{{$ticket->id}}"  id="btn-responder" class="btn btn-info btn-asignarTec" hidden>RESPONDER</a>
                     </div>
                   @elseif($usuario->name == $ticket->asignado_a && $ticket->estado->nombre == "Abierto")
-                    <div class="col-md-4 form-group btnAsistencia" >
+                    <div class="col-md-4 form-group btnAsistencia btnResponderTicket" >
                         <a href="/form/mensaje/tec/ticket/{{$ticket->id}}"  id="btn-responder" class="btn btn-info btn-asignarTec">RESPONDER</a>
                     </div>
                   @endif

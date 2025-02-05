@@ -14,9 +14,9 @@
             <table id="tabla_todasCalificaciones" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap" style="width:100%;" >
                <thead class="text-center bg-dark text-white">
                    <tr>
-                      <th class="th-califTodas">ID</th>
+                      <th class="th-califTodas">ID Calif.</th>
+                      <th class="th-califTodas">ID Ticket</th>
                       <th class="th-califTodas">Cliente</th>
-                      <th class="th-califTodas">Ticket ID</th>
                       <th >Nivel de <br> satisfacción</th>
                       <th class="th-califTodas">Acción</th>
                       <th class="th-califTodas">Comentario</th>
@@ -36,8 +36,8 @@
 
                         <tr>
                             <td>{{$calificacion->id}}</td>
-                            <td>{{$cliente}}</td>
                             <td>{{$calificacion->ticket_id}}</td>
+                            <td>{{$cliente}}</td>
                             <td>{{$calificacion->nivel_satisfaccion}}</td>
 
                             @if($calificacion->accion == "Cerrarlo")

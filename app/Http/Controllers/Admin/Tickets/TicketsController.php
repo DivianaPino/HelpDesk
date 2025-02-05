@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
-use App\Events\MasInfoEvent;
 use App\Events\MensajeTecnicoEvent;
 use App\Events\TicketAsignadoCorreoEvent;
 use App\Events\TicketReasignadoCorreoEvent;
@@ -24,7 +23,6 @@ use App\Models\Area;
 use App\Models\Servicio;
 use App\Models\Estado;
 use App\Models\Mensaje;
-use App\Models\TicketHistorial;
 use App\Models\Calificacion;
 use Gemini\Laravel\Facades\Gemini;
 use Gemini\Transporters\HttpTransporter;
@@ -109,43 +107,59 @@ public function filtrarTickets(Request $request)
     }
 
 
-    public function area_tickets()
+    public function area_tickets(Request $request)
     {
         // Usuario autenticaco
         $usuario= Auth::user();
 
-        if ($usuario->hasRole(['Administrador', 'Jefe de área', 'Técnico de soporte'])) {
+        // Obtener las áreas del usuario
+        $areasUsuario = $usuario->areas()->pluck('area_id');
 
-            // Area que pertenece el usuario
-            $areasUsuario=$usuario->areas()->pluck('area_id');
+        // Obtener parámetros de filtro desde la solicitud
+        $selectedAreaId = $request->input('area', null);
+        $selectedServicioId = $request->input('servicio', null);
 
-            // Tickets que pertenecen al área del asuario
-            $tickets=Ticket::whereIn('area_id', $areasUsuario)->get();
+        // obtener los tickets que pertenecen a las areas del tecnico
+        $query = Ticket::whereIn('area_id', $areasUsuario);
 
-            $cant_tkt_nuevos=$tickets->where('estado_id', 1 )->count();
-            $cant_tkt_abiertos=$tickets->where('estado_id', 2 )->count();
-            $cant_tkt_enEspera=$tickets->where('estado_id', 3 )->count();
-            $cant_tkt_resueltos=$tickets->where('estado_id', 4)->count();
-            $cant_tkt_reAbiertos=$tickets->where('estado_id', 5)->count();
-            $cant_tkt_cerrados=$tickets->where('estado_id', 6)->count();
-
-            // cantidad de tickets vencidos
-            $estados = Estado::whereIn('nombre', ['Nuevo', 'Abierto', 'Reabierto'])->pluck('id');
-            $fecha_actual=Carbon::now();
-            $cant_tkt_vencidos = $tickets->whereIn('estado_id', $estados)->where('fecha_caducidad', '<', $fecha_actual)->count();
-          
-            // Pasar los tickets a la vista
-            return view('myViews.Admin.tickets.ticketsArea' ,  compact('tickets', 'cant_tkt_nuevos', 
-                                                                                 'cant_tkt_abiertos',
-                                                                                 'cant_tkt_enEspera',
-                                                                                 'cant_tkt_resueltos',
-                                                                                 'cant_tkt_reAbiertos',
-                                                                                 'cant_tkt_cerrados',
-                                                                                 'cant_tkt_vencidos',
-                                                                                 'usuario'
-                                                                )) ;
-
+        // Aplicar filtro por área si está definido
+        if (!is_null($selectedAreaId) && $selectedAreaId !== '') {
+            $query->where('area_id', $selectedAreaId);
         }
+
+        // Aplicar filtro por servicio si está definido
+        if (!is_null($selectedServicioId) && $selectedServicioId !== '') {
+            $query->where('servicio_id', $selectedServicioId);
+        }
+
+        // Obtener los tickets filtrados
+        $tickets = $query->get();
+
+        // Obtener las áreas y servicios para los select
+        $areas = $usuario->areas()->get();
+        $serviciosArea = Servicio::where('area_id', $selectedAreaId)->get();
+
+        //Leyenda tickets del tecnico 
+        $cant_tkt_nuevos=$tickets->where('estado_id', 1 )->count();
+        $cant_tkt_abiertos=$tickets->where('estado_id', 2 )->count();
+        $cant_tkt_enEspera=$tickets->where('estado_id', 3 )->count();
+        $cant_tkt_resueltos=$tickets->where('estado_id', 4)->count();
+        $cant_tkt_reAbiertos=$tickets->where('estado_id', 5)->count();
+        $cant_tkt_cerrados=$tickets->where('estado_id', 6)->count();
+
+        // cantidad de tickets vencidos
+        $estados = Estado::whereIn('nombre', ['Nuevo', 'Abierto', 'Reabierto'])->pluck('id');
+        $fecha_actual=Carbon::now();
+        $cant_tkt_vencidos = $tickets->whereIn('estado_id', $estados)->where('fecha_caducidad', '<', $fecha_actual)->count();
+        
+        // Pasar los tickets a la vista
+        return view('myViews.Admin.tickets.ticketsArea' ,  compact('tickets', 'areas', 'serviciosArea', 
+                                                                   'selectedAreaId',  'selectedServicioId',
+                                                                    'cant_tkt_nuevos', 'cant_tkt_abiertos',
+                                                                    'cant_tkt_enEspera','cant_tkt_resueltos',
+                                                                    'cant_tkt_reAbiertos','cant_tkt_cerrados',
+                                                                    'cant_tkt_vencidos','usuario'
+                                                            )) ;
     }
 
 
@@ -186,12 +200,6 @@ public function filtrarTickets(Request $request)
             // cambiar estado a "abierto"
             $ticket->estado_id= 2;
             $ticket->save();
-
-            $historial= new TicketHistorial();
-            $historial->ticket_id= $idTicket;
-            $historial->estado_id=2;
-            $historial->updated_at= Carbon::now();
-            $historial->save();
 
             return redirect()->back()->with('status', 'Asignación exitosa. EL TICKET HA SIDO ABIERTO');
         // return redirect()->route('form_Respuestaticket', ['idTicket' => $ticket->id])->with( 'status', 'Asignación exitosa. EL TICKET HA SIDO ABIERTO')->with('ticket', $ticket);
@@ -249,18 +257,42 @@ public function filtrarTickets(Request $request)
         $tecnico = Auth::user();
 
 
-            try{
-
+        try{
+       
+            if ($request->input('resuelto') === 'on') {
                 $validator = $request->validate(
                     [
-                        'mensaje' => 'required',
+                        'mensaje' => 'nullable',
                         'imagen' => 'image|nullable',
                     ],
                     [
-                        'mensaje.required' => 'El campo mensaje es requerido',
                         'imagen.image' => 'El archivo debe ser una imagen',
                     ]
                 );
+            } else {
+                if (empty($request->input('mensaje')) && $request->hasFile('imagen')) {
+                    $validator = $request->validate(
+                        [
+                            'mensaje' => 'nullable',
+                            'imagen' => 'image',
+                        ],
+                        [
+                            'imagen.image' => 'El archivo debe ser una imagen',
+                        ]
+                    );
+                } else {
+                    $validator = $request->validate(
+                        [
+                            'mensaje' => 'required',
+                            'imagen' => 'image|nullable',
+                        ],
+                        [
+                            'mensaje.required' => 'El campo mensaje es requerido',
+                            'imagen.image' => 'El archivo debe ser una imagen',
+                        ]
+                    );
+                }
+            }
                 
                 
                 $mensaje = new Mensaje();
@@ -275,10 +307,6 @@ public function filtrarTickets(Request $request)
 
                 $textAnalizado ='';
                 $textErrores='';
-
-                // Fecha del mensaje
-                // $mensaje->created_at =  Carbon::now()->addHours(5);
-                // $mensaje->updated_at =  Carbon::now()->addHours(5);
 
                 // Analizar el sentimiento o estado de ánimo que transmite el mensaje
                 $geminiService = new GeminiService();
@@ -321,7 +349,10 @@ public function filtrarTickets(Request $request)
                         'textoErrores' => 'El texto tiene errores ortográficos o gramaticales',
                         'textoCorregido' => $textCorregido,
                     ]);
+                }elseif(empty($request->input('mensaje')) && $request->hasFile('imagen')){
+                    $mensaje->save();
                 }
+
                 $estadoTicket = Estado::find($ticket->estado_id);
 
                 if($estadoTicket->nombre != "En espera" && $ticket->mensajes){
@@ -334,18 +365,23 @@ public function filtrarTickets(Request $request)
                     }
                 }
 
+                $esResuelto = 'No';
+
                 if($request->input('resuelto') === 'on') {
+                    $esResuelto = 'Si';
                     $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
                     $ticket->save();
                 }
 
-                $this->notificacionCliente($mensaje, $cliente, $tecnico, $idTicket);
+                $this->notificacionCliente($mensaje, $cliente, $tecnico, $idTicket,$esResuelto);
 
+                
                 return response()->json([
                     'mensaje' => $request->mensaje,
                     'imagen' => $mensaje->imagen ?? null,
                     'status' => 'success',
                     'msjSuccess'  => 'Mensaje enviado exitosamente.',
+                    'msjId' => $mensaje->id
                 ]);
                 
         
@@ -366,33 +402,39 @@ public function filtrarTickets(Request $request)
         return $filename;
     }
 
-    private function notificacionCliente($mensaje, $cliente, $tecnico, $idTicket) {
+    private function notificacionCliente($mensaje, $cliente, $tecnico, $idTicket, $esResuelto) {
 
         MensajeTecnicoEvent::dispatch($mensaje);
-        MsjTecnicoCorreoEvent::dispatch($mensaje, $cliente,$tecnico, $idTicket);
 
-        $ticketLink = route('ver_ticketReportado', ['idTicket' => $idTicket]);
-        $message = "Nuevo mensaje del técnico {$tecnico->name}: {$mensaje->mensaje}: ({$ticketLink})";
-        $telegramService = app(TelegramService::class);
-        $telegramService->sendMessage($cliente->telegram, $message);
-    }
-    
-    private function notificacionClienteResuelto($mensaje, $cliente, $tecnico, $idTicket) {
+        if($esResuelto == 'Si'){
+            TicketResueltoCorreoEvent::dispatch($mensaje, $cliente, $tecnico, $idTicket);
+        }else{
+            MsjTecnicoCorreoEvent::dispatch($mensaje, $cliente,$tecnico, $idTicket);
+        }
 
-        //Notificacion en el sistema del cliente
-        $mensajeSistema = $mensaje ? $mensaje->mensaje : "El ticket ha sido resuelto";
-        MensajeTecnicoEvent::dispatch($mensajeSistema);
-
-        //Notificacion al correo del cliente
-        TicketResueltoCorreoEvent::dispatch($mensaje, $cliente, $tecnico, $idTicket);
-    
-        //Notificacion al telegram del cliente
         $ticketLink = route('ver_ticketReportado', ['idTicket' => $idTicket]);
         $mensajeTexto = is_null($mensaje) ? "El ticket ha sido resuelto" : $mensaje->mensaje;
         $message = "Nuevo mensaje del técnico {$tecnico->name}: {$mensajeTexto}: ({$ticketLink})";
         $telegramService = app(TelegramService::class);
-        $telegramService->sendMessage($cliente->telegram, $message);
+        $telegramService->sendMessage($cliente->telegram_id, $message);
     }
+    
+    // private function notificacionClienteResuelto($mensaje, $cliente, $tecnico, $idTicket) {
+
+    //     //Notificacion en el sistema del cliente
+    //     $mensajeSistema =$mensaje->mensaje ?? "El ticket ha sido resuelto";;
+    //     MensajeTecnicoEvent::dispatch($mensajeSistema);
+
+    //     //Notificacion al correo del cliente
+    //     TicketResueltoCorreoEvent::dispatch($mensaje, $cliente, $tecnico, $idTicket);
+    
+    //     //Notificacion al telegram del cliente
+    //     $ticketLink = route('ver_ticketReportado', ['idTicket' => $idTicket]);
+    //     $mensajeTexto = is_null($mensaje) ? "El ticket ha sido resuelto" : $mensaje->mensaje;
+    //     $message = "Nuevo mensaje del técnico {$tecnico->name}: {$mensajeTexto}: ({$ticketLink})";
+    //     $telegramService = app(TelegramService::class);
+    //     $telegramService->sendMessage($cliente->telegram_id, $message);
+    // }
     
     public function navbar_notifications(){
         return view('vendor.adminlte.components.layout.navbar-notification');
@@ -418,7 +460,7 @@ public function filtrarTickets(Request $request)
         
         $estado_enRevision = Estado::where('nombre', 'En revisión')->first();
         // Tickets que pertenecen a las areas del usuario auth con estado "Abierto"
-        $tickets_enRevision = Ticket::whereIn('clasificacion_id', $areasUsuario)->where('estado_id', $estado_enRevision->id)->get();
+        $tickets_enRevision = Ticket::whereIn('area_id', $areasUsuario)->where('estado_id', $estado_enRevision->id)->get();
 
         return view('myViews.Admin.tickets.enRevision')->with('tickets', $tickets_enRevision) ;
              
@@ -526,7 +568,7 @@ public function filtrarTickets(Request $request)
         $ticketLink = route('detalles_ticket', ['idTicket' => $ticket->id]); // Asumimos que tienes una ruta definida para ver el detalle del ticket
         $message = "Se te ha asignado un ticket: {$ticket->asunto}: ({$ticketLink})";
         $telegramService = app(TelegramService::class);
-        $response = $telegramService->sendMessage($usuario->telegram, $message);
+        $response = $telegramService->sendMessage($usuario->telegram_id, $message);
         
 
         return redirect()->back()->with('status', 'Ticket asignado exitosamente');
@@ -573,52 +615,6 @@ public function filtrarTickets(Request $request)
     }
 
     
-    // public function verRespCliente_masInfo( $idMensaje, $idTicket){
-
-    //      //Obtener el historial que esta en la posicion que viene en el parametro $idMensaje (ya que pueden haber registros eliminados)
-    //      $hist_Posicion=TicketHistorial::where('ticket_id', $idTicket)->where('estado_id', 3)->whereNotNull('masinfo_id')
-    //                                                                                          ->orderBy('id', 'desc')->first();
-    //      $idMasInfo=$hist_Posicion->masinfo_id; 
-      
-    //      //ultimo Mensaje del Agente  
-    //      $mensaje=MasInformacion::where('id', $idMasInfo)->latest('created_at')->first();
-
-    //     // respuesta usuario
-    //      $respuesta=RespMasInfo::where('masInfo_id', $mensaje->id)->first();
-
-    //     if (Respuesta::where('ticket_id', $idTicket)->exists()) {
-
-    //         $solucion=Respuesta::where('ticket_id', $idTicket)->first();
-
-    //         return view('myViews.Admin.tickets.ticketRespondido', compact('idTicket', 'mensaje', 'idMasInfo', 'respuesta', 'solucion'));
-             
-    //     }else{
-    //         return view('myViews.Admin.tickets.verRespCliente_masInfo', compact('idTicket', 'mensaje', 'idMasInfo', 'respuesta'));
-    //     }
-      
-    // }
-
-    // public function historialTicket($ticket_id){
-
-    //     // Incidente
-    //     $ticket= ticket::find($ticket_id);
-    
-    //     // Mas info 
-    //     $masInfo = MasInformacion::where('ticket_id',$ticket_id)->get(); 
-     
-    //     // respuesta de masInfo (cliente)
-    //     $respMasInfo = RespMasInfo::where('ticket_id',$ticket_id)->get();
-       
-    //     // solucion del ticket
-    //     $soluciones=Respuesta::where('ticket_id',$ticket_id)->get();
-
-
-    //     $comentarios=Comentario::where('ticket_id',$ticket_id)->get();
-     
-    //     return view('myViews.Admin.tickets.historialTicket', compact('ticket_id', 'ticket', 'masInfo','respMasInfo','soluciones', 'comentarios' ));
-       
-    // }
-
     public function volverDetalles($ticket_id)
     {
         $ticket = Ticket::find($ticket_id);
@@ -717,7 +713,7 @@ public function filtrarTickets(Request $request)
         $ticketLink = route('detalles_ticket', ['idTicket' => $ticket->id]); // Asumimos que tienes una ruta definida para ver el detalle del ticket
         $message = "Se te ha reasignado un ticket: {$ticket->asunto}: ({$ticketLink})";
         $telegramService = app(TelegramService::class);
-        $response = $telegramService->sendMessage($tecnico->telegram, $message);
+        $response = $telegramService->sendMessage($tecnico->telegram_id, $message);
 
         return redirect()->back()->with('status', 'El ticket ha sido reasignado exitosamente!!');
     }
@@ -725,6 +721,25 @@ public function filtrarTickets(Request $request)
     public function mensajeReabierto($idTicket){
         $mensaje= Comentario::where('ticket_id', $idTicket)->latest()->first();
         return view('myViews.Admin.tickets.mensajeReabierto', compact('mensaje', 'idTicket' ));
+
+    }
+
+
+    public function getMessagesNews($ticketId)
+    {
+        // Obtener los mensajes asociados al ticket
+        $mensajes = Mensaje::where('ticket_id', $ticketId)
+            ->orderBy('created_at', 'asc') // Ordenar por fecha de creación
+            ->get();
+
+        $ticket=Ticket::find($ticketId);
+        $usuarioTicket=$ticket->user_id;
+      
+        // Retornar los mensajes como JSON
+        return response()->json([
+            'messages' => $mensajes,
+            'usuarioTicket' =>$usuarioTicket
+        ]);
 
     }
 

@@ -124,8 +124,9 @@
                <thead class="text-center bg-dark text-white">
                    <tr>
                       <th>ID</th>
-                      <th>Usuario</th>
-                      <th>Clasif.</th>
+                      <th>Cliente</th>
+                      <th>Área</th>
+                      <th>Servicio</th>
                       <th>Asunto</th>
                       <th>Agente</th>
                       <th>Prioridad</th>
@@ -142,6 +143,7 @@
                             <td>{{$ticket->id}}</td>
                             <td>{{$ticket->user->name}}</td>
                             <td>{{$ticket->area->nombre}}</td>
+                            <td>{{$ticket->servicio->nombre}}</td>
 
                             <td>{{$ticket->asunto}}</td>
 

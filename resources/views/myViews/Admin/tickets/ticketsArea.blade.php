@@ -12,7 +12,31 @@
 <div>
      <div  class="card">
         <div  class="card-body" >
-            <table id="tabla_tktArea" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap"  collspacing="0" style="max-width: 1200px ; width:100%; font-size:14px;"  >
+            <table id="tabla_tktArea" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap"  collspacing="0" style="max-width: 1200px ; width:100%; font-size:14px;" >
+                <p class="d-flex justify-content-center" style="font-size:1.5rem;color:#2980B9">Filtrar</p>
+                <div class="row mb-4 justify-content-center">
+                    <div class="col-md-4">
+                        <select id="areaFilter" class="form-control">
+                            <option value="">Seleccionar área</option>
+                            @foreach($areas as $area)
+                                <option value="{{ $area->id }}" {{ $selectedAreaId == $area->id ? 'selected' : '' }}>
+                                    {{ $area->nombre }}
+                                </option>
+                            @endforeach
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="servicioFilter" class="form-control" {{ $selectedAreaId ? '' : 'disabled' }}>
+                            <option value="">Seleccionar servicio</option>
+                            @foreach($serviciosArea as $servicio)
+                                <option value="{{ $servicio->id }}" {{ $selectedServicioId == $servicio->id ? 'selected' : '' }}>
+                                    {{ $servicio->nombre }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
                 <div class="leyenda_tktArea">
                     <div class="col-leyenda">
                         <p>Nuevos:<a href="/noasignados"> {{$cant_tkt_nuevos}}</a></p>
@@ -33,8 +57,9 @@
                <thead class=" bg-dark text-white" >
                    <tr>
                       <th>ID</th>
-                      <th>Usuario</th>
+                      <th>Cliente</th>
                       <th>Área</th>
+                      <th>Servicio</th>
                       <th>Prioridad</th>
                       <th>Estado</th>
                       <th>Agente</th>
@@ -53,6 +78,7 @@
                         <td>{{$ticket->id}}</td>
                         <td>{{$ticket->user->name}}</td>
                         <td>{{$ticket->area->nombre}}</td>
+                        <td>{{$ticket->servicio->nombre}}</td>
 
                         <!-- Prioridades -->
                         @if($ticket->prioridad->nombre == "Urgente")
@@ -192,10 +218,10 @@ $(document).ready(function() {
             "infoFiltered":"",
         },
 
-        "order": [[7, 'desc']],
+        "order": [[8, 'desc']],
         "columnDefs": [
             {
-                "targets": 7, 
+                "targets": 8, 
                 "type": "date",
                 "render": function (data, type, row) {
                     // Verificar si 'data' es una fecha válida
@@ -214,6 +240,40 @@ $(document).ready(function() {
         ]
 
     });
+
+    // Evento de cambio para el filtro de área
+    $('#areaFilter').on('change', function() {
+        var selectedAreaId = $(this).val();
+        var url = '{{ route('areaUsuario_tickets') }}?area=' + selectedAreaId;
+
+        // Actualizar la tabla con el nuevo filtro
+        window.location.href = url;
+
+        // Habilitar o deshabilitar el filtro de servicios
+        if (selectedAreaId) {
+            $('#servicioFilter').prop('disabled', false);
+        } else {
+            $('#servicioFilter').prop('disabled', true);
+        }
+    });
+
+    // Evento de cambio para el filtro de servicio
+    $('#servicioFilter').on('change', function() {
+        var selectedServicioId = $(this).val();
+        var selectedAreaId = $('#areaFilter').val();
+        var url = '{{ route('areaUsuario_tickets') }}?area=' + selectedAreaId + '&servicio=' + selectedServicioId;
+
+        // Actualizar la tabla con el nuevo filtro
+        window.location.href = url;
+    });
+
+    // Inicializar el estado del filtro de servicios
+    if ($('#areaFilter').val()) {
+        $('#servicioFilter').prop('disabled', false);
+    } else {
+        $('#servicioFilter').prop('disabled', true);
+    }
+
 });
 </script>
 @stop

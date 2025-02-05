@@ -19,8 +19,9 @@
                <thead class="text-center bg-dark text-white">
                    <tr>
                       <th>ID</th>
-                      <th>Usuario</th>
-                      <th>Clasificación</th>
+                      <th>Cliente</th>
+                      <th>Área</th>
+                      <th>Servicio</th>
                       <th>Asunto</th>
                       <th>Prioridad</th>
                       <th>Estado</th>
@@ -36,7 +37,8 @@
                         <tr>
                              <td>{{$ticket->id}}</td>
                              <td>{{$ticket->user->name}}</td>
-                             <td>{{$ticket->clasificacion->nombre}}</td>
+                             <td>{{$ticket->area->nombre}}</td>
+                             <td>{{$ticket->servicio->nombre}}</td>
                              <td>{{$ticket->asunto}}</td>
                             
                              <!-- Prioridades -->
@@ -70,7 +72,12 @@
 
                             <!-- Botones - opciones -->
                             <td>
-                               <a class="btn btn-info" href="/detalles/{{$ticket->id}}" >Ver</a>
+                              <a class="btn btn-info" href="/form/mensaje/tec/ticket/{{$ticket->id}}">Ver</a>
+                              @if($ticket->estado->nombre == "Abierto" ||$ticket->estado->nombre == "En espera" || $ticket->estado->nombre == "Reabierto" )
+                                 @can('reasignar_ticket')
+                                    <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                                 @endcan
+                              @endif
                             </td>
                         </tr>
 
@@ -141,10 +148,10 @@ $(document).ready(function() {
             "infoFiltered":"",
         },
 
-        "order": [[7, 'desc']],
+        "order": [[8, 'desc']],
         "columnDefs": [
             {
-                "targets": 7, 
+                "targets": 8, 
                 "type": "date",
                 "render": function (data, type, row) {
                     // Asegurar de que 'data' esté en el formato 'YYYY-MM-DD'

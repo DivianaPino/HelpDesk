@@ -31,7 +31,7 @@
                 </div>
               </div>
 
-              <div class="msj_error">
+              <div class="msj_error mb-3">
                  @error('tiempo_resolucion')
                     {{$message}}
                   @enderror

@@ -3,22 +3,27 @@
 @section('title', 'Tickets en espera - técnico')
 
 @section('content_header')
-    <h1>Tickets en espera del técnico de soporte: {{$usuario->name}}</h1>
+    <h1 class="tituloAgenteT">Tickets en espera del técnico de soporte: {{$usuario->name}}</h1>
 @stop
 
 @section('content')
 <div>
      <div  class="card">
         <div  class="card-body" >
-            <table id="tabla_usuarios" class="table table-responsive table-striped table-bordered shadow-lg mt-4" style="width:100%; font-size:12px;" >
+        <div class="content-btnVolverTable">
+            <a style="" href="javascript:history.back()" class="btn btn-dark btn-volver">
+            <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
+        </div>
+        <table id="tabla_tickets" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap"  style="width:100%;"  >
                <thead class="text-center bg-dark text-white">
                    <tr>
                       <th>ID</th>
-                      <th>Usuario</th>
-                      <th>Clasificación</th>
-                      <th >Estado</th>
+                      <th>Cliente</th>
+                      <th>Área</th>
+                      <th>Servicio</th>
+                      <th>Estado</th>
                       <th>Prioridad</th>
-                      <th style="width:400px;">Asunto</th>
+                      <th>Asunto</th>
                       <th>Creado</th>
                       <th>Caducidad</th>
                       <th>Acciones</th>
@@ -32,12 +37,13 @@
                         <tr>
                              <td>{{$ticket->id}}</td>
                              <td>{{$ticket->user->name}}</td>
-                             <td>{{$ticket->clasificacion->nombre}}</td>
+                             <td>{{$ticket->area->nombre}}</td>
+                             <td>{{$ticket->servicio->nombre}}</td>
                              <td>{{$ticket->estado->nombre}}</td>
                              <td>{{$ticket->prioridad->nombre}}</td>
-                             <td style="width:400px;">{{$ticket->asunto}}</td>
-                             <td>{{$ticket->fecha_inicio}}</td>
-                             <td>{{$ticket->fecha_caducidad}}</td>
+                             <td>{{$ticket->asunto}}</td>
+                             <td>{{\Carbon\Carbon::parse($ticket->fecha_inicio)->format('d-m-Y')}}</td>
+                             <td>{{\Carbon\Carbon::parse($ticket->fecha_caducidad)->format('d-m-Y')}}</td>
                              <td>
                                 <a class="btn btn-info" href="/ver/ticket/{{$ticket->id}}" >Ver</a>
 
@@ -65,15 +71,20 @@
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://kit.fontawesome.com/6f3d5551a7.js" crossorigin="anonymous"></script>
 
 <script>
 $(document).ready(function() {
-    $('#tabla_usuarios').DataTable({
+    $('#tabla_tickets').DataTable({
       //Opciones de paginación
+      responsive:true,
+
+        //Opciones de paginación
         "lengthMenu": [
-            [5, 10, 50, -1],
-            [5, 10, 50, "All"]
+            [10, 30, 50, -1],
+            [10, 30, 50, "All"]
         ],
+        
         "language":{
             "info": "_TOTAL_ registros", 
             "search":"Buscar",
@@ -93,7 +104,29 @@ $(document).ready(function() {
             "zeroRecords":"No hay coincidencias",
             "infoEmpty": "",
             "infoFiltered":"",
-        }
+        },
+
+        "order": [[0, 'asc']],
+        "columnDefs": [
+            {
+                "targets": [7,8], 
+                "type": "date",
+                "render": function (data, type, row) {
+                    // Verificar si 'data' es una fecha válida
+                    if (moment(data, 'YYYY-MM-DD HH:mm:ss', true).isValid()) {
+                        // Si es una fecha válida, convertirla al formato 'DD-MM-YYYY' para la visualización
+                        if (type === 'display') {
+                            return moment(data, 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY');
+                        }
+                    }
+                    // Para la ordenación y otros usos, devuelve el valor original
+                    // Esto incluye el caso en que 'data' no es una fecha válida, por lo que se devuelve tal cual
+                    return data;
+                }
+                
+            }
+        ]
+    
     });
 });
 </script>

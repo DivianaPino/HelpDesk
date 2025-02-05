@@ -1,13 +1,13 @@
 @extends('adminlte::page')
 
-@section('title', 'Tickets en espera')
+@section('title', 'Mis tickets en espera')
 
 @section('content_header')
     
 @stop
 
 @section('content')
-<h1 class="titulo_prin">Tickets en espera</h1>
+<h1 class="titulo_prin">Mis tickets en espera</h1>
 <div>
      <div  class="card">
         <div  class="card-body" >
@@ -19,8 +19,9 @@
                <thead class="text-center bg-dark text-white">
                    <tr>
                       <th>ID</th>
-                      <th>Usuario</th>
-                      <th>Clasificación</th>
+                      <th>Cliente</th>
+                      <th>Área</th>
+                      <th>Servicio</th>
                       <th>Asunto</th>
                       <th>Prioridad</th>
                       <th>Estado</th>
@@ -37,7 +38,8 @@
                         <tr>
                              <td>{{$ticket->id}}</td>
                              <td>{{$ticket->user->name}}</td>
-                             <td>{{$ticket->clasificacion->nombre}}</td>
+                             <td>{{$ticket->area->nombre}}</td>
+                             <td>{{$ticket->servicio->nombre}}</td>
                              <td>{{$ticket->asunto}}</td>
                             
                             <!-- Prioridades -->
@@ -57,16 +59,7 @@
                              @elseif($ticket->estado->nombre == "Abierto")
                                 <td class="abierto">{{$ticket->estado->nombre}}</td>
                              @elseif($ticket->estado->nombre == "En espera")
-                                @php 
-                                    $masInfo=App\Models\MasInformacion::where('ticket_id', $ticket->id)->orderBy('created_at','desc')->first();
-                                    $respuesta_masInfo= App\Models\RespMasInfo::where('masInfo_id', $masInfo->id)->first(); 
-                                @endphp 
-                                        
-                                @isset($respuesta_masInfo)
-                                   <td class="enEspera">{{$ticket->estado->nombre}}<br>(mensaje respondido)</td>
-                                @else
-                                   <td class="enEspera">{{$ticket->estado->nombre}}<br>(Esperando respuesta del cliente)</td>
-                                @endisset
+                                <td class="enEspera">{{$ticket->estado->nombre}}</td>
                              @elseif($ticket->estado->nombre == "Resuelto")
                                 <td class="resuelto">{{$ticket->estado->nombre}}</td>
                              @endif
@@ -77,9 +70,12 @@
                             <td>En pausa</td>
 
                             <!-- Botones - opciones -->
-                             <td >
-                                <a class="btn btn-info" href="/historial/ticket/{{$ticket->id}}" >Historial</a>
-                             </td>
+                            <td class="content-btnInfo">
+                                <a class="btn btn-info" href="/form/mensaje/tec/ticket/{{$ticket->id}}">Ver</a>
+                                @can('reasignar_ticket')
+                                    <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
+                                @endcan
+                            </td>
 
                         </tr>
 
@@ -150,10 +146,10 @@ $(document).ready(function() {
             "infoFiltered":"",
         },
 
-        "order": [[6, 'desc']],
+        "order": [[7, 'desc']],
         "columnDefs": [
             {
-                "targets": 6, 
+                "targets": 7, 
                 "type": "date",
                 "render": function (data, type, row) {
                     // Asegurar de que 'data' esté en el formato 'YYYY-MM-DD'

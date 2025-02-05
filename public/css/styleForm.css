@@ -380,19 +380,7 @@ body {
 }
 
 
-.content-masInformacion{
-  display: flex;
-  align-items: center;
-  margin-top: 15px;
 
-}
-
-.masInformacion{
-  margin-left: 10px;
-  font-size: 18px !important;
-  color: rgb(103, 110, 130);
-
-}
 
 @media(max-width: 425px){
   .content-file {
@@ -462,6 +450,13 @@ body {
   .content-btnVolver .btn-volver i{
     font-size: 15px;
   }
+
+  .content-btn-area, .content-btn-prioridades{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap:nowrap;
+    margin-top:20px;
+  }
 }
 
 @media(max-width: 520px){
@@ -486,6 +481,18 @@ body {
 
   .content-btnVolver .btn-volver i{
     font-size: 10px;
+  }
+
+  .content-btn-area, .content-btn-prioridades {
+    margin-top:20px;
+  }
+
+  .content-btn-area div .btnForm, .content-btn-prioridades div .btnForm{
+    width: 80px !important;
+    font-size: 6px;
+    padding: 4px !important;
+    margin-top: 8px;
+    text-align: center;
   }
 }
 
@@ -940,6 +947,11 @@ body {
 
 .fechaRight{
   text-align: right;
+}
+
+.imagenRight{
+  display: flex;
+  justify-content: end;
 }
 
 .sinmensajes{
@@ -1687,6 +1699,12 @@ body {
   }
 }
 
+@media(max-width: 550px){
+  .titulo-detalles{
+    font-size: 25px !important;
+  }
+}
+
 @media(max-width: 425px){
   .btnVolver-verTicket{
     font-size: 9px;
@@ -1702,14 +1720,22 @@ body {
   }
 
   .titulo-detalles{
-    font-size: 30px !important;
+    font-size: 20px !important;
+  }
+
+  .btn-enviarTicket, .btn-darAsistencia, .btnResponderTicket{
+    margin-top: 20px;
+  }
+
+  .file-crearTicket{
+    margin-top:20px;
   }
 }
 
 @media(max-width: 375px){
 
   .titulo-detalles{
-    font-size: 22px !important;
+    font-size: 15px !important;
   }
 }
 
@@ -1729,7 +1755,11 @@ body {
   }
 
   .titulo-detalles{
-    font-size: 18px !important;
+    font-size: 12px !important;
+  }
+
+  .btn-darAsistencia input{
+    font-size: 10px !important;
   }
 
 }

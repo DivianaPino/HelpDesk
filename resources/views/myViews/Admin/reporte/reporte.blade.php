@@ -48,8 +48,9 @@
                <thead class="text-center bg-dark text-white">
                    <tr>
                       <th>ID</th>
-                      <th>Usuario</th>
+                      <th>Cliente</th>
                       <th>Área</th>
+                      <th>Servicio</th>
                       <th>Asunto</th>
                       <th>Agente</th>
                       <th>Prioridad</th>
@@ -67,6 +68,7 @@
                             <td>{{$ticket->id}}</td>
                             <td>{{$ticket->user->name}}</td>
                             <td>{{$ticket->area->nombre}}</td>
+                            <td>{{$ticket->servicio->nombre}}</td>
 
                             <td>{{$ticket->asunto}}</td>
 
@@ -118,20 +120,7 @@
                             @endif
                              
                             <td class="content-btnOpciones" >
-                              @if($ticket->estado->nombre == "Nuevo")
                                 <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
-                              @elseif($ticket->estado->nombre == "Abierto" ||$ticket->estado->nombre == "En espera" || $ticket->estado->nombre == "Reabierto" || $ticket->estado->nombre == "En revisión" )
-                                <a class="btn btn-info" href="/detalles/{{$ticket->id}}">Ver</a>
-                                <a class="btn btn-warning" href="/reasignar/ticket/{{$ticket->id}}">Reasignar</a>
-                              @else
-                                <a class="btn btn-info" href="/historial/ticket/{{$ticket->id}}" >Ver</a>
-                              @endif
-
-                                <form action="{{route('tickets.destroy',$ticket->id)}}" method="POST" class="formulario-eliminar">
-                                @csrf
-                                @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                                </form> 
                             </td> 
                              
                         </tr>

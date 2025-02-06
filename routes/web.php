@@ -152,6 +152,9 @@ Route::middleware([
       Route::get('/agentes_tecnicos', [TicketsController::class, 'todos_tecnicos'] )->name('todos_tecnicos');
   
       Route::get('/mensaje/reabierto/ticket/{idTicket}', [TicketsController::class, 'mensajeReabierto'] )->name('mensajeReabierto');
+      
+        
+      Route::post('/actualizar/resuelto/ticket/{idTicket}', [TicketsController::class, 'actualizarEstadoResuelto'] )->name('actualizar_ticket_resuelto');
     });
 
 

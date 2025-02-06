@@ -308,48 +308,55 @@ public function filtrarTickets(Request $request)
                 $textAnalizado ='';
                 $textErrores='';
 
-                // Analizar el sentimiento o estado de ánimo que transmite el mensaje
-                $geminiService = new GeminiService();
-                $resultSentimiento=$geminiService->generateSentiment($request->mensaje);
-                $textAnalizado = $resultSentimiento['candidates'][0]['content']['parts'][0]['text'];
+                try {
+                    // Analizar el sentimiento o estado de ánimo que transmite el mensaje
+                    $geminiService = new GeminiService();
+                    $resultSentimiento=$geminiService->generateSentiment($request->mensaje);
+                    $textAnalizado = $resultSentimiento['candidates'][0]['content']['parts'][0]['text'];
 
-                 //Texto reescrito con un estado de ánimo positivo
-                 $resultRewrite=$geminiService->rewriteText($request->mensaje);
-                 $textRewrite =  $resultRewrite['candidates'][0]['content']['parts'][0]['text'];
+                    //Texto reescrito con un estado de ánimo positivo
+                    $resultRewrite=$geminiService->rewriteText($request->mensaje);
+                    $textRewrite =  $resultRewrite['candidates'][0]['content']['parts'][0]['text'];
 
-                // Verificar si el texto tiene errores ortográficos o gramaticales
-                $resultErrores=$geminiService->SpellingError($request->mensaje);
-                $textErrores = $resultErrores['candidates'][0]['content']['parts'][0]['text'];
+                    // Verificar si el texto tiene errores ortográficos o gramaticales
+                    $resultErrores=$geminiService->SpellingError($request->mensaje);
+                    $textErrores = $resultErrores['candidates'][0]['content']['parts'][0]['text'];
 
-                //Texto corregido
-                $resultCorreccion=$geminiService->CorrectErrors($request->mensaje);
-                $textCorregido = $resultCorreccion['candidates'][0]['content']['parts'][0]['text'];
+                    //Texto corregido
+                    $resultCorreccion=$geminiService->CorrectErrors($request->mensaje);
+                    $textCorregido = $resultCorreccion['candidates'][0]['content']['parts'][0]['text'];
 
-                // si el estado de ánimo no es positivo y tiene errores ortograficos o gramaticales
-                // mostrar mensaje de error y no guardarlo
-                if($textAnalizado === "Negativo.\n" && $textErrores === "No\n"){
-                   
-                    return response()->json([
-                        'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
-                        'textoReescrito' => $textRewrite,
-                    ]);
+                    // si el estado de ánimo no es positivo y tiene errores ortograficos o gramaticales
+                    // mostrar mensaje de error y no guardarlo
+                    if($textAnalizado === "Negativo.\n" && $textErrores === "No\n"){
                     
-                }elseif($textAnalizado === "Neutral.\n" && $textErrores === "No\n"){
-                    return response()->json([
-                        'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
-                        'textoReescrito' => $textRewrite,
-                    ]);
+                        return response()->json([
+                            'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
+                            'textoReescrito' => $textRewrite,
+                        ]);
+                        
+                    }elseif($textAnalizado === "Neutral.\n" && $textErrores === "No\n"){
+                        return response()->json([
+                            'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
+                            'textoReescrito' => $textRewrite,
+                        ]);
 
-                }elseif($textAnalizado === "Positivo.\n" && $textErrores === "No\n"){
+                    }elseif($textAnalizado === "Positivo.\n" && $textErrores === "No\n"){
+                        $mensaje->mensaje = $request->mensaje;
+                        $mensaje->save();
+
+                    }elseif($textErrores === "Sí\n"){
+                        return response()->json([
+                            'textoErrores' => 'El texto tiene errores ortográficos o gramaticales',
+                            'textoCorregido' => $textCorregido,
+                        ]);
+                    }elseif(empty($request->input('mensaje')) && $request->hasFile('imagen')){
+                        $mensaje->save();
+                    }
+
+                } catch (\Exception $e) {
+                    // Log::error('Error en Gemini Service: ' . $e->getMessage());
                     $mensaje->mensaje = $request->mensaje;
-                    $mensaje->save();
-
-                }elseif($textErrores === "Sí\n"){
-                    return response()->json([
-                        'textoErrores' => 'El texto tiene errores ortográficos o gramaticales',
-                        'textoCorregido' => $textCorregido,
-                    ]);
-                }elseif(empty($request->input('mensaje')) && $request->hasFile('imagen')){
                     $mensaje->save();
                 }
 
@@ -383,6 +390,7 @@ public function filtrarTickets(Request $request)
                     'msjSuccess'  => 'Mensaje enviado exitosamente.',
                     'msjId' => $mensaje->id
                 ]);
+            
                 
         
             }catch (\Illuminate\Validation\ValidationException $e) {
@@ -741,6 +749,14 @@ public function filtrarTickets(Request $request)
             'usuarioTicket' =>$usuarioTicket
         ]);
 
+    }
+
+    public function actualizarEstadoResuelto($ticketId)
+    {
+        $ticket=Ticket::find($ticketId);
+        $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
+        $ticket->save();
+   
     }
 
   

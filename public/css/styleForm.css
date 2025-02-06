@@ -545,11 +545,18 @@ body {
 .select-container select:focus {
   outline: none;
 }
-.content-opcionesResuelto{
 
+.content-opcionesResuelto{
+  z-index: 2;
+  position:absolute;
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background-color: rgb(0, 0, 0);
-  
+
 }
+
 .texto_ticketResuelto, .texto_ticketCerrado {
    text-align: center;
    background-color: rgb(194, 240, 240);
@@ -893,6 +900,7 @@ body {
 }
 
 .chat{
+  z-index:1 !important;
   background-color:aliceblue;
   height: 400px;
   margin-bottom: 0 !important;

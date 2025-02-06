@@ -3481,15 +3481,16 @@ table{
 /*----------- REPORTES-------------------------- */
 .admin-reporte{
   display: flex;
-  justify-content:center;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
   background-color: #74a4d6b3;
   padding-top: 20px;
   padding-bottom: 20px;
   margin-bottom: 40px;
-  
 }
 
-.admin-reporte .fechasReporte{
+.admin-reporte .filtrosReporte{
   display: flex;
   justify-content: center;
   align-items: center;
@@ -3500,15 +3501,19 @@ table{
   margin-top: 32px ;
   background-color: #0c55a3;
   color: aliceblue;
+
 }
 
 .admin-reporte .btn-adminReporte:hover{
   background-color: #093363;
 }
 
-.admin-reporte .fechasReporte .fecha-inicial{
+.admin-reporte .filtrosReporte .fecha-inicial,
+.admin-reporte .filtrosReporte .fecha-fin,
+.admin-reporte .filtrosReporte .areaReporte{
   margin-right: 20px;
 }
+
 .form_reporteCompleto{
   display:flex; 
   justify-content:center;
@@ -3537,13 +3542,13 @@ table{
     font-size: 14px;
  }
 
- .admin-reporte .fechasReporte{
+ .admin-reporte .filtrosReporte{
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
-  .admin-reporte .fechasReporte{
+  .admin-reporte .filtrosReporte{
     display: flex;
     justify-content: space-between;
   }

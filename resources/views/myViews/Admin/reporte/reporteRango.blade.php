@@ -120,9 +120,15 @@
         <h3 class="texto2"> UNIVERSIDAD NACIONAL EXPERIMENTAL DE GUAYANA </h3>
         <h4> REPORTE DE TICKETS POR RANGO</h4>
 
-        @if(empty($fecha_inicial) || empty($fecha_fin))
+        @if(empty($fecha_inicial) && empty($fecha_fin))
             <h5>(
                 <span>HASTA:</span> {{\Carbon\Carbon::parse($fecha_actual)->format('d/m/Y')}}
+            )
+            </h5>
+        @elseif(empty($fecha_inicial) && $fecha_fin)
+            <h5>(
+                <span>DESDE:</span> {{\Carbon\Carbon::parse($primerTicket->created_at)->format('d/m/Y')}} -- 
+                <span>HASTA:</span> {{\Carbon\Carbon::parse($fecha_fin)->format('d/m/Y')}}
             )
             </h5>
         @else

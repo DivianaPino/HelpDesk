@@ -8,6 +8,7 @@
 
 @section('content')
 
+
 <h1 class="titulo_prin tituloReporte">Reportes</h1>
 <div>
      <div  class="card">
@@ -24,24 +25,46 @@
              <div>
                <form id="reporteForm" action=""  method="POST" class="formulario-reporte"> 
                     @csrf   
-                  <div class="admin-reporte">
-                       <div class="fechasReporte">
-                          <div class="fecha-inicial">
-                              <label for="fecha_inicial">Fecha inicial:</label>
-                              <input type="date" id="fecha_inicial" name="fecha_inicial" class="form-control">
-                          </div>
-                          <div class="fecha-fin">
-                              <label for="fecha_fin">Fecha fin:</label>
-                              <input type="date" id="fecha_fin" name="fecha_fin" class="form-control">
-                          </div>
-                       </div>
-                        <button type="button" id="filtrar"  class="btn btn-success btn-adminReporteRango">
-                            Filtrar
-                        </button>
-                        <button type="button" id="descargar"  class="btn btn-adminReporte">
-                            Descargar reporte (rango)
-                        </button>
-                  </div>
+                    <div class="admin-reporte">
+                      <div class="filtrosReporte">
+                        <div class="fecha-inicial">
+                            <label for="fecha_inicial">Fecha inicial:</label>
+                            <input type="date" id="fecha_inicial" name="fecha_inicial" class="form-control">
+                        </div>
+                        <div class="fecha-fin">
+                            <label for="fecha_fin">Fecha fin:</label>
+                            <input type="date" id="fecha_fin" name="fecha_fin" class="form-control">
+                        </div>
+                        <div class="areaReporte">
+                            <label for="">Área:</label>
+                            <select id="" class="form-control" name="area">
+                                <option value="">Seleccionar área</option>
+                                @foreach($areas as $area)
+                                    <option value="{{ $area->id }}">{{ $area->nombre }}</option>
+                                @endforeach
+                                <option value="all">Todas</option>
+                            </select>
+                        </div>
+                        <div class="areaEstado">
+                            <label for="">Estado:</label>
+                            <select id="" class="form-control" name="estado">
+                                <option value="">Seleccionar estado</option>
+                                @foreach($estados as $estado)
+                                    <option value="{{ $estado->id }}">{{ $estado->nombre }}</option>
+                                @endforeach
+                                <option value="all">Todos</option>
+                            </select>
+                        </div>
+                          <button type="button" id="filtrar" class="btn btn-success btn-adminReporteRango">
+                              Filtrar
+                          </button>
+                        </div>
+                        <div class="descargarReporte">
+                            <button type="button" id="descargar" class="btn btn-adminReporte" disabled>
+                                Descargar reporte (rango)
+                            </button>
+                        </div>
+                      </div>
                 </form>
             </div>
             <table id="tabla_tickets" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap"  style="width:100%;" >

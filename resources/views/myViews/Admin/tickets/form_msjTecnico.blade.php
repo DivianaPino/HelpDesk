@@ -160,7 +160,7 @@
 
                 <div class="col-md-4 content_starsCheckbox d-flex justify-content-end">
                   <div class="checkbox-containerResuelto"  id="checkboxContainerResuelto">
-                    <input class="checkbox" type="checkbox" id="resuelto" name="resuelto"  value="on">
+                    <input class="checkbox" type="checkbox" id="resuelto" name="resuelto"  value="on" onchange="actualizarEstadoCheckbox(this)">
                     <label class="labelResuelto" for="resuelto" >Ticket resuelto</label>
                   </div>
                   
@@ -451,6 +451,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 messageElement.classList.add('mensajesRight');
                
               }
+
+              $('#resuelto').prop('checked', false);
          
               // Insertar el mensaje y la imagen en el div "chat"
               chatContainer.appendChild(messageElement);
@@ -473,7 +475,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
-
 <script>
 
    $(document).ready(function() {
@@ -570,6 +571,67 @@ function fetchNewMessages() {
 </script>
 
 <script>
+function actualizarEstadoCheckbox(checkbox) {
+    // Obtener los elementos del DOM
+    const mensaje = document.getElementById('mensaje').value;
+    const imagenMsj = document.getElementById('imagenMsj').files.length;
+
+    
+
+
+    // Verificar si el campo mensaje está vacío y no hay imágenes cargadas
+    if (mensaje === '' && imagenMsj === 0) {
+        // Crear objeto FormData
+        const formData = new FormData();
+        
+        // Añadir el valor según el estado del checkbox
+        formData.append('resuelto', checkbox.checked ? 'true' : 'false');
+
+        // Si el checkbox está marcado, mostrar la alerta
+        if (checkbox.checked) {
+            Swal.fire({
+                title: '¿Seguro que el ticket está resuelto?',
+                text: 'Esta acción marcará el ticket como resuelto',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: 'Sí, está resuelto',
+                cancelButtonText: 'Cancelar'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    // Si el usuario confirma, proceder con la petición AJAX
+                    fetch('{{ route('actualizar_ticket_resuelto', $idTicket) }}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                      checkbox.checked = false;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Mantener el checkbox marcado si hay un error
+                        checkbox.checked = true;
+                    });
+                } else {
+                    // Si el usuario cancela, desmarcar el checkbox
+                    checkbox.checked = false;
+                }
+            });
+        } else {
+            // Si no está marcado, permitimos enviar
+            return true;
+        }
+    } 
+
+
+}
+</script>
+
+<script>
   $(document).ready(function() {
       checkTicketStatus();
 
@@ -610,7 +672,7 @@ function fetchNewMessages() {
                   $('#txtTicketCerrado').hide();
                   $('.container-estrellas').show();
                   $('#checkboxContainerResuelto').addClass('alinear-checkbox');
-                 
+                  
 
               } else {
                   $('#rowMensaje').show();
@@ -633,6 +695,33 @@ function fetchNewMessages() {
   }
 
   
+</script>
+
+<script>
+function checkTicketResuelto() {
+    fetch('{{ route('ticketEstado', $idTicket) }}', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.estado === 'Reabierto') {
+          
+            let checkboxDesmarcado = false;
+            const checkbox = document.getElementById('resuelto');
+
+            if (checkbox.checked && !checkboxDesmarcado) {
+                checkbox.checked = false; // Desmarcar el checkbox
+                checkboxDesmarcado = true; // Cambiar el estado para no desmarcarlo de nuevo
+            }
+        }
+    })
+    .catch(error => {
+        console.error("Error al obtener el estado reabierto:", error);
+    });
+}
 </script>
 
 

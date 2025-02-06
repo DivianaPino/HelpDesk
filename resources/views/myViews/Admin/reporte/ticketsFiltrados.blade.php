@@ -25,7 +25,7 @@
                 <form id="reporteForm" action=""  method="POST" class="formulario-reporte"> 
                     @csrf   
                     <div class="admin-reporte">
-                        <div class="fechasReporte"> 
+                        <div class="filtrosReporte"> 
                             @if(session()->has('fecha_inicial'))
                                 <div class="fecha-inicial">
                                     <label for="fecha_inicial">Fecha inicial:</label>
@@ -48,13 +48,98 @@
                                     <input type="date" id="fecha_fin" name="fecha_fin" class="form-control">
                                 </div>
                             @endif
+
+                            @if(session()->has('area_id'))
+                                @if(session('area_id') != 'all')
+                                <div class="areaReporte">
+                                    <label for="">Área:</label>
+                                    <select id="" class="form-control" name="area">
+                                        <option value="">Seleccionar área</option>
+                                        @foreach($areas as $area)
+                                            <option value="{{ $area->id }}" {{ session('area_id') == $area->id ? 'selected' : '' }}>
+                                                {{ $area->nombre }}
+                                            </option>
+                                        @endforeach
+                                        <option value="all">Todas</option>
+                                    </select>
+                                </div>
+                                @else
+                                <div class="areaReporte">
+                                    <label for="">Área:</label>
+                                    <select id="" class="form-control" name="area">
+                                        <option value="">Seleccionar área</option>
+                                        @foreach($areas as $area)
+                                            <option value="{{ $area->id }}" >
+                                                {{ $area->nombre }}
+                                            </option>
+                                        @endforeach
+                                        <option value="all" selected>Todas</option>
+                                    </select>
+                                </div>
+                                @endif
+
+                            @else
+                                <div class="areaReporte">
+                                    <label for="">Área:</label>
+                                    <select id="" class="form-control" name="area">
+                                        <option value="">Seleccionar área</option>
+                                        @foreach($areas as $area)
+                                            <option value="{{ $area->id }}">{{ $area->nombre }}</option>
+                                        @endforeach
+                                        <option value="all">Todas</option>
+                                    </select>
+                                </div>
+                            @endif
+
+                            @if(session()->has('estado_id'))
+                                @if(session('estado_id') != 'all')
+                                <div class="areaEstado">
+                                    <label for="">Estado:</label>
+                                    <select id="" class="form-control"  name="estado">
+                                    <option value="">Seleccionar estado</option>
+                                        @foreach($estados as $estado)
+                                            <option value="{{ $estado->id }}" {{ session('estado_id') == $estado->id ? 'selected' : '' }}>
+                                                {{ $estado->nombre }}
+                                            </option>
+                                        @endforeach
+                                    <option value="all">Todos</option>
+                                    </select>
+                                </div>
+                                @else
+                                    <div class="areaEstado">
+                                        <label for="">Estado:</label>
+                                        <select id="" class="form-control"  name="estado">
+                                        <option value="">Seleccionar estado</option>
+                                            @foreach($estados as $estado)
+                                                <option value="{{ $estado->id }}">
+                                                    {{ $estado->nombre }}
+                                                </option>
+                                            @endforeach
+                                        <option value="all" selected>Todos</option>
+                                        </select>
+                                    </div>
+                                @endif
+                            @else
+                                <div class="areaEstado">
+                                    <label for="">Estado:</label>
+                                    <select id="" class="form-control"  name="estado">
+                                    <option value="">Seleccionar estado</option>
+                                        @foreach($estados as $estado)
+                                            <option value="{{ $estado->id }}">{{ $estado->nombre }}</option>
+                                        @endforeach
+                                    <option value="all">Todos</option>
+                                    </select>
+                                </div>
+                            @endif
+                            <button type="button" id="filtrar"  class="btn btn-success btn-adminReporteRango">
+                                Filtrar
+                            </button>
                         </div>       
-                        <button type="button" id="filtrar"  class="btn btn-success btn-adminReporteRango">
-                            Filtrar
-                        </button>
-                        <button type="button" id="descargar"  class="btn btn-adminReporte">
-                            Descargar reporte (rango)
-                        </button>
+                        <div class="descargarReporte">
+                            <button type="button" id="descargar" class="btn btn-adminReporte">
+                                Descargar reporte (rango)
+                            </button>
+                        </div>
                     </div>
                 </form>
 

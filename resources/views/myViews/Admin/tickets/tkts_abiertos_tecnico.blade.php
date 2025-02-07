@@ -3,16 +3,19 @@
 @section('title', 'Tickets abiertos - técnico')
 
 @section('content_header')
-    <h1 class="tituloAgenteT">Tickets abiertos del técnico de soporte: {{$usuario->name}}</h1>
+    <!-- <h1 class="tituloAgenteT">Tickets abiertos del técnico de soporte: {{$usuario->name}}</h1> -->
 @stop
 
 @section('content')
 <div>
      <div  class="card">
         <div  class="card-body" >
-            <div class="content-btnVolverTable">
-                <a style="" href="javascript:history.back()" class="btn btn-dark btn-volver">
-                <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
+            <div style="margin-bottom:30px;">
+                <div class="content-btnVolverTable">
+                    <a  href="javascript:history.back()" class="btn btn-dark btn-volver">
+                    <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
+                </div>
+                <h3 class="tituloAgenteT" style="margin:0px; padding:0px;">Tickets abiertos del técnico de soporte: {{$usuario->name}}</h3>
             </div>
             <table id="tabla_tickets" class="table table-striped table-bordered shadow-lg mt-4 display responsive nowrap"  style="width:100%;"  >
                <thead class="text-center bg-dark text-white">
@@ -64,23 +67,24 @@
 
 @section('css')
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.min.css">
-
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.bootstrap5.css">
-
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.css">
 @stop
 
 @section('js')
-<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap5.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/2.0.2/js/dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/2.0.2/js/dataTables.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/2.0.2/js/dataTables.bootstrap5.js"></script>
 <script src="https://kit.fontawesome.com/6f3d5551a7.js" crossorigin="anonymous"></script>
+
 
 <script>
 $(document).ready(function() {
+  
     $('#tabla_tickets').DataTable({
-      //Opciones de paginación
-      responsive:true,
+
+        responsive:true,
 
         //Opciones de paginación
         "lengthMenu": [
@@ -110,27 +114,10 @@ $(document).ready(function() {
         },
 
         "order": [[0, 'asc']],
-        "columnDefs": [
-            {
-                "targets": [7,8], 
-                "type": "date",
-                "render": function (data, type, row) {
-                    // Verificar si 'data' es una fecha válida
-                    if (moment(data, 'YYYY-MM-DD HH:mm:ss', true).isValid()) {
-                        // Si es una fecha válida, convertirla al formato 'DD-MM-YYYY' para la visualización
-                        if (type === 'display') {
-                            return moment(data, 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY');
-                        }
-                    }
-                    // Para la ordenación y otros usos, devuelve el valor original
-                    // Esto incluye el caso en que 'data' no es una fecha válida, por lo que se devuelve tal cual
-                    return data;
-                }
-                
-            }
-        ]
-    
-    });
+      
+        
+        });
+
 });
 </script>
 @stop

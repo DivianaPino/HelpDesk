@@ -320,6 +320,12 @@ table{
   white-space: nowrap;
 }
 
+.tituloAgenteT{
+  text-align:center; 
+font-weight:bold; 
+color:#566573;
+}
+
 @media(max-width: 2560px){
   
   #tabla_tickets th {
@@ -398,7 +404,7 @@ table{
   }
 
   .tituloAgenteT{
-    font-size:22px !important;
+    font-size:25px !important;
   }
 }
 
@@ -459,11 +465,21 @@ table{
     margin-top: 0 !important;
     margin-bottom: 4px !important;
   }
+
+  .tituloAgenteT{
+    font-size:22px !important;
+  }
+
+  
 }
 
 @media(max-width:767px){
   #areaFilter{
     margin-bottom: 15px;
+  }
+
+  .tituloAgenteT{
+    font-size:18px !important;
   }
 }
 
@@ -493,7 +509,7 @@ table{
   }
 
   .tituloAgenteT{
-    font-size:16px !important;
+    font-size:12px !important;
   }
 }
 
@@ -530,13 +546,13 @@ table{
   }
 
   .tituloAgenteT{
-    font-size:14px !important;
+    font-size:10px !important;
   }
 }
 
 @media(max-width: 375px){
   .tituloAgenteT{
-    font-size:12px !important;
+    font-size:8px !important;
   }
 }
 
@@ -567,7 +583,7 @@ table{
   }
 
   .tituloAgenteT{
-    font-size:10px !important;
+    font-size:6px !important;
   }
   
 }

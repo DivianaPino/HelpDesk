@@ -54,7 +54,7 @@
                                 <div class="areaReporte">
                                     <label for="">Área:</label>
                                     <select id="" class="form-control" name="area">
-                                        <option value="">Seleccionar área</option>
+                                        <option value="">Seleccionar</option>
                                         @foreach($areas as $area)
                                             <option value="{{ $area->id }}" {{ session('area_id') == $area->id ? 'selected' : '' }}>
                                                 {{ $area->nombre }}
@@ -67,7 +67,7 @@
                                 <div class="areaReporte">
                                     <label for="">Área:</label>
                                     <select id="" class="form-control" name="area">
-                                        <option value="">Seleccionar área</option>
+                                        <option value="">Seleccionar</option>
                                         @foreach($areas as $area)
                                             <option value="{{ $area->id }}" >
                                                 {{ $area->nombre }}
@@ -82,7 +82,7 @@
                                 <div class="areaReporte">
                                     <label for="">Área:</label>
                                     <select id="" class="form-control" name="area">
-                                        <option value="">Seleccionar área</option>
+                                        <option value="">Seleccionar</option>
                                         @foreach($areas as $area)
                                             <option value="{{ $area->id }}">{{ $area->nombre }}</option>
                                         @endforeach
@@ -93,10 +93,10 @@
 
                             @if(session()->has('estado_id'))
                                 @if(session('estado_id') != 'all')
-                                <div class="areaEstado">
+                                <div class="estadoReporte">
                                     <label for="">Estado:</label>
                                     <select id="" class="form-control"  name="estado">
-                                    <option value="">Seleccionar estado</option>
+                                    <option value="">Seleccionar</option>
                                         @foreach($estados as $estado)
                                             <option value="{{ $estado->id }}" {{ session('estado_id') == $estado->id ? 'selected' : '' }}>
                                                 {{ $estado->nombre }}
@@ -106,10 +106,10 @@
                                     </select>
                                 </div>
                                 @else
-                                    <div class="areaEstado">
+                                    <div class="estadoReporte">
                                         <label for="">Estado:</label>
                                         <select id="" class="form-control"  name="estado">
-                                        <option value="">Seleccionar estado</option>
+                                        <option value="">Seleccionar</option>
                                             @foreach($estados as $estado)
                                                 <option value="{{ $estado->id }}">
                                                     {{ $estado->nombre }}
@@ -120,10 +120,10 @@
                                     </div>
                                 @endif
                             @else
-                                <div class="areaEstado">
+                                <div class="estadoReporte">
                                     <label for="">Estado:</label>
                                     <select id="" class="form-control"  name="estado">
-                                    <option value="">Seleccionar estado</option>
+                                    <option value="">Seleccionar</option>
                                         @foreach($estados as $estado)
                                             <option value="{{ $estado->id }}">{{ $estado->nombre }}</option>
                                         @endforeach

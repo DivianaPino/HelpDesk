@@ -98,7 +98,7 @@
                   <div class="card col-md-12 form-group mb-3 overflow-auto chat" id="chat">
                     @if($ticket->mensajes()->exists())
                       @foreach($ticket->mensajes as $msj)
-                        @if($msj->user_id == Auth::user()->id || auth()->user()->hasRole('Administrador'))
+                        @if($msj->user_id == Auth::user()->id)
                           @if($msj->mensaje || isset($msj['imagen']))
                             <div class="container-msjRight">
                               <div class="mensajesRight">
@@ -113,7 +113,9 @@
                             </div>
                           @endif
                         @else
+                   
                           @if($msj->mensaje || isset($msj['imagen']))
+                   
                             <div class="container-msjLeft">
                               <div class="mensajesLeft">
                                   <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>

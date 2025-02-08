@@ -227,6 +227,16 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                          <div id="messagesErrorCalif" class="col-md-12">
+                            @if(session('error.opcion'))
+                              <p class="alert alert-danger message-alert" >{{ Session('error') }}</p>
+                            @elseif(session('error.accion'))
+                              <p class="alert alert-danger message-alert" >{{ Session('error') }}</p>
+                            @endif
+                          </div>
+                        </div>
+
                         
                         <div class="contentResponderResuelto">
                             <div>
@@ -299,11 +309,11 @@
         var errorMessage = "{{ session('error') }}";
 
         if (statusMessage || errorMessage) {
-            // Espera un poco para asegurarse de que el mensaje de sesión se haya renderizado correctamente
+            // Esperar que el mensaje de sesión se haya renderizado correctamente
             setTimeout(function() {
-                // Ajusta el scroll al final de la página
+                // Ajustar el scroll al final de la página
                 document.getElementById('messagesContainer').scrollIntoView({ behavior: 'smooth' });
-            }, 500); // Espera medio segundo antes de mover el scroll
+            }, 500);
         }
     });
 </script>
@@ -364,19 +374,30 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('imagenMsj').value = ''; // Limpia el input de imagen
 
           } else if (data.errors) {
-            // Mostrar mensaje de error
-            let errorMessageElement = document.createElement('p');
-            errorMessageElement.className = 'alert alert-danger message-alert';
 
-            let errorValidation=Object.values(data)[0];
-            let mensajeError=Object.values(errorValidation)[0];
-            errorMessageElement.className = 'alert alert-danger message-alert';
-            errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
-            document.getElementById('messagesContainer').innerHTML = '';
-            document.getElementById('messagesContainer').appendChild(errorMessageElement);
+            if (data.errors.mensaje || data.errors.imagen){
+              // Mostrar mensaje de error
+              let errorMessageElement = document.createElement('p');
+              errorMessageElement.className = 'alert alert-danger message-alert';
 
-            alert('{{ session('error') }}');
-            
+              let errorValidation=Object.values(data)[0];
+              let mensajeError=Object.values(errorValidation)[0];
+              errorMessageElement.className = 'alert alert-danger message-alert';
+              errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
+              document.getElementById('messagesContainer').innerHTML = '';
+              document.getElementById('messagesContainer').appendChild(errorMessageElement);
+
+            }else if(data.errors.opcion || data.errors.accion){
+              let errorMessageElement = document.createElement('p');
+              // errorMessageElement.className = 'alert alert-danger message-alert';
+
+              let errorValidation=Object.values(data)[0];
+              let mensajeError=Object.values(errorValidation)[0];
+              // errorMessageElement.className = 'alert alert-danger message-alert';
+              errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-xs" style="color:red;line-height: 1;"><span class="msjErrorFormCalif mx-1">${mensajeError}</span></i>`;
+              document.getElementById('messagesErrorCalif').innerHTML = '';
+              document.getElementById('messagesErrorCalif').appendChild(errorMessageElement);
+            }
             // setTimeout(() => {
             //     document.getElementById('messagesContainer').innerHTML = '';
             // }, 5000)

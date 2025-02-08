@@ -582,6 +582,23 @@ body {
   color: #6e6f70;
 }
 
+
+.msjErrorFormCalif{
+  color:red;
+  font-family:  "Roboto", sans-serif;
+  font-size: 14px;
+  font-weight:400;
+}
+
+#messagesErrorCalif{
+  margin-top: 5px;
+  margin-left: 10px;
+}
+
+#messagesErrorCalif p {
+  line-height: 1 !important;
+}
+
 .textoTicketCerrado p{
   margin-bottom: 5px;
 }
@@ -706,7 +723,17 @@ body {
  .mensajeResuelto  #comentario{
     height: 60px;
   }
+
+  .msjErrorFormCalif{
+    font-size: 8px;
  
+  }
+
+  #messagesErrorCalif p i{
+    font-size:10px;
+   }
+
+  
 
 }
 

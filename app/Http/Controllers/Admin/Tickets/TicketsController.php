@@ -15,6 +15,7 @@ use App\Events\MsjTecnicoCorreoEvent;
 use App\Events\TicketResueltoCorreoEvent;
 use App\Services\TelegramService;
 use App\Services\GeminiService;
+use App\Services\GroqService;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Role;
@@ -37,10 +38,13 @@ class TicketsController extends Controller
 {
 
     protected $geminiService;
+    protected $groqService;
 
-    public function __construct(GeminiService $geminiService){
+
+    public function __construct(GeminiService $geminiService, GroqService $groqService){
 
         $this->geminiService = $geminiService;
+        $this->groqService = $groqService;
     }
     /**
      * Display a listing of the resource.
@@ -309,6 +313,8 @@ public function filtrarTickets(Request $request)
                 $textErrores='';
 
                 try {
+                    // ANALISIS DEL MENSAJE CON GEMINI
+
                     // Analizar el sentimiento o estado de ánimo que transmite el mensaje
                     $geminiService = new GeminiService();
                     $resultSentimiento=$geminiService->generateSentiment($request->mensaje);
@@ -355,9 +361,66 @@ public function filtrarTickets(Request $request)
                     }
 
                 } catch (\Exception $e) {
-                    // Log::error('Error en Gemini Service: ' . $e->getMessage());
-                    $mensaje->mensaje = $request->mensaje;
-                    $mensaje->save();
+
+                    try{
+
+                        // ANALISIS DEL MENSAJE CON GROQ
+
+                        // Analizar el sentimiento o estado de ánimo que transmite el mensaje
+                        $groqService = new GroqService();
+                        $resultSentimiento_groq=$groqService->generateSentiment($request->mensaje);
+                        $textAnalizado_groq = $resultSentimiento_groq['choices'][0]['message']['content'];
+                        $textAnalizado_groq = rtrim($textAnalizado_groq, '.');
+                    
+                        //Texto reescrito con un estado de ánimo positivo
+                        $resultRewrite_groq=$groqService->rewriteText($request->mensaje);
+                        $textRewrite_groq =  $resultRewrite_groq['choices'][0]['message']['content']; 
+
+                        // Verificar si el texto tiene errores ortográficos o gramaticales
+                        $resultErrores_groq=$groqService->SpellingError($request->mensaje);
+                        $textErrores_groq = $resultErrores_groq['choices'][0]['message']['content'];
+                        $textErrores_groq = rtrim($textErrores_groq, '.');
+                    
+                        //Texto corregido
+                        $resultCorreccion_groq=$groqService->CorrectErrors($request->mensaje);
+                        $textCorregido_groq = $resultCorreccion_groq['choices'][0]['message']['content'];
+
+                        // si el estado de ánimo no es positivo y tiene errores ortograficos o gramaticales
+                        // mostrar mensaje de error y no guardarlo
+                        if($textAnalizado_groq === "Negativo" && $textErrores_groq === "No"){
+                        
+                            return response()->json([
+                                'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
+                                'textoReescrito' => $textRewrite_groq,
+                            ]);
+                            
+                        }elseif($textAnalizado_groq === "Neutral" && $textErrores_groq === "No"){
+                            return response()->json([
+                                'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
+                                'textoReescrito' => $textRewrite_groq,
+                            ]);
+
+                        }elseif($textAnalizado_groq === "Positivo" && $textErrores_groq === "No"){
+                            $mensaje->mensaje = $request->mensaje;
+                            $mensaje->save();
+
+                        }elseif($textErrores_groq === "Sí"){
+                            return response()->json([
+                                'textoErrores' => 'El texto tiene errores ortográficos o gramaticales',
+                                'textoCorregido' => $textCorregido_groq,
+                            ]);
+                        }elseif(empty($request->input('mensaje')) && $request->hasFile('imagen')){
+                            $mensaje->save();
+                        }
+
+                    }catch (\Exception $e) {
+
+                        //Si las las dos IA falla que se guarde el mensaje sin analizar
+                        $mensaje->mensaje = $request->mensaje;
+                        $mensaje->save();
+
+                    }
+
                 }
 
                 $estadoTicket = Estado::find($ticket->estado_id);

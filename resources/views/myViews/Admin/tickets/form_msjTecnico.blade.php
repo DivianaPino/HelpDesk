@@ -238,17 +238,17 @@
         var errorMessage = "{{ session('error') }}";
 
         if (statusMessage || errorMessage) {
-            // Espera un poco para asegurarse de que el mensaje de sesión se haya renderizado correctamente
+            // Esperar que el mensaje de sesión se haya renderizado correctamente
             setTimeout(function() {
-                // Ajusta el scroll al final de la página
+                // Ajustar el scroll al final de la página
                 document.getElementById('messagesContainer').scrollIntoView({ behavior: 'smooth' });
-            }, 500); // Espera medio segundo antes de mover el scroll
+            }, 500);
         }
     });
   </script>
   
 <script>
-// Función para validar el checkbox
+//Función para validar el checkbox
 function validarCheckboxResuelto() {
     const checkbox = document.getElementById('resuelto');
     if (!checkbox.checked) return true; // Si no está marcado, permitimos enviar
@@ -292,7 +292,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(response => response.json())
         .then(data => {
 
-          // console.log(data);
+          console.log(data);
 
           const checkbox=document.getElementById('resuelto');
 
@@ -477,6 +477,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
+
 <script>
 
    $(document).ready(function() {

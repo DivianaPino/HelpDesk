@@ -319,6 +319,7 @@ public function filtrarTickets(Request $request)
                     $geminiService = new GeminiService();
                     $resultSentimiento=$geminiService->generateSentiment($request->mensaje);
                     $textAnalizado = $resultSentimiento['candidates'][0]['content']['parts'][0]['text'];
+                    $textAnalizado = str_replace(".\n", "", $textAnalizado);
 
                     //Texto reescrito con un estado de ánimo positivo
                     $resultRewrite=$geminiService->rewriteText($request->mensaje);
@@ -327,6 +328,7 @@ public function filtrarTickets(Request $request)
                     // Verificar si el texto tiene errores ortográficos o gramaticales
                     $resultErrores=$geminiService->SpellingError($request->mensaje);
                     $textErrores = $resultErrores['candidates'][0]['content']['parts'][0]['text'];
+                    $textErrores = str_replace("\n", "", $textErrores);
 
                     //Texto corregido
                     $resultCorreccion=$geminiService->CorrectErrors($request->mensaje);
@@ -334,24 +336,24 @@ public function filtrarTickets(Request $request)
 
                     // si el estado de ánimo no es positivo y tiene errores ortograficos o gramaticales
                     // mostrar mensaje de error y no guardarlo
-                    if($textAnalizado === "Negativo.\n" && $textErrores === "No\n"){
+                    if($textAnalizado === "Negativo" && $textErrores === "No"){
                     
                         return response()->json([
                             'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
                             'textoReescrito' => $textRewrite,
                         ]);
                         
-                    }elseif($textAnalizado === "Neutral.\n" && $textErrores === "No\n"){
+                    }elseif($textAnalizado === "Neutral" && $textErrores === "No"){
                         return response()->json([
                             'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
                             'textoReescrito' => $textRewrite,
                         ]);
 
-                    }elseif($textAnalizado === "Positivo.\n" && $textErrores === "No\n"){
+                    }elseif($textAnalizado === "Positivo" && $textErrores === "No"){
                         $mensaje->mensaje = $request->mensaje;
                         $mensaje->save();
 
-                    }elseif($textErrores === "Sí\n"){
+                    }elseif($textErrores === "Sí"){
                         return response()->json([
                             'textoErrores' => 'El texto tiene errores ortográficos o gramaticales',
                             'textoCorregido' => $textCorregido,

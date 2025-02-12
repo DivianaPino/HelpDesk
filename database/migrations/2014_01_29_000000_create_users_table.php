@@ -34,7 +34,7 @@ return new class extends Migration
             // $table->foreignId('current_team_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->uuid()->unique()->nullable();
+            $table->uuid('uuid')->unique()->nullable();
 
 
 

@@ -97,43 +97,70 @@
             
                   <div class="card col-md-12 form-group mb-3 overflow-auto chat" id="chat">
                     @if($ticket->mensajes()->exists())
-                      @foreach($ticket->mensajes as $msj)
-                        @if($msj->user_id == Auth::user()->id)
-                          @if($msj->mensaje || isset($msj['imagen']))
-                            <div class="container-msjRight">
-                              <div class="mensajesRight">
-                                  <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
-                                  @if(isset($msj['imagen']))
-                                      <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
-                                      <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" class="txtImagen"  download>Descargar Imagen</a>   
-                              
-                                  @endif    
-                                  <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}} </span>
-                              </div>
-                            </div>
-                          @endif
-                        @else
-                   
-                          @if($msj->mensaje || isset($msj['imagen']))
-                   
-                            <div class="container-msjLeft">
-                              <div class="mensajesLeft">
-                                  <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
-                                  @if(isset($msj['imagen']))
-                                      <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj" > 
-                                      <a href="{{ asset('images/msjCliente/'.$msj['imagen']) }}" class="txtImagen"  download>Descargar Imagen</a>   
-                                 
-                                  @endif    
-                                  <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}} </span>
-                              </div>
-                            </div>
-                          @endif
-                        @endif
-                      @endforeach
+                        @foreach($ticket->mensajes as $msj)
+                            {{-- Si el mensaje es del usuario autenticado --}}
+                            @if($msj->user_id == Auth::user()->id)
+                                @if($msj->mensaje || isset($msj['imagen']))
+                                    <div class="container-msjRight">
+                                        <div class="mensajesRight">
+                                            <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
+                                            @if(isset($msj['imagen']))
+                                                <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
+                                                <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" class="txtImagen" download>Descargar Imagen</a>   
+                                            @endif    
+                                            <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}}</span>
+                                        </div>
+                                    </div>
+                                @endif
+                            {{-- Si el usuario autenticado es administrador y no es el tecnico asignado (debe ver los mensajes del tecnico a la derecha)--}}
+                            @elseif(Auth::user()->hasRole('Administrador'))
+                                @if($msj->mensaje || isset($msj['imagen']))
+                                    @if($msj->user_id == $tecnico->id)
+                                        {{-- Mensaje enviado por el técnico (a la derecha) --}}
+                                        <div class="container-msjRight">
+                                            <div class="mensajesRight">
+                                                <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
+                                                @if(isset($msj['imagen']))
+                                                    <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
+                                                    <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" class="txtImagen" download>Descargar Imagen</a>   
+                                                @endif    
+                                                <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}}</span>
+                                            </div>
+                                        </div>
+                                    @else
+                                        {{-- Mensaje enviado por el cliente (a la izquierda) --}}
+                                        <div class="container-msjLeft">
+                                            <div class="mensajesLeft">
+                                                <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
+                                                @if(isset($msj['imagen']))
+                                                    <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
+                                                    <a href="{{ asset('images/msjCliente/'.$msj['imagen']) }}" class="txtImagen" download>Descargar Imagen</a>   
+                                                @endif    
+                                                <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}}</span>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endif
+                            {{-- Si el mensaje no es del usuario autenticado ni el usuario es administrador --}}
+                            @else
+                                @if($msj->mensaje || isset($msj['imagen']))
+                                    <div class="container-msjLeft">
+                                        <div class="mensajesLeft">
+                                            <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
+                                            @if(isset($msj['imagen']))
+                                                <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
+                                                <a href="{{ asset('images/msjCliente/'.$msj['imagen']) }}" class="txtImagen" download>Descargar Imagen</a>   
+                                            @endif    
+                                            <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}}</span>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endif
+                        @endforeach
                     @else
-                      <div class="sinmensajes" id="sinMsj">
-                          <p>Sin mensajes...</p>
-                      </div>
+                        <div class="sinmensajes" id="sinMsj">
+                            <p>Sin mensajes...</p>
+                        </div>
                     @endif
                   </div> 
                

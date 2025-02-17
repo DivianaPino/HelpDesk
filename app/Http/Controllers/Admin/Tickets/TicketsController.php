@@ -235,9 +235,10 @@ public function filtrarTickets(Request $request)
 
         $ticket=Ticket::find($idTicket);
         $cliente=User::find($ticket->user_id);
+        $tecnico = User::where('name', $ticket->asignado_a)->first();
         session(['previous_url' => url()->previous()]);
 
-        return view('myViews.Admin.tickets.form_msjTecnico', compact('ticket', 'idTicket','cliente'));
+        return view('myViews.Admin.tickets.form_msjTecnico', compact('ticket', 'idTicket','cliente', 'tecnico'));
   
         // if (Mensaje::where('ticket_id', $idTicket)->exists()) {
         //     return view('myViews.Admin.tickets.form_respuesta')->with(['ticket'=> $ticket, 'idTicket' => $idTicket]);

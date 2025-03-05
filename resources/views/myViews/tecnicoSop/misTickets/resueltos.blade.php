@@ -67,7 +67,8 @@
 
                              <!-- Ultima Fecha  de respuesta -->
                             
-                             <td>{{ \Carbon\Carbon::parse($ticket->respuestas->last()->updated_at) }}</td>
+                            <td>{{ \Carbon\Carbon::parse($ticket->mensajes->last()['updated_at']) }}</td>
+                          
 
                              <!-- Botones - opciones -->
                              <td>

@@ -95,7 +95,7 @@ class MisTicketsController extends Controller
         $usuario= Auth::user();
         $areasUsuario=$usuario->areas()->pluck('area_id');
 
-        $estados = Estado::whereIn('nombre', ['nuevo', 'abierto'])->pluck('id');
+        $estados = Estado::whereIn('nombre', ['nuevo', 'abierto', 'reabierto'])->pluck('id');
         
         $fecha_actual=Carbon::now();
 

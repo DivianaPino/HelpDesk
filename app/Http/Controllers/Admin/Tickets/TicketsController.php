@@ -321,6 +321,9 @@ public function filtrarTickets(Request $request)
                     $resultSentimiento=$geminiService->generateSentiment($request->mensaje);
                     $textAnalizado = $resultSentimiento['candidates'][0]['content']['parts'][0]['text'];
                     $textAnalizado = str_replace(".\n", "", $textAnalizado);
+                    $textAnalizado = str_replace("\n", "", $textAnalizado);
+                    // dd($textAnalizado);
+                  
 
                     //Texto reescrito con un estado de ánimo positivo
                     $resultRewrite=$geminiService->rewriteText($request->mensaje);
@@ -330,6 +333,7 @@ public function filtrarTickets(Request $request)
                     $resultErrores=$geminiService->SpellingError($request->mensaje);
                     $textErrores = $resultErrores['candidates'][0]['content']['parts'][0]['text'];
                     $textErrores = str_replace("\n", "", $textErrores);
+                    // dd($textErrores);
 
                     //Texto corregido
                     $resultCorreccion=$geminiService->CorrectErrors($request->mensaje);
@@ -345,10 +349,8 @@ public function filtrarTickets(Request $request)
                         ]);
                         
                     }elseif($textAnalizado === "Neutral" && $textErrores === "No"){
-                        return response()->json([
-                            'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
-                            'textoReescrito' => $textRewrite,
-                        ]);
+                        $mensaje->mensaje = $request->mensaje;
+                        $mensaje->save();
 
                     }elseif($textAnalizado === "Positivo" && $textErrores === "No"){
                         $mensaje->mensaje = $request->mensaje;

@@ -278,14 +278,19 @@ class TicketsUsuarioController extends Controller
                 $textErrores='';
 
                 try {
-                // Analizar el sentimiento o estado de ánimo que transmite el mensaje
+                    // Analizar el sentimiento o estado de ánimo que transmite el mensaje
                     $geminiService = new GeminiService();
-                    $resultSentimiento=$geminiService->generateSentiment($request->mensaje);
+                    $resultSentimiento=$geminiService->generateSentimentClient($request->mensaje);
                     $textAnalizado = $resultSentimiento['candidates'][0]['content']['parts'][0]['text'];
+                    $textAnalizado = str_replace(".\n", "", $textAnalizado);
+                    $textAnalizado = str_replace("\n", "", $textAnalizado);
+                    // dd($textAnalizado);
+        
 
                     //Texto reescrito con un estado de ánimo positivo
                     $resultRewrite=$geminiService->rewriteTextClient($request->mensaje);
                     $textRewrite =  $resultRewrite['candidates'][0]['content']['parts'][0]['text'];
+                    $textRewrite = str_replace('"', '', $textRewrite);
 
                     // Verificar si el texto tiene errores ortográficos o gramaticales
                     $resultErrores=$geminiService->SpellingError($request->mensaje);
@@ -297,18 +302,14 @@ class TicketsUsuarioController extends Controller
 
                     // si el estado de ánimo no es positivo y tiene errores ortograficos o gramaticales
                     // mostrar mensaje de error y no guardarlo
-                    if($textAnalizado === "Negativo.\n" && $textErrores === "No\n"){
+                    if($textAnalizado === "Sí" && $textErrores === "No\n"){
                     
                         return response()->json([
                             'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
                             'textoReescrito' => $textRewrite,
                         ]);
-                        
-                    }elseif($textAnalizado === "Neutral.\n" && $textErrores === "No\n"){
-                        $mensaje->mensaje = $request->mensaje;
-                        $mensaje->save();
 
-                    }elseif($textAnalizado === "Positivo.\n" && $textErrores === "No\n"){
+                    }elseif($textAnalizado === "No" && $textErrores === "No\n"){
                         $mensaje->mensaje = $request->mensaje;
                         $mensaje->save();
 
@@ -328,7 +329,7 @@ class TicketsUsuarioController extends Controller
 
                         // Analizar el sentimiento o estado de ánimo que transmite el mensaje
                         $groqService = new GroqService();
-                        $resultSentimiento_groq=$groqService->generateSentiment($request->mensaje);
+                        $resultSentimiento_groq=$groqService->generateSentimentClient($request->mensaje);
                         $textAnalizado_groq = $resultSentimiento_groq['choices'][0]['message']['content'];
                         $textAnalizado_groq = rtrim($textAnalizado_groq, '.');
                     

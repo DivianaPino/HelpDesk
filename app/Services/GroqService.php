@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Carbon\Carbon;
 
 
 class GroqService
@@ -12,7 +13,7 @@ class GroqService
 
     public function __construct()
     {
-        $this->groqKey = env('GROQ_API_KEY'); // Asegúrate de definir esta clave en tu archivo .env
+        $this->groqKey = env('GROQ_API_KEY'); 
     }
 
     public function generateSentiment($message)
@@ -28,7 +29,7 @@ class GroqService
                 ],
                 [
                     'role' => 'user',
-                    'content' => "Dime solamente sin ninguna introducción si la siguiente oración transmite un estado de ánimo positivo, negativo o neutral: $message",
+                    'content' => "Dime solamente sin ninguna introducción si la siguiente oracion transmite un sentimiento positivo o negativo o neutral (si la siguiente oración contiene  un saludo informal como por ejemplo 'Hola', mostrar que el sentimiento es negativo): $message",
                 ],
             ],
         ];
@@ -57,7 +58,7 @@ class GroqService
                 ],
                 [
                     'role' => 'user',
-                    'content' => "Dime solo si o no el siguiente texto tiene errores ortográficos o gramaticales, pero si la palabra es 'ok' que la respuesta sea que 'no':'$message'",
+                    'content' => "Dime solo si o no el siguiente texto tiene errores ortográficos en idioma español, pero si la palabra es 'ok' que la respuesta sea que 'no': texto:'$message'",
                 ],
             ],
         ];
@@ -87,7 +88,7 @@ class GroqService
                 ],
                 [
                     'role' => 'user',
-                    'content' => "¿Solo dime sin ninguna introducción de como sería el siguiente texto sin errores ortográficos o gramaticales, si no tiene solo mostrar el mismo texto: $message",
+                    'content' => "Sin hacer ninguna introducción, ¿Como sería el siguiente texto sin errores ortográficos?, solo mostrar el texto corregido: $message",
                 ],
             ],
         ];
@@ -105,6 +106,9 @@ class GroqService
     }
 
     public function rewriteText($message) {
+
+        $fecha_actual=Carbon::now();
+
         $apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
 
         $params = [
@@ -116,7 +120,38 @@ class GroqService
                 ],
                 [
                     'role' => 'user',
-                    'content' => "¿Solo muestrame sin ninguna introducción un solo texto de como sería el siguiente texto con un estado de ánimo positivo, teniendo en cuenta que dicho texto es escrito por un técnico de soporte de un sistema helpdesk?: texto: $message",
+                    'content' => "Solo dime un solo ejemplo sin ninguna introducción,  de como sería el siguiente texto que transmita un sentimiento positivo , si la siguiente oración contiene  un saludo informal como por ejemplo 'Hola', mostrar un saludo formal (con expresiones de buenos días, buenas tardes o buenas noches dependiento de la hora en Venezuela".$fecha_actual ."), teniendo en cuenta que es un mensaje a un cliente en un sistema de tickets o helpdesk:text: texto: $message",
+                ],
+            ],
+        ];
+
+        $response = Http::withToken($this->groqKey)
+            ->withOptions(['verify' => false])
+            ->post($apiUrl, $params);
+
+        if ($response->successful()) {
+            return $response->json(); 
+        }
+
+        throw new \Exception("Error al generar el contenido en groq: " . $response->status());
+    }
+
+    public function generateSentimentClient($message)
+    {
+        $fecha_actual=Carbon::now();
+
+        $apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
+
+        $params = [
+            'model' => 'llama-3.3-70b-versatile',
+            'messages' => [
+                [
+                    'role' => 'system',
+                    'content' => 'Eres un asistente muy util.',
+                ],
+                [
+                    'role' => 'user',
+                    'content' => "Dime solo si o no la siguiente oración transmite un mensaje ofensivo, frustrante, culposo e irrespetuoso (si la siguiente oración contiene un saludo informal como por ejemplo 'Hola', mostrar que Si): $message",
                 ],
             ],
         ];
@@ -144,7 +179,7 @@ class GroqService
                 ],
                 [
                     'role' => 'user',
-                    'content' => "¿Solo muestrame sin ninguna introducción un solo texto de como sería el siguiente texto con un estado de ánimo positivo, , teniendo en cuenta que dicho texto es escrito por un cliente a un técnico de soporte de un sistema helpdesk?: texto: $message",
+                    'content' => "Solo dime un solo ejemplo sin ninguna introducción de como sería el siguiente texto que transmita un mensaje inofensivo, sin frustración, sin culpa y respetuoso, además si la siguiente oración contiene  un saludo informal como por ejemplo 'Hola', reescribirlo con un saludo formal (con expresiones de buenos días, buenas tardes o buenas noches dependiento de la hora en Venezuela".$fecha_actual ."), teniendo en cuenta que es escrito por un cliente a un técnico de soporte?: $message",
                 ],
             ],
         ];

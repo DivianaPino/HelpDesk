@@ -354,7 +354,7 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('messagesContainer').innerHTML = '';
             document.getElementById('messagesContainer').appendChild(errorMessageElement);
 
-            alert('{{ session('error') }}');
+            // alert('{{ session('error') }}');
 
             // setTimeout(() => {
             //     document.getElementById('messagesContainer').innerHTML = '';
@@ -605,9 +605,6 @@ function actualizarEstadoCheckbox(checkbox) {
     // Obtener los elementos del DOM
     const mensaje = document.getElementById('mensaje').value;
     const imagenMsj = document.getElementById('imagenMsj').files.length;
-
-    
-
 
     // Verificar si el campo mensaje está vacío y no hay imágenes cargadas
     if (mensaje === '' && imagenMsj === 0) {

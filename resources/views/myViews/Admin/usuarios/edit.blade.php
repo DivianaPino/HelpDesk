@@ -18,32 +18,27 @@
 <div class="card">
     <div class="card-body">
         <p class="h5">Nombre</p>
-        <p class="form-control">{{$usuario->name}}</p>
+        <p class="form-control">{{ $usuario->name }}</p>
         
-        {!!Form::model($usuario,['route'=>['usuarios.update', $usuario], 'method'=> 'put', 'id'=>'formularioRoles'])!!}
+        <form action="{{ route('usuarios.update', $usuario) }}" method="POST" id="formularioRoles">
+            @csrf
+            @method('PUT')
 
             @foreach ($roles as $role)
                 <div class="role-checkboxes">
                     <label>
-                        {!! Form::checkbox('roles[]', $role->id, null, ['class'=>'mr-1', 'id' => $role->id]) !!}
-                        {{$role->name}}
-                        <div id="selectedRoles"></div>
-
+                        <input type="checkbox" name="roles[]" value="{{ $role->id }}" class="mr-1" id="{{ $role->id }}"
+                            {{ $usuario->hasRole($role->id) ? 'checked' : '' }}>
+                        {{ $role->name }}
                     </label>
                 </div>
             @endforeach
-
-            {!! Form::submit('Asignar rol', [
-            'class' => 'btn btn-primary mt-2',
-            'id' => 'submitButton',
-            'name' => 'submitButton'
-            ]) !!}
+            <button type="submit" class="btn btn-primary mt-2" id="submitButton" name="submitButton">Asignar rol</button>
 
             <div style="display:inline-block; margin-left:20px;">
                 <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volver">Volver</a>
             </div>
-
-        {!!Form::close()!!}
+        </form>
     </div>
 </div>
 @stop
@@ -79,48 +74,32 @@ $(document).ready(function() {
     });
 
     function updateRolesList(roles) {
-        
         $('.role-checkboxes').each(function(index, element) {
-           
             $(element).find('input[type="checkbox"]').prop('checked', false);
         });
 
         roles.forEach(function(role) {
-         
             $('#' + role.id).prop('checked', true);
-
-
         });
     }
 
     function showMessage(type, message) {
-    var messageDiv = $('.messages');
-    
-    // Elimina cualquier mensaje existente
-    messageDiv.empty();
-    
-    // Agrega el nuevo mensaje
-    messageDiv.append(`
-    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-        <strong>${message}</strong>
-    </div>
-`);
+        var messageDiv = $('.messages');
+        
+        // Elimina cualquier mensaje existente
+        messageDiv.empty();
+        
+        // Agrega el nuevo mensaje
+        messageDiv.append(`
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            <strong>${message}</strong>
+        </div>
+        `);
 
-setTimeout(function() {
-    $('.alert-dismissible').fadeOut(500);
-}, 5000);
-}
-
-    
+        setTimeout(function() {
+            $('.alert-dismissible').fadeOut(500);
+        }, 5000);
+    }
 });
 </script>
-
-
-
-
-
-
-
-
-
 @stop

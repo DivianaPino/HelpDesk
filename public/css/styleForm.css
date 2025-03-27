@@ -1868,6 +1868,71 @@ body {
 
 }
 
+/* servicios */
+
+.title-createService, .title-editServicio{
+  font-size: 30px !important;
+  color: #000;
+  font-weight: 800;
+}
+
+.nameArea{
+  color:#6e7683ee;
+}
+
+.btnCreateService, .btnVolverService{
+  width: 150px;
+  font-size: 12px !important;
+  font-weight: 600;
+  text-align: center;
+}
+
+@media(max-width: 1024px){
+  .title-createService, .title-editServicio{
+    font-size: 25px !important;
+  }
+
+  .btnCreateService, .btnVolverService{
+    width: 120px;
+    font-size: 8px !important;
+  }
+}
+
+@media(max-width: 768px){
+  .btn-createService{
+    flex-wrap: nowrap;
+  }
+  .btnCreateService, .btnVolverService{
+    width: 120px;
+    font-size: 8px !important;
+  }
+}
+
+@media(max-width: 425px){
+  .nameService{
+    font-size: 15px !important;
+  }
+
+  .btnCreateService, .btnVolverService{
+    margin-top: 20px !important;
+  }
+}
+
+@media(max-width: 375px){
+  .title-createService, .title-editServicio{
+    font-size: 18px !important;
+  }
+
+  .btnCreateService, .btnVolverService{
+    width: 80px;
+    font-size: 7px !important;
+    padding: 6px 2px!important;
+  }
+}
+
+
+
+
 
 
 

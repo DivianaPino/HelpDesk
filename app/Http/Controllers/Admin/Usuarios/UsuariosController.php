@@ -83,11 +83,11 @@ class UsuariosController extends Controller
     {
      
         $roles = $request->input('roles', []);
-        $usuario->syncRoles($roles);
+    
+        $usuario->roles()->sync($roles);
         
-        // Obtén los roles actualizados del usuario
         $updatedRoles = $usuario->roles;
-      
+    
         return response()->json([
             'success' => true,
             'roles' => $updatedRoles,

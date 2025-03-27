@@ -24,7 +24,7 @@
         <script src="https://kit.fontawesome.com/6f3d5551a7.js" crossorigin="anonymous"></script>
     </head>
     <body class="font-sans antialiased">
-        <x-jet-banner />
+        <x-banner />
 
         <div class="min-h-screen bg-gray-100">
             @livewire('navigation-menu')

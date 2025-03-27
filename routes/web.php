@@ -98,7 +98,7 @@ Route::middleware([
     Route::get('/reporte/tickets', [ReporteController::class, 'reporte'] )->name('reporteTickets');
     Route::post('/tickets/filtrados', [ReporteController::class, 'reporteFiltrados'] )->name('reporteFiltrados');
     Route::post('/reporte-pdf',  [ReporteController::class, 'reporteCompletoPDF'] )->name('reporteCompletoPDF');
-    Route::post('/reporteRango-pdf',  [ReporteController::class, 'reporteRangoPDF'] )->name('reporteRangoPDF');
+    Route::post('/reporteFiltrado-pdf',  [ReporteController::class, 'reporteFiltradoPDF'] )->name('reporteFiltradoPDF');
     Route::get('/area/{areaId}/servicios', [AreasController::class, 'area_servicios'] )->name('area_servicios');
     Route::get('/crear/servicio/area/{areaId}', [ServiciosController::class, 'crear_servicio'] )->name('crear_servicio');
     Route::post('/guardar/servicio/{areaId}',  [ServiciosController::class, 'guardar_servicio'] )->name('guardar_servicio');

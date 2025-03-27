@@ -4,13 +4,13 @@
         <a href="{{ route('/') }}" class=" btn txt-btn " ><i class="fa-solid fa-arrow-left fa-lg"></i> Página principal</a>
     </div> -->
     
-        <x-jet-authentication-card >
+        <x-authentication-card >
 
             <x-slot name="logo">
-                <x-jet-authentication-card-logo />
+                <x-authentication-card-logo />
             </x-slot>
 
-            <x-jet-validation-errors class="mb-4" />
+            <x-validation-errors class="mb-4" />
 
             @if (session('status'))
                 <div class="mb-4 font-medium text-sm text-green-600 ">
@@ -22,19 +22,19 @@
                 @csrf
 
                 <div>
-                    <x-jet-label for="email" value="{{ __('Correo:') }}" class="label texto-formulario" />
-                    <x-jet-input id="email" class="block mt-1 w-full " type="email" name="email" :value="old('email')" required autofocus />
+                    <x-label for="email" value="{{ __('Correo:') }}" class="label texto-formulario" />
+                    <x-input id="email" class="block mt-1 w-full " type="email" name="email" :value="old('email')" required autofocus />
                 </div>
 
                 <div class="mt-4">
-                    <x-jet-label for="password" value="{{ __('Contraseña:') }}" class="label texto-formulario" />
-                    <x-jet-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
+                    <x-label for="password" value="{{ __('Contraseña:') }}" class="label texto-formulario" />
+                    <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
                 </div>
 
                 <div class="contenedor-remember">
                     <div >
                         <label for="remember_me" class="flex items-center">
-                            <x-jet-checkbox id="remember_me" name="remember" />
+                            <x-checkbox id="remember_me" name="remember" />
                             <span class=" texto-recuerdame margin-derecho ">{{ __('Recordarme') }}</span>
                         </label>
                     </div>
@@ -49,12 +49,12 @@
                 </div>
 
                 <div class="contenedor-btnform">
-                    <x-jet-button class="btn-form" >
+                    <x-button class="btn-form" >
                     {{ __('Iniciar sesión') }} 
-                    </x-jet-button>
+                    </x-button>
                 </div>
             </form>
             
-        </x-jet-authentication-card>
+        </x-authentication-card>
     
 </x-guest-layout>

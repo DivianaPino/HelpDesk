@@ -8,13 +8,13 @@
       <div class="row align-items-stretch no-gutters contact-wrap centrar-form">
         <div class="col-md-6">
           <div class="form h-100 sombra ">
-            <h3>Editar servicio</h3>
+            <h3 class="title-editServicio">Editar servicio de <span class="nameArea">{{$area->nombre}}</span></h3>
             <form action="/servicios/{{$servicio->id}}" class="mb-5" method="post" id="contactForm" name="contactForm">
             @csrf
             @method('PUT')
               <div class="row">
                 <div class="col-md-12 form-group mb-3">
-                  <label for="nombre" class="col-form-label">Nombre del servicio:</label>
+                  <label for="nombre" class="col-form-label nameService">Nombre del servicio:</label>
                   <input type="text" class="form-control" name="nombre" id="nombre"  value="{{$servicio->nombre}}" >
                 </div>
               </div>
@@ -26,14 +26,14 @@
               </div>
               
             
-              <div class="row">
-                <div class="col-md-8 form-group">
-                  <input type="submit" id="submitButton" value="Editar" class="btnForm btn-primary rounded-0 py-2 px-4">
-                </div>
+              <div class="row btn-createService">
+                  <div class="col-md-6 form-group d-flex justify-content-start">
+                      <input type="submit" id="submitButton" value="Crear" class="btnForm btn-primary rounded-0 py-2 px-4 btnCreateService">
+                  </div>
 
-                <div class="col-md-4 form-group">
-                    <a href="/area/{{$area->id}}/servicios" class="btnForm btn-dark rounded-0 py-2 px-4 btn_volver"> Ver todos</a>
-                </div>
+                  <div class="col-md-6 form-group d-flex justify-content-end">
+                      <a href="/area/{{$area->id}}/servicios" class="btnForm btn-dark rounded-0 py-2 px-4 btn_volver btnVolverService"> Ver todos</a>
+                  </div>
               </div>
             </form>
 

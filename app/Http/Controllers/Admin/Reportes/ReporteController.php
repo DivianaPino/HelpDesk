@@ -100,7 +100,7 @@ class ReporteController extends Controller
     }
 
 
-    public function reporteRangoPDF(Request $request){
+    public function reporteFiltradoPDF(Request $request){
         $usuario = Auth::user();
         $reporte = new Reporte();
         $reporte->user_id = $usuario->id;
@@ -152,7 +152,7 @@ class ReporteController extends Controller
         $primerTicket = Ticket::orderBy('created_at', 'asc')->first();
     
         // Generar el PDF
-        $pdf = PDF::loadView('myViews.Admin.reporte.reporteRango', [
+        $pdf = PDF::loadView('myViews.Admin.reporte.reporteFiltrado', [
             'tickets' => $tickets,
             'fecha_inicial' => $fecha_inicial,
             'fecha_fin' => $fecha_fin,
@@ -163,6 +163,6 @@ class ReporteController extends Controller
             'primerTicket'=> $primerTicket
         ]);
     
-        return $pdf->download('reporte-ticketsRango.pdf');
+        return $pdf->download('reporte-ticketsFiltrados.pdf');
     }
 }

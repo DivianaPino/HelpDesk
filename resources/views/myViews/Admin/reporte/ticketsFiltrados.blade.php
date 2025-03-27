@@ -137,7 +137,7 @@
                         </div>       
                         <div class="descargarReporte">
                             <button type="button" id="descargar" class="btn btn-adminReporte">
-                                Descargar reporte (rango)
+                                Descargar reporte (filtrado)
                             </button>
                         </div>
                     </div>
@@ -370,7 +370,7 @@ $(document).ready(function() {
         });
 
         document.getElementById('descargar').addEventListener('click', function() {
-            document.getElementById('reporteForm').action = "/reporteRango-pdf";
+            document.getElementById('reporteForm').action = "/reporteFiltrado-pdf";
             document.getElementById('reporteForm').submit();
         });
 </script>

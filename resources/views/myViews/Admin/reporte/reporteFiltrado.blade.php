@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Reporte por rango PDF</title>
+    <title>Reporte por filtrado PDF</title>
 
     <style>
 
@@ -118,7 +118,7 @@
         <img src="data:image/jpg;base64,{{ base64_encode(file_get_contents(public_path('assets/logoUneg.jpg'))) }}" alt="Logo Uneg"> 
         <h3 class="texto1">REPÚBLICA BOLIVARIANA DE VENEZUELA </h3>
         <h3 class="texto2"> UNIVERSIDAD NACIONAL EXPERIMENTAL DE GUAYANA </h3>
-        <h4> REPORTE DE TICKETS POR RANGO</h4>
+        <h4> REPORTE DE TICKETS FILTRADOS</h4>
 
         @if(empty($fecha_inicial) && empty($fecha_fin))
             <h5>(

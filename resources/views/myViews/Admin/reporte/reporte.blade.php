@@ -61,7 +61,7 @@
                         </div>
                         <div class="descargarReporte">
                           <button type="button" id="descargar" class="btn btn-adminReporte" disabled>
-                              Descargar reporte (rango)
+                              Descargar reporte (filtrado)
                           </button>
                         </div>
                     </div>

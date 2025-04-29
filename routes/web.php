@@ -94,7 +94,13 @@ Route::middleware([
     Route::get('/asignar_area/{id}', [UsuariosController::class, 'asignar_area'] )->name('asignar_area');
     Route::get('/area/{areaId}/tecnicos', [AreasController::class, 'area_tecnicos'] )->name('area_tecnicos');
     Route::get('/analisis', [AnalisisController::class, 'index'] )->name('indexAnalisis');
-    Route::get('/grafico_kpi', [GraficoController::class, 'index'] )->name('indexGrafico');
+    Route::get('/graficos_kpi', [GraficoController::class, 'index'] )->name('indexGrafico');
+    Route::get('/grafico_kpi/csat', [GraficoController::class, 'graficoCSAT'] )->name('graficoCSAT');
+    Route::post('/grafico_kpi/csat/filtrado', [GraficoController::class, 'graficoCSAT_Filtrado'] )->name('graficoCSAT_Filtrado');
+    Route::get('/grafico_kpi/mttr', [GraficoController::class, 'graficoMTTR'] )->name('graficoMTTR');
+    Route::post('/grafico_kpi/mttr/filtrado', [GraficoController::class, 'graficoMTTR_Filtrado'] )->name('graficoMTTR_Filtrado');
+    Route::get('/grafico_kpi/fcr', [GraficoController::class, 'graficoFCR'] )->name('graficoFCR');
+    Route::post('/grafico_kpi/fcr/filtrado', [GraficoController::class, 'graficoFCR_Filtrado'] )->name('graficoFCR_Filtrado');
     Route::get('/reporte/tickets', [ReporteController::class, 'reporte'] )->name('reporteTickets');
     Route::post('/tickets/filtrados', [ReporteController::class, 'reporteFiltrados'] )->name('reporteFiltrados');
     Route::post('/reporte-pdf',  [ReporteController::class, 'reporteCompletoPDF'] )->name('reporteCompletoPDF');

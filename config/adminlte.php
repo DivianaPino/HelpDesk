@@ -613,7 +613,7 @@ return [
         ],
         [
             'text'        => 'GRÁFICO DE RENDIMIENTO ',
-            'url'         => '/grafico_kpi',
+            'url'         => '/graficos_kpi',
             'icon'        => 'fas fa-fw fa-chart-bar',
             'can'         => 'indexGrafico',
         ],

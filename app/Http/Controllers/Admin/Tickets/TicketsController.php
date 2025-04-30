@@ -367,6 +367,12 @@ public function filtrarTickets(Request $request)
 
                 } catch (\Exception $e) {
 
+                    if (strpos($errorMessage, 'cURL error 6: Could not resolve host: generativelanguage.googleapis.com') !== false) {
+                        return response()->json([
+                            'error_gemini_connect' => 'No se pudo conectar con el servicio de Gemini. Por favor, revisa tu conexión a internet o inténtalo más tarde.'
+                        ]);
+                    } 
+
                     try{
 
                         // ANALISIS DEL MENSAJE CON GROQ
@@ -461,11 +467,11 @@ public function filtrarTickets(Request $request)
             
                 
         
-            }catch (\Illuminate\Validation\ValidationException $e) {
-                return response()->json([
-                    'errors' => $e->validator->errors()->toArray(),
-                ], 422);
-            }
+        }catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'errors' => $e->validator->errors()->toArray(),
+            ], 422);
+        }
         
        
     }

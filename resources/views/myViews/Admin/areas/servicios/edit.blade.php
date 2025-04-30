@@ -28,7 +28,7 @@
             
               <div class="row btn-createService">
                   <div class="col-md-6 form-group d-flex justify-content-start">
-                      <input type="submit" id="submitButton" value="Crear" class="btnForm btn-primary rounded-0 py-2 px-4 btnCreateService">
+                      <input type="submit" id="submitButton" value="Editar" class="btnForm btn-primary rounded-0 py-2 px-4 btnCreateService">
                   </div>
 
                   <div class="col-md-6 form-group d-flex justify-content-end">

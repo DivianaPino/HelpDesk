@@ -80,10 +80,21 @@
                     if ($notificacion->type === 'App\Notifications\CalificacionNotification') {
 
                         $ticket=App\Models\Ticket::where('id',$notificacion->data['calificacion_idTicket'])->first();
-                        $id_usuario_Ticket=$ticket->user_id;
-                        $usuario=App\Models\User::where('id',$id_usuario_Ticket)->first();
-                        $usuarioNombre=$usuario->name;
+                        if ($ticket) {
+                            $id_usuario_Ticket = $ticket->user_id;
+                            $usuario = App\Models\User::where('id', $id_usuario_Ticket)->first();
 
+                            if ($usuario) {
+                                $usuarioNombre = $usuario->name;
+                                // Aquí puedes usar $usuarioNombre como necesites
+                            } else {
+                                // Manejo de caso cuando el usuario no existe
+                                $usuarioNombre = 'Usuario no encontrado';
+                            }
+                        } else {
+                            // Manejo de caso cuando el ticket no existe
+                            $usuarioNombre = 'Usuario no encontrado';
+                        }
 
                         $url = url("/notificacion/{$notificacion->id}/ticket/{$notificacion->data['calificacion_idTicket']}/mensajeTecnico");
                     
@@ -97,8 +108,16 @@
                     }elseif ($notificacion->type === 'App\Notifications\MensajeClienteNotification') {
 
                         $ticket=App\Models\Ticket::where('id',$notificacion->data['mensaje_ticketId'])->first();
-                        $usuario=App\Models\User::where('id',$ticket->user_id)->first();
-                        $usuarioNombre=$usuario->name;
+
+                        if($ticket){
+                            $usuario=App\Models\User::where('id',$ticket->user_id)->first();
+                            $usuarioNombre=$usuario->name;
+                        }
+                        else{
+                            $usuario=null;
+                        }
+
+                        
 
                         $url = url("/notificacion/{$notificacion->id}/ticket/{$notificacion->data['mensaje_ticketId']}/mensajeTecnico");
 
@@ -106,7 +125,11 @@
                     }elseif ($notificacion->type === 'App\Notifications\MensajeTecnicoNotification') {
 
                         $ticket=App\Models\Ticket::where('id',$notificacion->data['mensaje_ticketId'])->first();
-                        $tecnicoSop=$ticket->asignado_a;
+                        if ($ticket) {
+                            $tecnicoSop = $ticket->asignado_a;
+                        } else {
+                            $tecnicoSop = null; // O maneja el caso donde no hay ticket
+                        }
 
                         $url = url("/notificacion/{$notificacion->id}/ticket/{$notificacion->data['mensaje_ticketId']}/mensajeCliente");
                     }
@@ -152,7 +175,11 @@
                                 <h6 class="titleNoti">Mensaje técnico - Ticket #{{ $notificacion->data['mensaje_ticketId'] }}</h6>
                             </div>
                             <span class="float-right text-muted text-sm msjStyle">{{ $notificacion->data['mensaje_mensaje'] }}</span>
-                            <span class="float-right text-muted text-sm">Técnico de soporte: {{ $tecnicoSop }}</span>
+                            @if($tecnicoSop)
+                                <span class="float-right text-muted text-sm">Técnico: {{ $tecnicoSop }}</span>
+                            @else
+                                <span class="float-right text-muted text-sm">El ticket ya no existe</span>
+                            @endif
                             <span class="float-right text-muted text-sm">{{ $notificacion->created_at->diffForHumans() }}</span>
                         
                         @endif

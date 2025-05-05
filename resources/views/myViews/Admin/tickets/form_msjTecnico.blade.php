@@ -11,235 +11,247 @@
         <div class="col-md-12 ">
           <div class="form h-100  content-fondo" >
             <div class="content-btnVolver">
-                <a  href="javascript:void(0);" class="btn btn-dark btn-volver" onclick="checkPreviousUrl({{ $ticket->id }})">
-                    <i class="fa-solid fa-arrow-left fa-lg"></i>Volver
-                </a>
+              @if ($ticket)
+                  <a href="javascript:void(0);" class="btn btn-dark btn-volver" onclick="checkPreviousUrl({{ $ticket->id }})">
+                      <i class="fa-solid fa-arrow-left fa-lg"></i>Volver
+                  </a>
+              @else
+                <a style="margin-top:8px;" href="javascript:history.back()" class="btn btn-dark btn-volver">
+                <i class="fa-solid fa-arrow-left fa-lg"></i>Volver</a>
+              @endif
             </div>
             <h3 class="tituloMsjTecnico">Ticket #{{$idTicket}} </h3>
-            <form action="/mensaje/tecnico/ticket/{{$ticket->id}}" class="mb-5" method="post" id="contactForm" name="contactForm" enctype="multipart/form-data">
-              @csrf
-              <div class="row">
-                <div class="col-md-8 form-group mb-3">
-                  <label for="user_id" class="col-form-label">Usuario:</label>
-                  <input type="text" class="form-control" name="user_id" id="user_id"   value="{{$ticket->user->name}}" disabled >
-                </div>
-                <div class="col-md-4 form-group mb-3 ml-auto">
-                  <label for="fecha_inicio" class="col-form-label">Fecha:</label>
-                  <input type="text" class="form-control" name="fecha_inicio" id="fecha_inicio" value="{{$ticket->fecha_inicio}}"  disabled>
-                </div>
-              </div>
-              
-              <div class="row">
-                <div class="col-md-4 form-group mb-3">
-                      <label for="area_id" class="col-form-label">Área:</label>
-                      <input type="text" class="form-control" name="area_id" id="area_id" value="{{ $ticket->area->nombre }}" disabled>
-                </div>
-                <div class="col-md-4 form-group mb-3">
-                      <label for="servicio_id" class="col-form-label">Servicio:</label>
-                      <input type="text" class="form-control" name="servicio_id" id="servicio_id" value="{{ $ticket->servicio->nombre }}" disabled>
-                </div>
-                <div class="col-md-4 form-group mb-3">
-                  <label for="prioridad_id" class="col-form-label">Prioridad:</label>
-                  <input type="text" class="form-control" name="prioridad_id" id="prioridad_id" value="{{ $ticket->prioridad->nombre }}" disabled>
-                </div>
-              </div>     
-              
-              <div class="row">
-                @if(is_null($ticket->asignado_a))
-                  <div class="col-md-6 form-group mb-3">
-                    <label for="asignado_a" class="col-form-label">Técnico asignado:</label>
-                    <input type="text" class="form-control" name="asignado_a" id="asignado_a" value="Sin asignar" disabled>
+            @if($ticket)
+              <form action="/mensaje/tecnico/ticket/{{$ticket->id}}" class="mb-5" method="post" id="contactForm" name="contactForm" enctype="multipart/form-data">
+                @csrf
+                <div class="row">
+                  <div class="col-md-8 form-group mb-3">
+                    <label for="user_id" class="col-form-label">Usuario:</label>
+                    <input type="text" class="form-control" name="user_id" id="user_id"   value="{{$ticket->user->name}}" disabled >
                   </div>
-                @else
+                  <div class="col-md-4 form-group mb-3 ml-auto">
+                    <label for="fecha_inicio" class="col-form-label">Fecha:</label>
+                    <input type="text" class="form-control" name="fecha_inicio" id="fecha_inicio" value="{{$ticket->fecha_inicio}}"  disabled>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-4 form-group mb-3">
+                        <label for="area_id" class="col-form-label">Área:</label>
+                        <input type="text" class="form-control" name="area_id" id="area_id" value="{{ $ticket->area->nombre }}" disabled>
+                  </div>
+                  <div class="col-md-4 form-group mb-3">
+                        <label for="servicio_id" class="col-form-label">Servicio:</label>
+                        <input type="text" class="form-control" name="servicio_id" id="servicio_id" value="{{ $ticket->servicio->nombre }}" disabled>
+                  </div>
+                  <div class="col-md-4 form-group mb-3">
+                    <label for="prioridad_id" class="col-form-label">Prioridad:</label>
+                    <input type="text" class="form-control" name="prioridad_id" id="prioridad_id" value="{{ $ticket->prioridad->nombre }}" disabled>
+                  </div>
+                </div>     
+                
+                <div class="row">
+                  @if(is_null($ticket->asignado_a))
+                    <div class="col-md-6 form-group mb-3">
+                      <label for="asignado_a" class="col-form-label">Técnico asignado:</label>
+                      <input type="text" class="form-control" name="asignado_a" id="asignado_a" value="Sin asignar" disabled>
+                    </div>
+                  @else
+                    <div class="col-md-6 form-group mb-3">
+                      <label for="asignado_a" class="col-form-label">Técnico asignado:</label>
+                      <input type="text" class="form-control" name="asignado_a" id="asignado_a" value="{{$ticket->asignado_a}}" disabled>
+                    </div>
+                  @endif
+
                   <div class="col-md-6 form-group mb-3">
-                    <label for="asignado_a" class="col-form-label">Técnico asignado:</label>
-                    <input type="text" class="form-control" name="asignado_a" id="asignado_a" value="{{$ticket->asignado_a}}" disabled>
+                    <label for="estado_id" class="col-form-label">Estado:</label>
+                    <input type="text" class="form-control" name="estado_id" id="estado_id" value="{{$ticket->estado->nombre}}" disabled>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-12 form-group mb-3">
+                    <label for="asunto" class="col-form-label">Asunto:</label>
+                    <input type="text" class="form-control inputForm" name="asunto" id="asunto" value="{{$ticket->asunto}}" placeholder="Escribe el asunto" disabled >
+                  </div>
+                </div>
+                  
+                <div class="row">
+                  <div class="col-md-12 form-group mb-3">
+                    <label for="mensaje" class="col-form-label">Mensaje:</label>
+                    <textarea class="form-control inputForm" name="mensaje" id="msj" cols="30" rows="4"  disabled>{{$ticket->mensaje}}</textarea>
+                  </div>
+                </div>
+
+                @if(isset($ticket->imagen))
+                  <div class="row">
+                    <div class="col-md-12 form-group mb-3">
+                        <img src="{{asset('images/tickets/'.$ticket->imagen)}}"
+                          class="img-fluid img-rounded" width="60px"> 
+                        <a href="{{ asset('images/tickets/'.$ticket->imagen) }}" style="font-size:12px;" download >Descargar Imagen</a>   
+                    </div>
                   </div>
                 @endif
 
-                <div class="col-md-6 form-group mb-3">
-                  <label for="estado_id" class="col-form-label">Estado:</label>
-                  <input type="text" class="form-control" name="estado_id" id="estado_id" value="{{$ticket->estado->nombre}}" disabled>
-                </div>
-              </div>
+                <div class="content-chat">
+                  <div class="row">
+                    <div class="col-md-12 form-group mb-3 cuadro2">
+                        CHAT CON EL CLIENTE "{{strtoupper($cliente->name)}}"
+                    </div>
+
+
               
-              <div class="row">
-                <div class="col-md-12 form-group mb-3">
-                  <label for="asunto" class="col-form-label">Asunto:</label>
-                  <input type="text" class="form-control inputForm" name="asunto" id="asunto" value="{{$ticket->asunto}}" placeholder="Escribe el asunto" disabled >
-                </div>
-              </div>
+                    <div class="card col-md-12 form-group mb-3 overflow-auto chat" id="chat">
+                      @if($ticket->mensajes()->exists())
+                          @foreach($ticket->mensajes as $msj)
+                              {{-- Si el mensaje es del usuario autenticado --}}
+                              @if($msj->user_id == Auth::user()->id)
+                                  @if($msj->mensaje || isset($msj['imagen']))
+                                      <div class="container-msjRight">
+                                          <div class="mensajesRight">
+                                              <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
+                                              @if(isset($msj['imagen']))
+                                                  <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
+                                                  <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" class="txtImagen" download>Descargar Imagen</a>   
+                                              @endif    
+                                              <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}}</span>
+                                          </div>
+                                      </div>
+                                  @endif
+                              {{-- Si el usuario autenticado es administrador y no es el tecnico asignado (debe ver los mensajes del tecnico a la derecha)--}}
+                              @elseif(Auth::user()->hasRole('Administrador'))
+                                  @if($msj->mensaje || isset($msj['imagen']))
+                                      @if($msj->user_id == $tecnico->id)
+                                          {{-- Mensaje enviado por el técnico (a la derecha) --}}
+                                          <div class="container-msjRight">
+                                              <div class="mensajesRight">
+                                                  <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
+                                                  @if(isset($msj['imagen']))
+                                                      <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
+                                                      <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" class="txtImagen" download>Descargar Imagen</a>   
+                                                  @endif    
+                                                  <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}}</span>
+                                              </div>
+                                          </div>
+                                      @else
+                                          {{-- Mensaje enviado por el cliente (a la izquierda) --}}
+                                          <div class="container-msjLeft">
+                                              <div class="mensajesLeft">
+                                                  <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
+                                                  @if(isset($msj['imagen']))
+                                                      <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
+                                                      <a href="{{ asset('images/msjCliente/'.$msj['imagen']) }}" class="txtImagen" download>Descargar Imagen</a>   
+                                                  @endif    
+                                                  <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}}</span>
+                                              </div>
+                                          </div>
+                                      @endif
+                                  @endif
+                              {{-- Si el mensaje no es del usuario autenticado ni el usuario es administrador --}}
+                              @else
+                                  @if($msj->mensaje || isset($msj['imagen']))
+                                      <div class="container-msjLeft">
+                                          <div class="mensajesLeft">
+                                              <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
+                                              @if(isset($msj['imagen']))
+                                                  <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
+                                                  <a href="{{ asset('images/msjCliente/'.$msj['imagen']) }}" class="txtImagen" download>Descargar Imagen</a>   
+                                              @endif    
+                                              <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}}</span>
+                                          </div>
+                                      </div>
+                                  @endif
+                              @endif
+                          @endforeach
+                      @else
+                          <div class="sinmensajes" id="sinMsj">
+                              <p>Sin mensajes...</p>
+                          </div>
+                      @endif
+                    </div> 
                 
-              <div class="row">
-                <div class="col-md-12 form-group mb-3">
-                  <label for="mensaje" class="col-form-label">Mensaje:</label>
-                  <textarea class="form-control inputForm" name="mensaje" id="msj" cols="30" rows="4"  disabled>{{$ticket->mensaje}}</textarea>
-                </div>
-              </div>
-
-              @if(isset($ticket->imagen))
-                <div class="row">
-                  <div class="col-md-12 form-group mb-3">
-                      <img src="{{asset('images/tickets/'.$ticket->imagen)}}"
-                        class="img-fluid img-rounded" width="60px"> 
-                      <a href="{{ asset('images/tickets/'.$ticket->imagen) }}" style="font-size:12px;" download >Descargar Imagen</a>   
+          
+                    <div id="messagesContainer" class="col-md-12 containermsj">
+                      @if(session('status'))
+                        <p class="alert alert-success message-alert" ><i class="fa-solid fa-circle-check fa-lg"></i>{{ Session('status') }}</p>
+                      @elseif(session('error'))
+                        <p class="alert alert-danger message-alert" >{{ Session('error') }}</p>
+                      @elseif(session('errorText'))
+                        <p class="alert alert-danger message-alert" >{{ Session('errorText') }}</p>
+                      @endif
+                    </div>
                   </div>
-                </div>
-              @endif
-
-              <div class="content-chat">
-                <div class="row">
-                  <div class="col-md-12 form-group mb-3 cuadro2">
-                      CHAT CON EL CLIENTE "{{strtoupper($cliente->name)}}"
-                  </div>
-
-
-            
-                  <div class="card col-md-12 form-group mb-3 overflow-auto chat" id="chat">
-                    @if($ticket->mensajes()->exists())
-                        @foreach($ticket->mensajes as $msj)
-                            {{-- Si el mensaje es del usuario autenticado --}}
-                            @if($msj->user_id == Auth::user()->id)
-                                @if($msj->mensaje || isset($msj['imagen']))
-                                    <div class="container-msjRight">
-                                        <div class="mensajesRight">
-                                            <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
-                                            @if(isset($msj['imagen']))
-                                                <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
-                                                <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" class="txtImagen" download>Descargar Imagen</a>   
-                                            @endif    
-                                            <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}}</span>
-                                        </div>
-                                    </div>
-                                @endif
-                            {{-- Si el usuario autenticado es administrador y no es el tecnico asignado (debe ver los mensajes del tecnico a la derecha)--}}
-                            @elseif(Auth::user()->hasRole('Administrador'))
-                                @if($msj->mensaje || isset($msj['imagen']))
-                                    @if($msj->user_id == $tecnico->id)
-                                        {{-- Mensaje enviado por el técnico (a la derecha) --}}
-                                        <div class="container-msjRight">
-                                            <div class="mensajesRight">
-                                                <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
-                                                @if(isset($msj['imagen']))
-                                                    <img src="{{asset('images/msjTecnico/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
-                                                    <a href="{{ asset('images/msjTecnico/'.$msj['imagen']) }}" class="txtImagen" download>Descargar Imagen</a>   
-                                                @endif    
-                                                <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}}</span>
-                                            </div>
-                                        </div>
-                                    @else
-                                        {{-- Mensaje enviado por el cliente (a la izquierda) --}}
-                                        <div class="container-msjLeft">
-                                            <div class="mensajesLeft">
-                                                <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
-                                                @if(isset($msj['imagen']))
-                                                    <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
-                                                    <a href="{{ asset('images/msjCliente/'.$msj['imagen']) }}" class="txtImagen" download>Descargar Imagen</a>   
-                                                @endif    
-                                                <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}}</span>
-                                            </div>
-                                        </div>
-                                    @endif
-                                @endif
-                            {{-- Si el mensaje no es del usuario autenticado ni el usuario es administrador --}}
-                            @else
-                                @if($msj->mensaje || isset($msj['imagen']))
-                                    <div class="container-msjLeft">
-                                        <div class="mensajesLeft">
-                                            <p id="{{$msj->id}}" class="msjChat">{{$msj->mensaje}}</p>
-                                            @if(isset($msj['imagen']))
-                                                <img src="{{asset('images/msjCliente/'.$msj['imagen'])}}" class="img-fluid img-rounded imagenMsj"> 
-                                                <a href="{{ asset('images/msjCliente/'.$msj['imagen']) }}" class="txtImagen" download>Descargar Imagen</a>   
-                                            @endif    
-                                            <span class="fecha_mensajes" style="text-align:right;">{{$msj->created_at->format('d/m/Y')}}, {{$msj->created_at->format('h:i A')}}</span>
-                                        </div>
-                                    </div>
-                                @endif
-                            @endif
-                        @endforeach
-                    @else
-                        <div class="sinmensajes" id="sinMsj">
-                            <p>Sin mensajes...</p>
-                        </div>
-                    @endif
-                  </div> 
-               
-         
-                  <div id="messagesContainer" class="col-md-12 containermsj">
-                    @if(session('status'))
-                      <p class="alert alert-success message-alert" ><i class="fa-solid fa-circle-check fa-lg"></i>{{ Session('status') }}</p>
-                    @elseif(session('error'))
-                      <p class="alert alert-danger message-alert" >{{ Session('error') }}</p>
-                    @elseif(session('errorText'))
-                      <p class="alert alert-danger message-alert" >{{ Session('errorText') }}</p>
-                    @endif
-                  </div>
-                </div>
-            
-                <div class="row" id="rowMensaje">
-                  <div class="col-md-12 form-group mb-3 " style="padding:0px;">
-                    <textarea  class="form-control"  name="mensaje" id="mensaje" cols="40" rows="4"  placeholder="Escribe el mensaje" ></textarea>
-                  </div>
-                </div>
-              </div>
-              <div class="row contentCheckbox-Resuelto w-100" id="rowImagenBox">
-                <div class="col-md-8 form-group mb-3 content-file">
-                  <input type="file" name="imagen" accept="image/*" id="imagenMsj" class="msjFile">
-                </div>
-
-                <div class="col-md-4 content_starsCheckbox d-flex justify-content-end">
-                  <div class="checkbox-containerResuelto"  id="checkboxContainerResuelto">
-                    <input class="checkbox" type="checkbox" id="resuelto" name="resuelto"  value="on" onchange="actualizarEstadoCheckbox(this)">
-                    <label class="labelResuelto" for="resuelto" >Ticket resuelto</label>
-                  </div>
-                  
-                  <div class="stars-calif">
-                    <div class="container-estrellas" >
-                      <div class="estrellas estrellasTicket"></div>
-                      <a href="/calificaciones/ticket/{{$idTicket}}" class="ml-2 link-calif">Ver calificación(es)</a>
+              
+                  <div class="row" id="rowMensaje">
+                    <div class="col-md-12 form-group mb-3 " style="padding:0px;">
+                      <textarea  class="form-control"  name="mensaje" id="mensaje" cols="40" rows="4"  placeholder="Escribe el mensaje" ></textarea>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <div class="content-responder" id="btnEnviarMsj">
-                <div>
-                  <input type="submit" id="submitButton" value="Enviar mensaje" class="btn-primary rounded-0 py-2 px-4 btnResponder" >
-                </div>
-                <div>
-                   <button id="btnReescribir" class="btn-info btnReescribir" type="button" style="display: none;">Reescribir</button>
-                </div>
-                <div>
-                   <button id="btnCorregir" class="btn-info btnCorregir" type="button" style="display: none;">Corregir</button>
-                </div>
-              </div>
-
-              <div class="textoTicketResuelto shadow-sm p-3 mb-5 bg-body rounded" id="txtTicketResuelto">
-                  <p><i class="fa-solid fa-circle-check fa-xl"></i>Ticket resuelto, esperando calificación de la asistencia.</p>
-              </div>
-
-              @if($ticket->calificaciones()->exists())
-                  <!-- Cuadro cuando ya esta cerrado el ticket -->
-                  <div class="textoTicketCerrado shadow-sm p-3 mb-5 bg-body rounded" id="txtTicketCerrado">
-                    <p><i class="fa-solid fa-circle-check fa-xl"></i>Ticket resuelto</p>
-                      <div class="container-stars" >
-                            <div class="stars"></div>
-                          
-                            <span class="calificacion_nivel" id="nivel_calif">{{$ticket->ultimaCalificacion->nivel_satisfaccion}}</span>
-                            <a href="/calificaciones/ticket/{{$idTicket}}" class="text-calificacionCerrado ml-2">Ver calificación(es)</a>
-                      </div>
+                <div class="row contentCheckbox-Resuelto w-100" id="rowImagenBox">
+                  <div class="col-md-8 form-group mb-3 content-file">
+                    <input type="file" name="imagen" accept="image/*" id="imagenMsj" class="msjFile">
                   </div>
-              @endif
-            </form>
+
+                  <div class="col-md-4 content_starsCheckbox d-flex justify-content-end">
+                    <div class="checkbox-containerResuelto"  id="checkboxContainerResuelto">
+                      <input class="checkbox" type="checkbox" id="resuelto" name="resuelto"  value="on" onchange="actualizarEstadoCheckbox(this)">
+                      <label class="labelResuelto" for="resuelto" >Ticket resuelto</label>
+                    </div>
+                    
+                    <div class="stars-calif">
+                      <div class="container-estrellas" >
+                        <div class="estrellas estrellasTicket"></div>
+                        <a href="/calificaciones/ticket/{{$idTicket}}" class="ml-2 link-calif">Ver calificación(es)</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="content-responder" id="btnEnviarMsj">
+                  <div>
+                    <input type="submit" id="submitButton" value="Enviar mensaje" class="btn-primary rounded-0 py-2 px-4 btnResponder" >
+                  </div>
+                  <div>
+                    <button id="btnReescribir" class="btn-info btnReescribir" type="button" style="display: none;">Reescribir</button>
+                  </div>
+                  <div>
+                    <button id="btnCorregir" class="btn-info btnCorregir" type="button" style="display: none;">Corregir</button>
+                  </div>
+                </div>
+
+                <div class="textoTicketResuelto shadow-sm p-3 mb-5 bg-body rounded" id="txtTicketResuelto">
+                    <p><i class="fa-solid fa-circle-check fa-xl"></i>Ticket resuelto, esperando calificación de la asistencia.</p>
+                </div>
+
+                @if($ticket->calificaciones()->exists())
+                    <!-- Cuadro cuando ya esta cerrado el ticket -->
+                    <div class="textoTicketCerrado shadow-sm p-3 mb-5 bg-body rounded" id="txtTicketCerrado">
+                      <p><i class="fa-solid fa-circle-check fa-xl"></i>Ticket resuelto</p>
+                        <div class="container-stars" >
+                              <div class="stars"></div>
+                            
+                              <span class="calificacion_nivel" id="nivel_calif">{{$ticket->ultimaCalificacion->nivel_satisfaccion}}</span>
+                              <a href="/calificaciones/ticket/{{$idTicket}}" class="text-calificacionCerrado ml-2">Ver calificación(es)</a>
+                        </div>
+                    </div>
+                @endif
+              </form>
+            @else
+            <p>El ticket seleccionado ya no existe.</p>
+
+            @endif
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  @php
-    $estadoTkt = $ticket->estado->nombre;
-  @endphp
+  @if($ticket)
+    @php
+      $estadoTkt = $ticket->estado->nombre;
+    @endphp
+  @endif
 @stop
 
 @section('css')
@@ -312,14 +324,21 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('mensaje').disabled = true; 
 
 
-        fetch('/mensaje/tecnico/ticket/{{$ticket->id}}', { 
+        @if($ticket)
+            url = `/mensaje/tecnico/ticket/{{$ticket->id}}`;
+        @else
+            console.error('El ticket ya no existe, no se puede enviar el mensaje.');
+            return; 
+        @endif
+
+        fetch(url, {
             method: 'POST',
             body: formData
         })
         .then(response => response.json())
         .then(data => {
 
-          console.log(data);
+          // console.log(data);
 
           const checkbox=document.getElementById('resuelto');
 
@@ -551,7 +570,7 @@ function fetchNewMessages() {
                       imageElement.src = `/images/msjCliente/${message.imagen}`;
                       imageElement.classList.add('img-fluid', 'img-rounded', 'imagenMsj');
                       messageElement.appendChild(imageElement);
-                      messageElement.innerHTML += `<br><a href="/images/msjTecnico/${message.imagen}"  class="txtImagen" download>Descargar Imagen</a>`;
+                      messageElement.innerHTML += `<br><a href="/images/msjCliente/${message.imagen}"  class="txtImagen" download>Descargar Imagen</a>`;
                   }
 
                   if(message.mensaje || message.imagen){

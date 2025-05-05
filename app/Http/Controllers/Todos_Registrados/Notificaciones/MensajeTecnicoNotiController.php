@@ -25,7 +25,11 @@ class MensajeTecnicoNotiController extends Controller
          // Marca la notificación como leída
         $notification->markAsRead();
 
-        $cliente=User::find($ticket->user_id);
+        if($ticket)
+            $cliente=User::find($ticket->user_id);
+        else{
+            $cliente=null;
+        }
  
         return view('myViews.Admin.tickets.form_msjTecnico')->with(['ticket'=> $ticket, 'idTicket' => $idTicket, 'cliente' => $cliente]);
 

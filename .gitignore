@@ -13,3 +13,6 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
+/public/images/msjCliente
+/public/images/msjTecnico
+/public/images/tickets

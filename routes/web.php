@@ -58,6 +58,10 @@ Route::get('/tickets/{idTicket}/mensajes', [TicketsController::class, 'getMessag
 //   return "Mensaje enviado!";
 // })->name('ticket.email');
 
+ // Guardar msj cuando hay un error de IA
+ Route::post('/mensaje/usuario/save/{idTicket}', [TicketsUsuarioController::class, 'saveMsjUser'])->name('saveMsjUser');
+ // Guardar msj cuando hay un error de IA
+ Route::post('/mensaje/save/{idTicket}', [TicketsController::class, 'saveMsj'] )->name('saveMsj');
 
 Route::middleware([
   'auth:sanctum',
@@ -71,6 +75,7 @@ Route::middleware([
     Route::put('/actualizar_area/{id}', [UsuariosController::class, 'actualizar_area'])->name('actualizar_area');
   });
 });
+
 
 Route::middleware([
     'auth:sanctum',
@@ -161,6 +166,8 @@ Route::middleware([
       
         
       Route::post('/actualizar/resuelto/ticket/{idTicket}', [TicketsController::class, 'actualizarEstadoResuelto'] )->name('actualizar_ticket_resuelto');
+
+      
     });
 
 

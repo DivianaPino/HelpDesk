@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\ConnectionException;
 use Gemini\Laravel\Facades\Gemini;
 use Carbon\Carbon;
 
@@ -17,8 +18,7 @@ class GeminiService
 
     public function generateSentiment($message)
     {
-
-
+        
         $apiUrl = config('gemini.base_url') . "/v1beta/models/gemini-2.0-flash:generateContent?key={$this->geminiKey}";
         
         $params = [
@@ -26,23 +26,31 @@ class GeminiService
                 [
                     'parts' => [
                         [
-                            // 'text' => "Dime solamente si la siguiente oración transmite un sentimiento positivo o negativo o neutral: $message"
                             'text' => "Dime solamente si la siguiente oracion transmite un sentimiento positivo o negativo o neutral (si la siguiente oración contiene  un saludo informal como por ejemplo 'Hola', mostrar que el sentimiento es negativo): $message"
                         ]
                     ]
                 ]
             ]
         ];
+        
+        try {
+            $response = Http::withOptions([
+                'verify' => false,
+                'timeout' => 30,
+                'connect_timeout' => 30
+            ])->post($apiUrl, $params);
+            
+            if ($response->successful()) {
+                return $response->json();
+            }
 
-        $response = Http::withOptions(['verify'=>false])->post($apiUrl, $params);
-
-        if ($response->successful()) {
-            return $response->json(); // Retorna el JSON de la respuesta
+        } catch (ConnectionException $e) {
+  
+            throw new \Exception("Error de conexión con Gemini");
+        } catch (\Exception $e) {
+            throw new \Exception("Ocurrió un error inesperado");
         }
-
-        throw new \Exception("Error al generar el contenido: " . $response->status());
     }
-
     public function SpellingError($message)
     {
         $apiUrl = config('gemini.base_url') . "/v1beta/models/gemini-2.0-flash:generateContent?key={$this->geminiKey}";
@@ -59,13 +67,23 @@ class GeminiService
             ]
         ];
 
-        $response = Http::withOptions(['verify'=>false])->post($apiUrl, $params);
-
-        if ($response->successful()) {
-            return $response->json(); // Retorna el JSON de la respuesta
+        try {
+            $response = Http::withOptions([
+                'verify' => false,
+                'timeout' => 30,
+                'connect_timeout' => 30
+            ])->post($apiUrl, $params);
+            
+            if ($response->successful()) {
+                return $response->json();
+            }
+            
+        } catch (ConnectionException $e) {
+  
+            throw new \Exception("Error de conexión con Gemini");
+        } catch (\Exception $e) {
+            throw new \Exception("Ocurrió un error inesperado");
         }
-
-        throw new \Exception("Error al generar el contenido: " . $response->status());
     }
 
     public function CorrectErrors($message)
@@ -84,13 +102,23 @@ class GeminiService
             ]
         ];
 
-        $response = Http::withOptions(['verify'=>false])->post($apiUrl, $params);
-
-        if ($response->successful()) {
-            return $response->json(); // Retorna el JSON de la respuesta
+        try {
+            $response = Http::withOptions([
+                'verify' => false,
+                'timeout' => 30,
+                'connect_timeout' => 30
+            ])->post($apiUrl, $params);
+            
+            if ($response->successful()) {
+                return $response->json();
+            }
+            
+        } catch (ConnectionException $e) {
+  
+            throw new \Exception("Error de conexión con Gemini");
+        } catch (\Exception $e) {
+            throw new \Exception("Ocurrió un error inesperado");
         }
-
-        throw new \Exception("Error al generar el contenido: " . $response->status());
     }
 
 
@@ -112,13 +140,23 @@ class GeminiService
             ]
         ];
 
-        $response = Http::withOptions(['verify'=>false])->post($apiUrl, $params);
-
-        if ($response->successful()) {
-            return $response->json(); // Retorna el JSON de la respuesta
+        try {
+            $response = Http::withOptions([
+                'verify' => false,
+                'timeout' => 30,
+                'connect_timeout' => 30
+            ])->post($apiUrl, $params);
+            
+            if ($response->successful()) {
+                return $response->json();
+            }
+            
+        } catch (ConnectionException $e) {
+  
+            throw new \Exception("Error de conexión con Gemini");
+        } catch (\Exception $e) {
+            throw new \Exception("Ocurrió un error inesperado");
         }
-
-        throw new \Exception("Error al generar el contenido: " . $response->status());
     }
 
     public function generateSentimentClient($message)
@@ -139,13 +177,23 @@ class GeminiService
             ]
         ];
 
-        $response = Http::withOptions(['verify'=>false])->post($apiUrl, $params);
-
-        if ($response->successful()) {
-            return $response->json(); // Retorna el JSON de la respuesta
+        try {
+            $response = Http::withOptions([
+                'verify' => false,
+                'timeout' => 30,
+                'connect_timeout' => 30
+            ])->post($apiUrl, $params);
+            
+            if ($response->successful()) {
+                return $response->json();
+            }
+            
+        } catch (ConnectionException $e) {
+  
+            throw new \Exception("Error de conexión con Gemini");
+        } catch (\Exception $e) {
+            throw new \Exception("Ocurrió un error inesperado");
         }
-
-        throw new \Exception("Error al generar el contenido: " . $response->status());
     }
 
     
@@ -167,12 +215,22 @@ class GeminiService
             ]
         ];
 
-        $response = Http::withOptions(['verify'=>false])->post($apiUrl, $params);
-
-        if ($response->successful()) {
-            return $response->json(); // Retorna el JSON de la respuesta
+        try {
+            $response = Http::withOptions([
+                'verify' => false,
+                'timeout' => 30,
+                'connect_timeout' => 30
+            ])->post($apiUrl, $params);
+            
+            if ($response->successful()) {
+                return $response->json();
+            }
+            
+        } catch (ConnectionException $e) {
+  
+            throw new \Exception("Error de conexión con Gemini");
+        } catch (\Exception $e) {
+            throw new \Exception("Ocurrió un error inesperado");
         }
-
-        throw new \Exception("Error al generar el contenido: " . $response->status());
     }
 }

@@ -286,7 +286,7 @@
     });
   </script>
   
-<script>
+ <script>
 //Función para validar el checkbox
 function validarCheckboxResuelto() {
     const checkbox = document.getElementById('resuelto');
@@ -302,6 +302,39 @@ function validarCheckboxResuelto() {
         cancelButtonText: 'Cancelar'
     }).then(result => result.isConfirmed); // Devolvemos true solo si confirma
 }
+
+function enviarMensajeSinIA(mensaje, imagen) {
+
+  document.getElementById('submitButton').value = 'Enviando...'; 
+  document.getElementById('submitButton').disabled = true; 
+  document.getElementById('mensaje').disabled = true;
+  
+  var imagen = document.getElementById('imagenMsj').files[0]; 
+    // Crear un objeto FormData
+    var formData = new FormData();
+    formData.append('mensaje', mensaje);
+    formData.append('imagen', imagen);
+    formData.append('_token', '{{ csrf_token() }}');
+
+ 
+    $.ajax({
+        url: `/mensaje/save/{{$ticket->id}}`, 
+        method: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false, 
+        success: function(response) {
+            console.log('Mensaje enviado');
+        },
+        error: function(xhr) {
+            // Manejar errores en la solicitud
+            console.error('Error al guardar el mensaje:', xhr);
+        }
+    });
+
+   
+}
+
 
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -337,192 +370,162 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(response => response.json())
         .then(data => {
+            console.log(data);
 
-          // console.log(data);
+            const checkbox=document.getElementById('resuelto');
 
-          const checkbox=document.getElementById('resuelto');
+            if (data.status === 'success' && !data.error && !data.animoNegativo 
+                && !data.textoErrores && !data.errorIA ) {
+                // Mostrar mensaje de éxito
+                let successMessageElement = document.createElement('p');
+                successMessageElement.className = 'alert alert-success message-alert';
+                successMessageElement.innerHTML = `<i class="fa-solid fa-circle-check fa-lg"></i>${data.msjSuccess}`;
+                document.getElementById('messagesContainer').innerHTML = '';
+                document.getElementById('messagesContainer').appendChild(successMessageElement);
+
+                // Limpiar los campos de entrada
+                document.getElementById('mensaje').value = ''; // Limpia el textarea de mensaje
+                document.getElementById('imagenMsj').value = ''; // Limpia el input de imagen
+
+                mensajeError = '';
+                // Crear elementos HTML para el mensaje y la imagen
+                const messageElement = document.createElement('div');
+                chatContainer.classList.add('contenedorRight');
+                messageElement.classList.add('msjUserRight');
+
+                if(data.mensaje){
+                    const paragraph = document.createElement('p');
+                    paragraph.id = data.msjId;
+                    paragraph.className = 'msjChat';
+                    paragraph.textContent = data.mensaje;
+                    messageElement.appendChild(paragraph);
+                }
+
+                if (data.imagen) {
+                    const imageElement = document.createElement('img');
+                    imageElement.id = data.msjId;
+                    imageElement.src = `/images/msjTecnico/${data.imagen}`;
+                    imageElement.classList.add('img-fluid', 'img-rounded', 'imagenMsj');
+                    messageElement.appendChild(imageElement);
+                    messageElement.innerHTML += `<br><a href="/images/msjTecnico/${data.imagen}"  class="txtImagen" download>Descargar Imagen</a>`;
+                }
+
+                if(data.mensaje || data.imagen){
+                    const fechaActual = new Date().toLocaleString('es-ES', { /* ... */ }).toUpperCase().replace(/\./g, '').replace(/\s+(AM|PM)/g, '$1').replace(/(A)\s+(M)/g, '$1$2').replace(/(P)\s+(M)/g, '$1$2');
+                    messageElement.innerHTML += `<span class="fecha_mensajes" style="text-align:right;">${fechaActual}</span>`;
+                    $('#sinMsj').hide();
+                    messageElement.classList.add('mensajesRight');
+                }
+
+                $('#resuelto').prop('checked', false);
+
+                // Insertar el mensaje y la imagen en el div "chat"
+                chatContainer.appendChild(messageElement);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                mensajeError='';
+
+            } else if (data.errors) {
+                // Mostrar mensaje de error
+                let errorMessageElement = document.createElement('p');
+                errorMessageElement.className = 'alert alert-danger message-alert';
+                let errorValidation=Object.values(data)[0];
+                let mensajeError=Object.values(errorValidation)[0];
+                errorMessageElement.className = 'alert alert-danger message-alert';
+                errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
+                document.getElementById('messagesContainer').innerHTML = '';
+                document.getElementById('messagesContainer').appendChild(errorMessageElement);
+            } else if(data.animoNegativo){
+                if (checkbox.checked) {
+                    checkbox.checked = true;
+                }
+                // Mostrar mensaje de error de estado de animo negativo
+                let errorMessageElement = document.createElement('p');
+                errorMessageElement.className = 'alert alert-danger message-alert';
+                let mensajeError=data.animoNegativo;
+                errorMessageElement.className = 'alert alert-danger message-alert';
+                errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
+                document.getElementById('messagesContainer').innerHTML = '';
+                document.getElementById('messagesContainer').appendChild(errorMessageElement);
+                const btnReescribir = document.getElementById('btnReescribir');
+                const mensajeTextarea = document.getElementById('mensaje');
+                btnReescribir.style.display = 'block';
+                btnReescribir.addEventListener('click', function() {
+                    const nuevoMensaje = data.textoReescrito;
+                    mensajeTextarea.value =  nuevoMensaje;
+                    btnReescribir.style.display = 'none';
+                });
+                mensajeError='';
+            } else if(data.textoErrores){
+                if (checkbox.checked) {
+                    checkbox.checked = true;
+                }
+                // Mostrar mensaje de error de estado de animo negativo
+                let errorMessageElement = document.createElement('p');
+                errorMessageElement.className = 'alert alert-danger message-alert';
+                let mensajeError=data.textoErrores;
+                errorMessageElement.className = 'alert alert-danger message-alert';
+                errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
+                document.getElementById('messagesContainer').innerHTML = '';
+                document.getElementById('messagesContainer').appendChild(errorMessageElement);
+                const btnCorregir = document.getElementById('btnCorregir');
+                const mensajeTextarea = document.getElementById('mensaje');
+                btnCorregir.style.display = 'block';
+                btnCorregir.addEventListener('click', function() {
+                    const nuevoMensaje = data.textoCorregido;
+                    mensajeTextarea.value =  nuevoMensaje;
+                    btnCorregir.style.display = 'none';
+                    mensajeError = '';
+                });
+            } else if(data.errorIA){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: 'La conexión con la IA ha excedido el tiempo de espera. ¿Desea enviar el mensaje sin ser analizado?',
+                    showCancelButton: true,
+                    confirmButtonText: 'Si',
+                    cancelButtonText: 'No',
+                    customClass: {
+                        confirmButton: 'confirm-button-error'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const msjOriginal = data.msjOriginal;
+                        const imgOriginal = data.imagenOriginal;
+                        enviarMensajeSinIA(msjOriginal, imgOriginal);
+                    }
+                });
+            }else if(data.errorAll_IA){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión con la IA',
+                    text: '¿Desea enviar el mensaje sin ser analizado?',
+                    showCancelButton: true,
+                    confirmButtonText: 'Si',
+                    cancelButtonText: 'No',
+                    customClass: {
+                        confirmButton: 'confirm-button-error'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const msjOriginal = data.msjOriginal;
+                        const imgOriginal = data.imagenOriginal;
+                        enviarMensajeSinIA(msjOriginal, imgOriginal);
+                    }
+                });
+            }
 
 
-          if (data.status === 'success') {
-            // Mostrar mensaje de éxito
-            let successMessageElement = document.createElement('p');
-            successMessageElement.className = 'alert alert-success message-alert';
-            successMessageElement.innerHTML = `<i class="fa-solid fa-circle-check fa-lg"></i>${data.msjSuccess}`;
-            document.getElementById('messagesContainer').innerHTML = '';
-            document.getElementById('messagesContainer').appendChild(successMessageElement);
-
-            // setTimeout(() => {
-            //     document.getElementById('messagesContainer').innerHTML = '';
-            // }, 5000); // Elimina el mensaje después de 5 segundos (5000 milisegundos)
-
-            // Limpiar los campos de entrada
-            document.getElementById('mensaje').value = ''; // Limpia el textarea de mensaje
-            document.getElementById('imagenMsj').value = ''; // Limpia el input de imagen
-
-          } else if (data.errors) {
-           
-            // Mostrar mensaje de error
-            let errorMessageElement = document.createElement('p');
-            errorMessageElement.className = 'alert alert-danger message-alert';
-
-            let errorValidation=Object.values(data)[0];
-            let mensajeError=Object.values(errorValidation)[0];
-      
-            errorMessageElement.className = 'alert alert-danger message-alert';
-            errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
-            document.getElementById('messagesContainer').innerHTML = '';
-            document.getElementById('messagesContainer').appendChild(errorMessageElement);
-
-            // alert('{{ session('error') }}');
-
-            // setTimeout(() => {
-            //     document.getElementById('messagesContainer').innerHTML = '';
-            // }, 5000)
-
-
-
-          }else if(data.animoNegativo){
-
-            if (checkbox.checked) {
-              checkbox.checked = true;
-            } 
-            
-            // Mostrar mensaje de error de estado de animo negativo
-            let errorMessageElement = document.createElement('p');
-            errorMessageElement.className = 'alert alert-danger message-alert';
-
-            let mensajeError=data.animoNegativo;
-      
-            errorMessageElement.className = 'alert alert-danger message-alert';
-            errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
-            document.getElementById('messagesContainer').innerHTML = '';
-            document.getElementById('messagesContainer').appendChild(errorMessageElement);
-
-            // setTimeout(() => {
-            //     document.getElementById('messagesContainer').innerHTML = '';
-            // }, 5000)
-
-            const btnReescribir = document.getElementById('btnReescribir');
-            const mensajeTextarea = document.getElementById('mensaje');
-
-            btnReescribir.style.display = 'block';
-
-            btnReescribir.addEventListener('click', function() {
-                const nuevoMensaje = data.textoReescrito;
-                mensajeTextarea.value =  nuevoMensaje;
-                btnReescribir.style.display = 'none';
-            });
-
-            mensajeError='';
-
-          }else if(data.textoErrores){
-
-            if (checkbox.checked) {
-                  checkbox.checked = true;
-            } 
-
-            // console.log(data.textoErrores);
-
-            // Mostrar mensaje de error de estado de animo negativo
-            let errorMessageElement = document.createElement('p');
-            errorMessageElement.className = 'alert alert-danger message-alert';
-
-            let mensajeError=data.textoErrores;
-
-            errorMessageElement.className = 'alert alert-danger message-alert';
-            errorMessageElement.innerHTML = `<i class="fa-solid fa-circle-exclamation fa-lg"></i>${mensajeError}`;
-            document.getElementById('messagesContainer').innerHTML = '';
-            document.getElementById('messagesContainer').appendChild(errorMessageElement);
-
-            // setTimeout(() => {
-            //     document.getElementById('messagesContainer').innerHTML = '';
-            // }, 5000)
-
-            const btnCorregir = document.getElementById('btnCorregir');
-            const mensajeTextarea = document.getElementById('mensaje');
-
-            btnCorregir.style.display = 'block';
-
-            btnCorregir.addEventListener('click', function() {
-                const nuevoMensaje = data.textoCorregido;
-                mensajeTextarea.value =  nuevoMensaje;
-                btnCorregir.style.display = 'none';
-
-                mensajeError = ''; 
-
-               
-            });
+            document.getElementById('submitButton').value = 'Enviar mensaje';
+            document.getElementById('submitButton').disabled = false;
+            document.getElementById('mensaje').disabled = false;
+         })
 
      
-          }
-
-          if(!data.hasOwnProperty('errors')){
-
-            mensajeError = ''; 
-            // Crear elementos HTML para el mensaje y la imagen
-            const messageElement = document.createElement('div');
-
-            chatContainer.classList.add('contenedorRight');
-            messageElement.classList.add('msjUserRight');
-           
-              if(data.mensaje){
-                const paragraph = document.createElement('p');
-                paragraph.id = data.msjId;
-                paragraph.className = 'msjChat';
-                paragraph.textContent = data.mensaje;
-                messageElement.appendChild(paragraph);
-              }
-            
-              if (data.imagen) {
-                  const imageElement = document.createElement('img');
-                  imageElement.id = data.msjId;
-                  imageElement.src = `/images/msjTecnico/${data.imagen}`;
-                  imageElement.classList.add('img-fluid', 'img-rounded', 'imagenMsj');
-                  messageElement.appendChild(imageElement);
-                  messageElement.innerHTML += `<br><a href="/images/msjTecnico/${data.imagen}"  class="txtImagen" download>Descargar Imagen</a>`;
-              }
-
-              if(data.mensaje || data.imagen){
-                const fechaActual = new Date().toLocaleString('es-ES', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: true
-                }).toUpperCase().replace(/\./g, '').replace(/\s+(AM|PM)/g, '$1').replace(/(A)\s+(M)/g, '$1$2').replace(/(P)\s+(M)/g, '$1$2'); // Elimina el espacio entre A y M, y P y M
-
-                
-                messageElement.innerHTML += `<span class="fecha_mensajes" style="text-align:right;">${fechaActual}</span>`;
-                $('#sinMsj').hide();
-
-                messageElement.classList.add('mensajesRight');
-               
-              }
-
-              $('#resuelto').prop('checked', false);
-         
-              // Insertar el mensaje y la imagen en el div "chat"
-              chatContainer.appendChild(messageElement);
-
-              chatContainer.scrollTop = chatContainer.scrollHeight;
-
-              mensajeError='';
-
-          }
-
-          
-            document.getElementById('submitButton').value = 'Enviar mensaje'; 
-            document.getElementById('submitButton').disabled = false; 
-
-            document.getElementById('mensaje').disabled = false; 
-        })
-        .catch(error => console.error('Error:', error));
-
-      }
+         .catch(error => console.error('Error:', error));
+      }  
     });
 });
-</script>
+</script> 
 
 <script>
 
@@ -548,63 +551,92 @@ function fetchNewMessages() {
             response.messages.forEach(message => {
 
                // Verifica si el mensaje ya está en el chat y si pertenece al ticket correcto
-              if(!document.getElementById(`${message.id}`) && message.ticket_id === {{$idTicket}}){
+               if(!document.getElementById(`${message.id}`) && message.ticket_id === {{$idTicket}}){
+                  const messageElement = document.createElement('div');
+                  const messageContainer = document.createElement('div'); // Nuevo contenedor para el mensaje
 
-                  const messageElement = document.createElement('div')
-                  chatContainer.classList.add('container-msjleft');
-                  messageElement.classList.add('mensajesLeft');
-            
+                  const authUserId = {{ auth()->user()->id }};
 
-                    // Agregar el mensaje al chat
-                  if(message.mensaje){
-                    const paragraph = document.createElement('p');
-                    paragraph.id = message.id;
-                    paragraph.className = 'msjChat';
-                    paragraph.textContent = message.mensaje;
-                    messageElement.appendChild(paragraph);
+                  if (message.user_id === authUserId) {
+                      messageContainer.classList.add('container-msjRight'); // Aplicar la clase al contenedor del mensaje
+                      messageElement.classList.add('mensajesRight'); // Estilo del mensaje en sí
+                  } else {
+                      messageContainer.classList.add('container-msjLeft'); // Aplicar la clase al contenedor del mensaje
+                      messageElement.classList.add('mensajesLeft'); // Estilo del mensaje en sí
                   }
-                
-                  if (message.imagen) {
-                      const imageElement = document.createElement('img');
-                      imageElement.id = message.id;
-                      imageElement.src = `/images/msjCliente/${message.imagen}`;
-                      imageElement.classList.add('img-fluid', 'img-rounded', 'imagenMsj');
-                      messageElement.appendChild(imageElement);
-                      messageElement.innerHTML += `<br><a href="/images/msjCliente/${message.imagen}"  class="txtImagen" download>Descargar Imagen</a>`;
+
+                  // Agregar el mensaje al chat
+                  if(message.mensaje){
+                      const paragraph = document.createElement('p');
+                      paragraph.id = message.id;
+                      paragraph.className = 'msjChat';
+                      paragraph.textContent = message.mensaje;
+                      messageElement.appendChild(paragraph);
+                  }
+
+                  if (message.user_id === authUserId) {
+                    if (message.imagen) {
+                        const imageElement = document.createElement('img');
+                        imageElement.id = message.id;
+                        imageElement.src = `/images/msjTecnico/${message.imagen}`;
+                        imageElement.classList.add('img-fluid', 'img-rounded', 'imagenMsj');
+                        messageElement.appendChild(imageElement);
+                        messageElement.innerHTML += `<br><a href="/images/msjTecnico/${message.imagen}"  class="txtImagen" download>Descargar Imagen</a>`;
+                    }
+                  }else{
+                    if (message.imagen) {
+                        const imageElement = document.createElement('img');
+                        imageElement.id = message.id;
+                        imageElement.src = `/images/msjCliente/${message.imagen}`;
+                        imageElement.classList.add('img-fluid', 'img-rounded', 'imagenMsj');
+                        messageElement.appendChild(imageElement);
+                        messageElement.innerHTML += `<br><a href="/images/msjCliente/${message.imagen}"  class="txtImagen" download>Descargar Imagen</a>`;
+                    }
                   }
 
                   if(message.mensaje || message.imagen){
-                    const fechaActual = new Date().toLocaleString('es-ES', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      hour12: true
-                    }).toUpperCase().replace(/\./g, '').replace(/\s+(AM|PM)/g, '$1').replace(/(A)\s+(M)/g, '$1$2').replace(/(P)\s+(M)/g, '$1$2'); // Elimina el espacio entre A y M, y P y M
+                      const fechaActual = new Date().toLocaleString('es-ES', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: true
+                      }).toUpperCase().replace(/\./g, '').replace(/\s+(AM|PM)/g, '$1').replace(/(A)\s+(M)/g, '$1$2').replace(/(P)\s+(M)/g, '$1$2'); // Elimina el espacio entre A y M, y P y M
 
-                    
-                    messageElement.innerHTML += `<span class="fecha_mensajes" style="text-align:right;">${fechaActual}</span>`;
-                    $('#sinMsj').hide();
 
-                    messageElement.classList.add('mensajesRight');
-                  
+                      messageElement.innerHTML += `<span class="fecha_mensajes" style="text-align:right;">${fechaActual}</span>`;
+                      $('#sinMsj').hide();
+
+                      messageElement.classList.add('mensajesRight'); // Mantén esta clase para el estilo interno del mensaje
+
                   }
 
-                  //añadir el nuevo mensaje al chat
-                  chatContainer.appendChild(messageElement);
+                  // Añadir el elemento del mensaje al contenedor del mensaje
+                  messageContainer.appendChild(messageElement);
+
+                  // añadir el nuevo contenedor del mensaje al chat
+                  chatContainer.appendChild(messageContainer);
 
                   //Colocar el scroll al final del chat
                   chatContainer.scrollTop = chatContainer.scrollHeight;
 
-                  //sombra al mensaje nuevo
-                  messageElement.style.boxShadow = '5px 5px 15px rgba(0, 0, 0, 0.5)';
+                  //sombra al contenedor del mensaje nuevo
+                  messageContainer.style.boxShadow = '5px 5px 15px rgba(0, 0, 0, 0.5)';
 
                   // Quitar la sombra a los 5 segundos
                   setTimeout(() => {
-                      messageElement.style.boxShadow = 'none';
+                      messageContainer.style.boxShadow = 'none';
                   }, 5000);
-                }
+
+                  document.getElementById('submitButton').value = 'Enviar mensaje';
+                  document.getElementById('submitButton').disabled = false;
+                  document.getElementById('mensaje').disabled = false;
+
+                   // Limpiar los campos de entrada
+                  document.getElementById('mensaje').value = ''; // Limpia el textarea de mensaje
+                  document.getElementById('imagenMsj').value = ''; // Limpia el input de imagen
+               }
 
                 
                 

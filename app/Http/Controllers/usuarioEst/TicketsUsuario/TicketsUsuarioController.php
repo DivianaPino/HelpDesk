@@ -268,58 +268,70 @@ class TicketsUsuarioController extends Controller
                 $mensaje->mensaje = $request->mensaje;
                 
                 //Guardar imagen si hay
+            
                 if ($request->hasFile('imagen')) {
-                    $filename = time() . '-' . $request->file('imagen')->getClientOriginalName();
-                    $request->file('imagen')->move('images/msjCliente', $filename);
+                    $filename = $this->subirImagen($request->file('imagen'));
                     $mensaje->imagen = $filename;
                 }
+                
 
                 $textAnalizado ='';
                 $textErrores='';
 
                 try {
-                    // Analizar el sentimiento o estado de ánimo que transmite el mensaje
-                    $geminiService = new GeminiService();
-                    $resultSentimiento=$geminiService->generateSentimentClient($request->mensaje);
-                    $textAnalizado = $resultSentimiento['candidates'][0]['content']['parts'][0]['text'];
-                    $textAnalizado = str_replace(".\n", "", $textAnalizado);
-                    $textAnalizado = str_replace("\n", "", $textAnalizado);
-                    // dd($textAnalizado);
-        
 
-                    //Texto reescrito con un estado de ánimo positivo
-                    $resultRewrite=$geminiService->rewriteTextClient($request->mensaje);
-                    $textRewrite =  $resultRewrite['candidates'][0]['content']['parts'][0]['text'];
-                    $textRewrite = str_replace('"', '', $textRewrite);
+                    try{
+                        // Analizar el sentimiento o estado de ánimo que transmite el mensaje
+                        $geminiService = new GeminiService();
+                        $resultSentimiento=$geminiService->generateSentimentClient($request->mensaje);
+                        $textAnalizado = $resultSentimiento['candidates'][0]['content']['parts'][0]['text'];
+                        $textAnalizado = str_replace(".\n", "", $textAnalizado);
+                        $textAnalizado = str_replace("\n", "", $textAnalizado);
+                        // dd($textAnalizado);
+            
 
-                    // Verificar si el texto tiene errores ortográficos o gramaticales
-                    $resultErrores=$geminiService->SpellingError($request->mensaje);
-                    $textErrores = $resultErrores['candidates'][0]['content']['parts'][0]['text'];
+                        //Texto reescrito con un estado de ánimo positivo
+                        $resultRewrite=$geminiService->rewriteTextClient($request->mensaje);
+                        $textRewrite =  $resultRewrite['candidates'][0]['content']['parts'][0]['text'];
+                        $textRewrite = str_replace('"', '', $textRewrite);
 
-                    //Texto corregido
-                    $resultCorreccion=$geminiService->CorrectErrors($request->mensaje);
-                    $textCorregido = $resultCorreccion['candidates'][0]['content']['parts'][0]['text'];
+                        // Verificar si el texto tiene errores ortográficos o gramaticales
+                        $resultErrores=$geminiService->SpellingError($request->mensaje);
+                        $textErrores = $resultErrores['candidates'][0]['content']['parts'][0]['text'];
 
-                    // si el estado de ánimo no es positivo y tiene errores ortograficos o gramaticales
-                    // mostrar mensaje de error y no guardarlo
-                    if($textAnalizado === "Sí" && $textErrores === "No\n"){
-                    
+                        //Texto corregido
+                        $resultCorreccion=$geminiService->CorrectErrors($request->mensaje);
+                        $textCorregido = $resultCorreccion['candidates'][0]['content']['parts'][0]['text'];
+
+                        // si el estado de ánimo no es positivo y tiene errores ortograficos o gramaticales
+                        // mostrar mensaje de error y no guardarlo
+                        if($textAnalizado === "Sí" && $textErrores === "No\n"){
+                        
+                            return response()->json([
+                                'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
+                                'textoReescrito' => $textRewrite,
+                            ]);
+
+                        }elseif($textAnalizado === "No" && $textErrores === "No\n"){
+                            $mensaje->mensaje = $request->mensaje;
+                            $mensaje->save();
+
+                        }elseif($textErrores === "Sí\n"){
+                            return response()->json([
+                                'textoErrores' => 'El texto tiene errores ortográficos o gramaticales',
+                                'textoCorregido' => $textCorregido,
+                            ]);
+                        }elseif(empty($request->input('mensaje')) && $request->hasFile('imagen')){
+                            $mensaje->save();
+                        }
+
+                    } catch (\Exception $e) {
+
                         return response()->json([
-                            'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
-                            'textoReescrito' => $textRewrite,
-                        ]);
-
-                    }elseif($textAnalizado === "No" && $textErrores === "No\n"){
-                        $mensaje->mensaje = $request->mensaje;
-                        $mensaje->save();
-
-                    }elseif($textErrores === "Sí\n"){
-                        return response()->json([
-                            'textoErrores' => 'El texto tiene errores ortográficos o gramaticales',
-                            'textoCorregido' => $textCorregido,
-                        ]);
-                    }elseif(empty($request->input('mensaje')) && $request->hasFile('imagen')){
-                        $mensaje->save();
+                            'errorIA' => $e->getMessage(),
+                            'msjOriginal' => $request->mensaje,
+                            'imagenOriginal' => $filename
+                        ], 500);
                     }
                     
                 } catch (\Exception $e) {
@@ -375,8 +387,18 @@ class TicketsUsuarioController extends Controller
                     }catch (\Exception $e) {
 
                         //Si las las dos IA falla que se guarde el mensaje sin analizar
-                        $mensaje->mensaje = $request->mensaje;
-                        $mensaje->save();
+                        if ($request->hasFile('imagen')) {
+                            $filename = $this->subirImagen($request->file('imagen'));
+                            $mensaje->imagen = $filename;
+                        }
+
+                        $imagenOriginal = $filename ?? null;
+                     
+                        return response()->json([
+                            'errorAll_IA' => $e->getMessage(),
+                            'msjOriginal' => $request->mensaje,
+                            'imagenOriginal' => $imagenOriginal
+                        ], 500);
 
                     }
                 }
@@ -386,16 +408,20 @@ class TicketsUsuarioController extends Controller
                 $ticket->fecha_caducidad = Carbon::now()->addDays($tiempoResolucion);
                 $ticket->save();
                 
-                // Notificacion al sistema del técnico
-                MensajeClienteEvent::dispatch($mensaje);
-                 // Notificacion al correo del técnico
-                MsjClienteCorreoEvent::dispatch($mensaje, $cliente, $tecnico, $idTicket);
-                
-                // Notificacion al telegram del técnico
-                $ticketLink = route('form_msjTecnico', ['idTicket' => $ticket->id]);
-                $message = "Nuevo mensaje del cliente {$cliente->name}: {$mensaje->mensaje}: ({$ticketLink})";
-                $telegramService = app(TelegramService::class);
-                $telegramService->sendMessage($tecnico->telegram_id, $message);
+                // Notificaciones
+                if ($mensaje->wasRecentlyCreated || $mensaje->wasChanged()) {
+
+                    // Notificación al sistema del técnico
+                    MensajeClienteEvent::dispatch($mensaje);
+                    // Notificación al correo del técnico
+                    MsjClienteCorreoEvent::dispatch($mensaje, $cliente, $tecnico, $idTicket);
+            
+                    // Notificación al telegram del técnico
+                    $ticketLink = route('form_msjTecnico', ['idTicket' => $ticket->id]);
+                    $message = "Nuevo mensaje del cliente {$cliente->name}: {$mensaje->mensaje}: ({$ticketLink})";
+                    $telegramService = app(TelegramService::class);
+                    $telegramService->sendMessage($tecnico->telegram_id, $message);
+                }
                 
                 return response()->json([
                     'mensaje' => $request->mensaje,
@@ -414,6 +440,50 @@ class TicketsUsuarioController extends Controller
         }
              
         // return back()->with('status', 'Mensaje enviado exitosamente :)');
+    }
+
+    public function saveMsjUser(Request $request, $idTicket){
+
+        $ticket= Ticket::find($idTicket);
+        $tecnico=User::where('name', $ticket->asignado_a)->first();
+        $cliente = Auth::user();
+
+        $mensaje = new Mensaje();
+        $mensaje->user_id = $cliente->id;
+        $mensaje->ticket_id = $idTicket;
+
+        // Guardad imagen si hay
+        
+        if ($request->hasFile('imagen')) {
+            $filename = $this->subirImagen($request->file('imagen'));
+            $mensaje->imagen = $filename;
+        }
+        
+        $mensaje->mensaje = $request->input('mensaje');
+        $mensaje->save();
+
+        // Notificaciones
+        if ($mensaje->wasRecentlyCreated || $mensaje->wasChanged()) {
+
+            // Notificación al sistema del técnico
+            MensajeClienteEvent::dispatch($mensaje);
+            // Notificación al correo del técnico
+            MsjClienteCorreoEvent::dispatch($mensaje, $cliente, $tecnico, $idTicket);
+    
+            // Notificación al telegram del técnico
+            $ticketLink = route('form_msjTecnico', ['idTicket' => $ticket->id]);
+            $message = "Nuevo mensaje del cliente {$cliente->name}: {$mensaje->mensaje}: ({$ticketLink})";
+            $telegramService = app(TelegramService::class);
+            $telegramService->sendMessage($tecnico->telegram_id, $message);
+        }
+    }
+
+    private function subirImagen($file) {
+        $random_name = time();
+        $destinationPath = 'images/msjCliente/';
+        $filename = $random_name . '-' . $file->getClientOriginalName();
+        $file->move($destinationPath, $filename);
+        return $filename;
     }
 
 

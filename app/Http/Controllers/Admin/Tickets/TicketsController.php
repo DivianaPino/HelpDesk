@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Tickets;
 
+use Illuminate\Http\Client\ConnectionException;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -27,11 +28,13 @@ use App\Models\Mensaje;
 use App\Models\Calificacion;
 use Gemini\Laravel\Facades\Gemini;
 use Gemini\Transporters\HttpTransporter;
+
 use GuzzleHttp\Client as GuzzleClient;
 use Gemini\Client;
 use Illuminate\Validation\Rule;
 
 use App\Rules\sentimientoTextoRule;
+
 
 
 class TicketsController extends Controller
@@ -216,7 +219,7 @@ public function filtrarTickets(Request $request)
         $usuario= Auth::user();
         $areasUsuario=$usuario->areas()->pluck('area_id');
  
-        $estadoAbierto = Estado::where('nombre', 'abierto')->first();
+        $estadoAbierto = Estado::where('nombre', 'Abierto')->first();
         // Tickets que pertenecen a las areas del usuario auth con estado "Abierto"
         $ticketsAbiertos = Ticket::whereIn('area_id', $areasUsuario)->where('estado_id', $estadoAbierto->id)->get();
 
@@ -310,59 +313,77 @@ public function filtrarTickets(Request $request)
                     $mensaje->imagen = $filename;
                 }
 
+                $esResuelto = 'No';
+
+                if($request->input('resuelto') === 'on') {
+                    $esResuelto = 'Si';
+                    $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
+                    $ticket->save();
+                }
+
+
                 $textAnalizado ='';
                 $textErrores='';
 
                 try {
                     // ANALISIS DEL MENSAJE CON GEMINI
-
-                    // Analizar el sentimiento o estado de ánimo que transmite el mensaje
-                    $geminiService = new GeminiService();
-                    $resultSentimiento=$geminiService->generateSentiment($request->mensaje);
-                    $textAnalizado = $resultSentimiento['candidates'][0]['content']['parts'][0]['text'];
-                    $textAnalizado = str_replace(".\n", "", $textAnalizado);
-                    $textAnalizado = str_replace("\n", "", $textAnalizado);
-                    // dd($textAnalizado);
-                  
-
-                    //Texto reescrito con un estado de ánimo positivo
-                    $resultRewrite=$geminiService->rewriteText($request->mensaje);
-                    $textRewrite =  $resultRewrite['candidates'][0]['content']['parts'][0]['text'];
-
-                    // Verificar si el texto tiene errores ortográficos o gramaticales
-                    $resultErrores=$geminiService->SpellingError($request->mensaje);
-                    $textErrores = $resultErrores['candidates'][0]['content']['parts'][0]['text'];
-                    $textErrores = str_replace("\n", "", $textErrores);
-                    // dd($textErrores);
-
-                    //Texto corregido
-                    $resultCorreccion=$geminiService->CorrectErrors($request->mensaje);
-                    $textCorregido = $resultCorreccion['candidates'][0]['content']['parts'][0]['text'];
-
-                    // si el estado de ánimo no es positivo y tiene errores ortograficos o gramaticales
-                    // mostrar mensaje de error y no guardarlo
-                    if($textAnalizado === "Negativo" && $textErrores === "No"){
-                    
-                        return response()->json([
-                            'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
-                            'textoReescrito' => $textRewrite,
-                        ]);
+                    try {
+                        // Analizar el sentimiento o estado de ánimo que transmite el mensaje
+                        $resultSentimiento = $geminiService->generateSentiment($request->mensaje);
+                        $textAnalizado = $resultSentimiento['candidates'][0]['content']['parts'][0]['text'];
+                        $textAnalizado = str_replace(".\n", "", $textAnalizado);
+                        $textAnalizado = str_replace("\n", "", $textAnalizado);
                         
-                    }elseif($textAnalizado === "Neutral" && $textErrores === "No"){
-                        $mensaje->mensaje = $request->mensaje;
-                        $mensaje->save();
+                        //Texto reescrito con un estado de ánimo positivo
+                        $resultRewrite=$geminiService->rewriteText($request->mensaje);
+                        $textRewrite =  $resultRewrite['candidates'][0]['content']['parts'][0]['text'];
 
-                    }elseif($textAnalizado === "Positivo" && $textErrores === "No"){
-                        $mensaje->mensaje = $request->mensaje;
-                        $mensaje->save();
+                        // Verificar si el texto tiene errores ortográficos o gramaticales
+                        $resultErrores=$geminiService->SpellingError($request->mensaje);
+                        $textErrores = $resultErrores['candidates'][0]['content']['parts'][0]['text'];
+                        $textErrores = str_replace("\n", "", $textErrores);
+                        // dd($textErrores);
 
-                    }elseif($textErrores === "Sí"){
+                        //Texto corregido
+                        $resultCorreccion=$geminiService->CorrectErrors($request->mensaje);
+                        $textCorregido = $resultCorreccion['candidates'][0]['content']['parts'][0]['text'];
+
+                        // si el estado de ánimo no es positivo y tiene errores ortograficos o gramaticales
+                        // mostrar mensaje de error y no guardarlo
+                        if($textAnalizado === "Negativo" && $textErrores === "No"){
+                        
+                            return response()->json([
+                                'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
+                                'textoReescrito' => $textRewrite,
+                            ]);
+                            
+                        }elseif($textAnalizado === "Neutral" && $textErrores === "No"){
+                            $mensaje->mensaje = $request->mensaje;
+                            $mensaje->save();
+                            $this->notificacionCliente($mensaje, $cliente, $tecnico, $idTicket,$esResuelto);
+
+                        }elseif($textAnalizado === "Positivo" && $textErrores === "No"){
+                            $mensaje->mensaje = $request->mensaje;
+                            $mensaje->save();
+                            $this->notificacionCliente($mensaje, $cliente, $tecnico, $idTicket,$esResuelto);
+
+                        }elseif($textErrores === "Sí"){
+                            return response()->json([
+                                'textoErrores' => 'El texto tiene errores ortográficos o gramaticales',
+                                'textoCorregido' => $textCorregido,
+                            ]);
+                        }elseif(empty($request->input('mensaje')) && $request->hasFile('imagen')){
+                            $mensaje->save();
+                            $this->notificacionCliente($mensaje, $cliente, $tecnico, $idTicket,$esResuelto);
+                        }
+
+                    } catch (\Exception $e) {
+
                         return response()->json([
-                            'textoErrores' => 'El texto tiene errores ortográficos o gramaticales',
-                            'textoCorregido' => $textCorregido,
-                        ]);
-                    }elseif(empty($request->input('mensaje')) && $request->hasFile('imagen')){
-                        $mensaje->save();
+                            'errorIA' => $e->getMessage(),
+                            'msjOriginal' => $request->mensaje,
+                            'imagenOriginal' => $filename
+                        ], 500);
                     }
 
                 } catch (\Exception $e) {
@@ -420,10 +441,19 @@ public function filtrarTickets(Request $request)
 
                     }catch (\Exception $e) {
 
-                        //Si las las dos IA falla que se guarde el mensaje sin analizar
-                        $mensaje->mensaje = $request->mensaje;
-                        $mensaje->save();
+                        if ($request->hasFile('imagen')) {
+                            $filename = $this->subirImagen($request->file('imagen'));
+                            $mensaje->imagen = $filename;
+                        }
 
+                        $imagenOriginal = $filename ?? null;
+                     
+                        //Si las las dos IA falla que se guarde el mensaje sin analizar
+                        return response()->json([
+                            'errorAll_IA' => $e->getMessage(),
+                            'msjOriginal' => $request->mensaje,
+                            'imagenOriginal' => $imagenOriginal
+                        ], 500);
                     }
 
                 }
@@ -440,16 +470,7 @@ public function filtrarTickets(Request $request)
                     }
                 }
 
-                $esResuelto = 'No';
-
-                if($request->input('resuelto') === 'on') {
-                    $esResuelto = 'Si';
-                    $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
-                    $ticket->save();
-                }
-
-                $this->notificacionCliente($mensaje, $cliente, $tecnico, $idTicket,$esResuelto);
-
+                
                 
                 return response()->json([
                     'mensaje' => $request->mensaje,
@@ -468,6 +489,39 @@ public function filtrarTickets(Request $request)
         }
         
        
+    }
+
+    public function saveMsj(Request $request, $idTicket){
+
+        $ticket = Ticket::findOrFail($idTicket);
+        $tecnico = Auth::user();
+        $cliente = User::find($ticket->user_id);
+        
+
+        $esResuelto = 'No';
+
+        if($request->input('resuelto') === 'on') {
+            $esResuelto = 'Si';
+            $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
+            $ticket->save();
+        }
+
+        $mensaje = new Mensaje();
+        $mensaje->user_id = $tecnico->id;
+        $mensaje->ticket_id = $idTicket;
+
+        // Guardar imagen si hay
+        
+        if ($request->hasFile('imagen')) {
+            $filename = $this->subirImagen($request->file('imagen'));
+            $mensaje->imagen = $filename;
+        }
+        
+        $mensaje->mensaje = $request->input('mensaje');
+        $mensaje->save();
+
+        $this->notificacionCliente($mensaje, $cliente, $tecnico, $idTicket,$esResuelto);
+
     }
 
     private function subirImagen($file) {
@@ -907,6 +961,8 @@ public function filtrarTickets(Request $request)
         return redirect()->route('tickets.index')->with('eliminar', 'ok');
   
     }
+
+   
 
 
 

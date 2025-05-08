@@ -1002,6 +1002,10 @@ body {
   font-size: 14px;
 }
 
+.confirm-button-error{
+  margin-right: 35px !important;
+}
+
 
 @media(max-width: 1024px){
 

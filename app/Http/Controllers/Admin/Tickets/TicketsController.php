@@ -257,239 +257,96 @@ public function filtrarTickets(Request $request)
         // }
     }
     
-    public function guardar_mensajeTecnico(GeminiService $geminiService, Request $request, $idTicket){
+public function guardar_mensajeTecnico(GeminiService $geminiService, Request $request, $idTicket) {
+    
+    $ticket = Ticket::findOrFail($idTicket);
+    // IMPORTANTE: Obtenemos el cliente (propietario del ticket)
+    $cliente = User::find($ticket->user_id); 
+    $tecnico = Auth::user();
 
-       
-        $ticket = Ticket::findOrFail($idTicket);
-        $cliente = User::find($ticket->user_id);
-        $tecnico = Auth::user();
+    // --- 1. Lógica de Validación Unificada ---
+    
+    $rules = [
+        'imagen' => 'image|nullable',
+    ];
 
+    $messages = [
+        'mensaje.required' => 'El campo mensaje es requerido.',
+        'imagen.image' => 'El archivo debe ser una imagen.',
+        'mensaje.required_without_all' => 'Debes ingresar un mensaje o adjuntar una imagen.',
+    ];
 
-        try{
-       
-            if ($request->input('resuelto') === 'on') {
-                $validator = $request->validate(
-                    [
-                        'mensaje' => 'nullable',
-                        'imagen' => 'image|nullable',
-                    ],
-                    [
-                        'imagen.image' => 'El archivo debe ser una imagen',
-                    ]
-                );
-            } else {
-                if (empty($request->input('mensaje')) && $request->hasFile('imagen')) {
-                    $validator = $request->validate(
-                        [
-                            'mensaje' => 'nullable',
-                            'imagen' => 'image',
-                        ],
-                        [
-                            'imagen.image' => 'El archivo debe ser una imagen',
-                        ]
-                    );
-                } else {
-                    $validator = $request->validate(
-                        [
-                            'mensaje' => 'required',
-                            'imagen' => 'image|nullable',
-                        ],
-                        [
-                            'mensaje.required' => 'El campo mensaje es requerido',
-                            'imagen.image' => 'El archivo debe ser una imagen',
-                        ]
-                    );
-                }
-            }
-                
-                
-                $mensaje = new Mensaje();
-                $mensaje->user_id = $tecnico->id;
-                $mensaje->ticket_id = $idTicket;
-
-                // Guardad imagen si hay
-                if ($request->hasFile('imagen')) {
-                    $filename = $this->subirImagen($request->file('imagen'));
-                    $mensaje->imagen = $filename;
-                }
-
-                $esResuelto = 'No';
-
-                if($request->input('resuelto') === 'on') {
-                    $esResuelto = 'Si';
-                    $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
-                    $ticket->save();
-                }
-
-
-                $textAnalizado ='';
-                $textErrores='';
-
-                try {
-                    // ANALISIS DEL MENSAJE CON GEMINI
-                    try {
-                        // Analizar el sentimiento o estado de ánimo que transmite el mensaje
-                        $resultSentimiento = $geminiService->generateSentiment($request->mensaje);
-                        $textAnalizado = $resultSentimiento['candidates'][0]['content']['parts'][0]['text'];
-                        $textAnalizado = str_replace(".\n", "", $textAnalizado);
-                        $textAnalizado = str_replace("\n", "", $textAnalizado);
-                        
-                        //Texto reescrito con un estado de ánimo positivo
-                        $resultRewrite=$geminiService->rewriteText($request->mensaje);
-                        $textRewrite =  $resultRewrite['candidates'][0]['content']['parts'][0]['text'];
-
-                        // Verificar si el texto tiene errores ortográficos o gramaticales
-                        $resultErrores=$geminiService->SpellingError($request->mensaje);
-                        $textErrores = $resultErrores['candidates'][0]['content']['parts'][0]['text'];
-                        $textErrores = str_replace("\n", "", $textErrores);
-                        // dd($textErrores);
-
-                        //Texto corregido
-                        $resultCorreccion=$geminiService->CorrectErrors($request->mensaje);
-                        $textCorregido = $resultCorreccion['candidates'][0]['content']['parts'][0]['text'];
-
-                        // si el estado de ánimo no es positivo y tiene errores ortograficos o gramaticales
-                        // mostrar mensaje de error y no guardarlo
-                        if($textAnalizado === "Negativo" && $textErrores === "No"){
-                        
-                            return response()->json([
-                                'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
-                                'textoReescrito' => $textRewrite,
-                            ]);
-                            
-                        }elseif($textAnalizado === "Neutral" && $textErrores === "No"){
-                            $mensaje->mensaje = $request->mensaje;
-                            $mensaje->save();
-                            $this->notificacionCliente($mensaje, $cliente, $tecnico, $idTicket,$esResuelto);
-
-                        }elseif($textAnalizado === "Positivo" && $textErrores === "No"){
-                            $mensaje->mensaje = $request->mensaje;
-                            $mensaje->save();
-                            $this->notificacionCliente($mensaje, $cliente, $tecnico, $idTicket,$esResuelto);
-
-                        }elseif($textErrores === "Sí"){
-                            return response()->json([
-                                'textoErrores' => 'El texto tiene errores ortográficos o gramaticales',
-                                'textoCorregido' => $textCorregido,
-                            ]);
-                        }elseif(empty($request->input('mensaje')) && $request->hasFile('imagen')){
-                            $mensaje->save();
-                            $this->notificacionCliente($mensaje, $cliente, $tecnico, $idTicket,$esResuelto);
-                        }
-
-                    } catch (\Exception $e) {
-
-                        return response()->json([
-                            'errorIA' => $e->getMessage(),
-                            'msjOriginal' => $request->mensaje,
-                            'imagenOriginal' => $filename
-                        ], 500);
-                    }
-
-                } catch (\Exception $e) {
-
-                    try{
-
-                        // ANALISIS DEL MENSAJE CON GROQ
-
-                        // Analizar el sentimiento o estado de ánimo que transmite el mensaje
-                        $groqService = new GroqService();
-                        $resultSentimiento_groq=$groqService->generateSentiment($request->mensaje);
-                        $textAnalizado_groq = $resultSentimiento_groq['choices'][0]['message']['content'];
-                        $textAnalizado_groq = rtrim($textAnalizado_groq, '.');
-                    
-                        //Texto reescrito con un estado de ánimo positivo
-                        $resultRewrite_groq=$groqService->rewriteText($request->mensaje);
-                        $textRewrite_groq =  $resultRewrite_groq['choices'][0]['message']['content']; 
-
-                        // Verificar si el texto tiene errores ortográficos o gramaticales
-                        $resultErrores_groq=$groqService->SpellingError($request->mensaje);
-                        $textErrores_groq = $resultErrores_groq['choices'][0]['message']['content'];
-                        $textErrores_groq = rtrim($textErrores_groq, '.');
-                    
-                        //Texto corregido
-                        $resultCorreccion_groq=$groqService->CorrectErrors($request->mensaje);
-                        $textCorregido_groq = $resultCorreccion_groq['choices'][0]['message']['content'];
-
-                        // si el estado de ánimo no es positivo y tiene errores ortograficos o gramaticales
-                        // mostrar mensaje de error y no guardarlo
-                        if($textAnalizado_groq === "Negativo" && $textErrores_groq === "No"){
-                        
-                            return response()->json([
-                                'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
-                                'textoReescrito' => $textRewrite_groq,
-                            ]);
-                            
-                        }elseif($textAnalizado_groq === "Neutral" && $textErrores_groq === "No"){
-                            return response()->json([
-                                'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
-                                'textoReescrito' => $textRewrite_groq,
-                            ]);
-
-                        }elseif($textAnalizado_groq === "Positivo" && $textErrores_groq === "No"){
-                            $mensaje->mensaje = $request->mensaje;
-                            $mensaje->save();
-
-                        }elseif($textErrores_groq === "Sí"){
-                            return response()->json([
-                                'textoErrores' => 'El texto tiene errores ortográficos o gramaticales',
-                                'textoCorregido' => $textCorregido_groq,
-                            ]);
-                        }elseif(empty($request->input('mensaje')) && $request->hasFile('imagen')){
-                            $mensaje->save();
-                        }
-
-                    }catch (\Exception $e) {
-
-                        if ($request->hasFile('imagen')) {
-                            $filename = $this->subirImagen($request->file('imagen'));
-                            $mensaje->imagen = $filename;
-                        }
-
-                        $imagenOriginal = $filename ?? null;
-                     
-                        //Si las las dos IA falla que se guarde el mensaje sin analizar
-                        return response()->json([
-                            'errorAll_IA' => $e->getMessage(),
-                            'msjOriginal' => $request->mensaje,
-                            'imagenOriginal' => $imagenOriginal
-                        ], 500);
-                    }
-
-                }
-
-                $estadoTicket = Estado::find($ticket->estado_id);
-
-                if($estadoTicket->nombre != "En espera" && $ticket->mensajes){
-                    foreach($ticket->mensajes as $msj){
-                        if($msj->user->hasAnyRole(['Administrador', 'Jefe de área', 'Técnico de soporte'])){
-                            $ticket->estado_id = Estado::where('nombre', 'En espera')->first()->id;
-                            $ticket->save();
-                            break;
-                        }  
-                    }
-                }
-
-                
-                
-                return response()->json([
-                    'mensaje' => $request->mensaje,
-                    'imagen' => $mensaje->imagen ?? null,
-                    'status' => 'success',
-                    'msjSuccess'  => 'Mensaje enviado exitosamente.',
-                    'msjId' => $mensaje->id
-                ]);
-            
-                
-        
-        }catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'errors' => $e->validator->errors()->toArray(),
-            ], 422);
-        }
-        
-       
+    if ($request->input('resuelto') === 'on') {
+        // Si se resuelve, mensaje y/o imagen son opcionales
+        $rules['mensaje'] = 'nullable';
+    } else {
+        // Si NO se resuelve, debe haber MENSAJE o IMAGEN.
+        $rules['mensaje'] = 'required_without_all:imagen';
+        $rules['imagen'] = 'image|nullable|required_without_all:mensaje';
     }
+
+    try {
+        $request->validate($rules, $messages);
+
+        // --- 2. Preparación y Creación del Mensaje ---
+
+        // Definimos la variable $esResuelto ANTES de la lógica de notificaciones
+        $esResuelto = ($request->input('resuelto') === 'on') ? 'Si' : 'No';
+        
+        $mensaje = new Mensaje();
+        $mensaje->user_id = $tecnico->id;
+        $mensaje->ticket_id = $idTicket;
+        $mensaje->mensaje = $request->input('mensaje');
+
+        // Guardar imagen si hay
+        if ($request->hasFile('imagen')) {
+            $filename = $this->subirImagen($request->file('imagen'));
+            $mensaje->imagen = $filename;
+        }
+
+        // GUARDAR EL MENSAJE EN LA BASE DE DATOS
+        $mensaje->save(); 
+        
+        // Enviar notificaciones al cliente con la variable $esResuelto definida
+        $this->notificacionCliente($mensaje, $cliente, $tecnico, $idTicket, $esResuelto);
+
+        // --- 3. Actualización del Estado del Ticket ---
+
+        if ($esResuelto === 'Si') {
+            // Marcar como Resuelto
+            $ticket->estado_id = Estado::where('nombre', 'Resuelto')->first()->id;
+            $ticket->save();
+        } else {
+             // Si el técnico envía un mensaje y el ticket no está 'En espera'
+             $estadoTicket = Estado::find($ticket->estado_id);
+             
+             // Si el estado actual no es 'En espera' y hay mensajes
+             if($estadoTicket->nombre !== "En espera" && $ticket->mensajes->isNotEmpty()){
+                 // Se necesita revisar la lógica de cambio de estado. 
+                 // Asumimos que si el técnico responde, el estado del cliente pasa a 'En espera'
+                 $ticket->estado_id = Estado::where('nombre', 'En espera')->first()->id;
+                 $ticket->save();
+             }
+        }
+
+        // --- 4. Respuesta JSON ---
+
+        return response()->json([
+            'mensaje' => $mensaje->mensaje,
+            'imagen' => $mensaje->imagen ?? null,
+            'status' => 'success',
+            'msjSuccess' => 'Mensaje enviado exitosamente.',
+            'msjId' => $mensaje->id
+        ]);
+    
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'errors' => $e->validator->errors()->toArray(),
+        ], 422);
+    }
+}
+
+
 
     public function saveMsj(Request $request, $idTicket){
 

@@ -162,285 +162,153 @@ class TicketsUsuarioController extends Controller
         return view('myViews.usuarioEst.ticketReportado', compact('ticket', 'idTicket', 'tecnico'));
     }
 
-    public function guardar_mensajeCliente(GeminiService $geminiService, Request $request, $idTicket){
+  public function guardar_mensajeCliente(GeminiService $geminiService, Request $request, $idTicket) {
 
-       $tick=Ticket::find($idTicket);
-       $estadoTick=$tick->estado->nombre;
-       $cliente=Auth::user();
-       $tecnico=User::where('name', $tick->asignado_a)->first();
-       $prioridad = Prioridad::find($tick->prioridad_id); // Obtener la prioridad por ID
-       $tiempoResolucion = $prioridad->tiempo_resolucion;
+    $tick = Ticket::findOrFail($idTicket);
+    $estadoTick = $tick->estado->nombre;
+    $cliente = Auth::user();
+    $tecnico = User::where('name', $tick->asignado_a)->first(); 
+    $prioridad = Prioridad::find($tick->prioridad_id);
+    $tiempoResolucion = $prioridad->tiempo_resolucion;
 
-       if($estadoTick == "Resuelto"){
+    // Bloque para cuando el TICKET ESTÁ RESUELTO (Calificación y Reabrir/Cerrar)
+    if ($estadoTick == "Resuelto") {
 
-            try{
+        try {
+            // Validar campos de calificación y acción
+            $request->validate([
+                'opcion' => 'required', // Nivel de satisfacción
+                'accion_seleccionada' => 'required' // Opción de Reabrirlo o Cerrarlo
+            ], [
+                'opcion.required' => 'El campo nivel de satisfacción es requerido.',
+                'accion_seleccionada.required' => 'Debes indicar si quieres Reabrirlo o Cerrarlo.',
+            ]);
 
-                $validator = $request->validate([
-                        'opcion' =>'required',
-                        'accion' => 'required'
-                        
-                    ],
-                    [
-                        'opcion.required' => 'El campo nivel de satisfacción es requerido.',
-                        'accion.required' => 'Debes indicar que quieres hacer con el ticket.',
-                    ]
-                
-                );
+            $accionSelect = $request->input('accion_seleccionada');
 
-              $accionSelect=$request->input('accion_seleccionada');
+            // Guardar la Calificación
+            $calificacion = new Calificacion();
+            $calificacion->ticket_id = $idTicket;
+            $calificacion->nivel_satisfaccion = $request->opcion;
+            $calificacion->comentario = $request->comentario;
+            $calificacion->accion = $accionSelect;
+            $calificacion->save(); // <-- Aquí SÍ se estaba guardando la calificación
 
-                $calificacion= new Calificacion();
-                $calificacion->ticket_id = $idTicket;
-                $calificacion->nivel_satisfaccion = $request->opcion;
-                $calificacion->comentario=$request->comentario; 
-                $calificacion->accion =  $request->input('accion_seleccionada');
-                $calificacion->save();
-
-               
-                if ($accionSelect === 'Reabrirlo') {
-                     $estadoReabierto =Estado::where('nombre', 'Reabierto')->first();
-                     $tick->estado_id= $estadoReabierto->id;
-                     $tick->save();
-                } elseif ($accionSelect === 'Cerrarlo') {
-                    $estadoCerrado =Estado::where('nombre', 'Cerrado')->first();
-                    $tick->estado_id= $estadoCerrado->id;
-                    $tick->save();
-                }
-
-                // Notificación en el sistema del técnico
-                CalificacionEvent::dispatch($calificacion);
-                // Notificación al correo del técnico
-                CalificacionCorreoEvent::dispatch($calificacion, $tecnico, $idTicket);
-
-                // Notificación al telegram del técnico
-                $ticketLink = route('form_msjTecnico', ['idTicket' => $tick->id]); 
-                $message = "El cliente {$cliente->name} ha calificado la asistencia del ticket: {$calificacion->nivel_satisfaccion}: ({$ticketLink})";
-                $telegramService = app(TelegramService::class);
-                $response = $telegramService->sendMessage($tecnico->telegram_id, $message);
-
-
-                return response()->json([
-                    'nivel_satisfaccion' => $request->opcion,
-                    'comentario' => $request->comentario,
-                    'accion' => $request->input('accion_seleccionada'),
-                    'status' => 'success',
-                    'msjSuccess'  => 'Calificación enviada exitosamente.',
-                
-                ]);
-
-           
-            }catch (\Illuminate\Validation\ValidationException $e) {
-                return response()->json([
-                    'errors' => $e->validator->errors()->toArray(),
-                ], 422);
+            // Actualizar estado del ticket
+            if ($accionSelect === 'Reabrirlo') {
+                $estadoReabierto = Estado::where('nombre', 'Reabierto')->first();
+                $tick->estado_id = $estadoReabierto->id;
+                $tick->save();
+            } elseif ($accionSelect === 'Cerrarlo') {
+                $estadoCerrado = Estado::where('nombre', 'Cerrado')->first();
+                $tick->estado_id = $estadoCerrado->id;
+                $tick->save();
             }
 
+            // Notificaciones
+            CalificacionEvent::dispatch($calificacion);
+            CalificacionCorreoEvent::dispatch($calificacion, $tecnico, $idTicket);
             
-       }else{
+            // Notificación a Telegram
+            $ticketLink = route('form_msjTecnico', ['idTicket' => $tick->id]);
+            $message = "El cliente {$cliente->name} ha calificado la asistencia del ticket: {$calificacion->nivel_satisfaccion}: ({$ticketLink})";
+            $telegramService = app(TelegramService::class);
+            // Validar que el técnico tiene un telegram_id antes de enviar
+            if ($tecnico && $tecnico->telegram_id) {
+                 $telegramService->sendMessage($tecnico->telegram_id, $message);
+            }
 
-            try{
-                if (empty($request->input('mensaje')) && $request->hasFile('imagen')) {
-                    $validator = $request->validate(
-                        [
-                            'mensaje' => 'nullable',
-                            'imagen' => 'image',
-                        ],
-                        [
-                            'imagen.image' => 'El archivo debe ser una imagen',
-                        ]
-                    );
-                } else {
-                    $validator = $request->validate(
-                        [
-                            'mensaje' => 'required',
-                            'imagen' => 'image|nullable',
-                        ],
-                        [
-                            'mensaje.required' => 'El campo mensaje es requerido',
-                            'imagen.image' => 'El archivo debe ser una imagen',
-                        ]
-                    );
-                }
-                
-                $mensaje = new Mensaje();
-                $mensaje->user_id = Auth::user()->id;
-                $mensaje->ticket_id = $idTicket;
-                $mensaje->mensaje = $request->mensaje;
-                
-                //Guardar imagen si hay
+            return response()->json([
+                'nivel_satisfaccion' => $request->opcion,
+                'comentario' => $request->comentario,
+                'accion' => $accionSelect,
+                'status' => 'success',
+                'msjSuccess' => 'Calificación enviada exitosamente.',
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'errors' => $e->validator->errors()->toArray(),
+            ], 422);
+        }
+        
+    // Bloque para cuando el TICKET NO ESTÁ RESUELTO (Mensaje normal del cliente)
+    } else {
+
+        try {
+            // --- Lógica de Validación Unificada (Similar a la que refactorizamos antes) ---
+            $rules = [
+                // Debe haber mensaje O imagen
+                'mensaje' => 'required_without_all:imagen',
+                'imagen' => 'image|nullable|required_without_all:mensaje', 
+            ];
+
+            $messages = [
+                'mensaje.required_without_all' => 'Debes ingresar un mensaje o adjuntar una imagen.',
+                'imagen.required_without_all' => 'Debes ingresar un mensaje o adjuntar una imagen.',
+                'imagen.image' => 'El archivo debe ser una imagen.',
+            ];
+
+            $request->validate($rules, $messages);
             
-                if ($request->hasFile('imagen')) {
-                    $filename = $this->subirImagen($request->file('imagen'));
-                    $mensaje->imagen = $filename;
-                }
-                
-
-                $textAnalizado ='';
-                $textErrores='';
-
-                try {
-
-                    try{
-                        // Analizar el sentimiento o estado de ánimo que transmite el mensaje
-                        $geminiService = new GeminiService();
-                        $resultSentimiento=$geminiService->generateSentimentClient($request->mensaje);
-                        $textAnalizado = $resultSentimiento['candidates'][0]['content']['parts'][0]['text'];
-                        $textAnalizado = str_replace(".\n", "", $textAnalizado);
-                        $textAnalizado = str_replace("\n", "", $textAnalizado);
-                        // dd($textAnalizado);
+            // --- Creación y Guardado del Mensaje ---
             
-
-                        //Texto reescrito con un estado de ánimo positivo
-                        $resultRewrite=$geminiService->rewriteTextClient($request->mensaje);
-                        $textRewrite =  $resultRewrite['candidates'][0]['content']['parts'][0]['text'];
-                        $textRewrite = str_replace('"', '', $textRewrite);
-
-                        // Verificar si el texto tiene errores ortográficos o gramaticales
-                        $resultErrores=$geminiService->SpellingError($request->mensaje);
-                        $textErrores = $resultErrores['candidates'][0]['content']['parts'][0]['text'];
-
-                        //Texto corregido
-                        $resultCorreccion=$geminiService->CorrectErrors($request->mensaje);
-                        $textCorregido = $resultCorreccion['candidates'][0]['content']['parts'][0]['text'];
-
-                        // si el estado de ánimo no es positivo y tiene errores ortograficos o gramaticales
-                        // mostrar mensaje de error y no guardarlo
-                        if($textAnalizado === "Sí" && $textErrores === "No\n"){
-                        
-                            return response()->json([
-                                'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
-                                'textoReescrito' => $textRewrite,
-                            ]);
-
-                        }elseif($textAnalizado === "No" && $textErrores === "No\n"){
-                            $mensaje->mensaje = $request->mensaje;
-                            $mensaje->save();
-
-                        }elseif($textErrores === "Sí\n"){
-                            return response()->json([
-                                'textoErrores' => 'El texto tiene errores ortográficos o gramaticales',
-                                'textoCorregido' => $textCorregido,
-                            ]);
-                        }elseif(empty($request->input('mensaje')) && $request->hasFile('imagen')){
-                            $mensaje->save();
-                        }
-
-                    } catch (\Exception $e) {
-
-                        return response()->json([
-                            'errorIA' => $e->getMessage(),
-                            'msjOriginal' => $request->mensaje,
-                            'imagenOriginal' => $filename
-                        ], 500);
-                    }
-                    
-                } catch (\Exception $e) {
-
-                    try{
-                        // ANALISIS DEL MENSAJE CON GROQ
-
-                        // Analizar el sentimiento o estado de ánimo que transmite el mensaje
-                        $groqService = new GroqService();
-                        $resultSentimiento_groq=$groqService->generateSentimentClient($request->mensaje);
-                        $textAnalizado_groq = $resultSentimiento_groq['choices'][0]['message']['content'];
-                        $textAnalizado_groq = rtrim($textAnalizado_groq, '.');
-                    
-                        //Texto reescrito con un estado de ánimo positivo
-                        $resultRewrite_groq=$groqService->rewriteTextClient($request->mensaje);
-                        $textRewrite_groq =  $resultRewrite_groq['choices'][0]['message']['content']; 
-
-                        // Verificar si el texto tiene errores ortográficos o gramaticales
-                        $resultErrores_groq=$groqService->SpellingError($request->mensaje);
-                        $textErrores_groq = $resultErrores_groq['choices'][0]['message']['content'];
-                        $textErrores_groq = rtrim($textErrores_groq, '.');
-                    
-                        //Texto corregido
-                        $resultCorreccion_groq=$groqService->CorrectErrors($request->mensaje);
-                        $textCorregido_groq = $resultCorreccion_groq['choices'][0]['message']['content'];
-
-                        // si el estado de ánimo no es positivo y tiene errores ortograficos o gramaticales
-                        // mostrar mensaje de error y no guardarlo
-                        if($textAnalizado_groq === "Negativo" && $textErrores_groq === "No"){
-                        
-                            return response()->json([
-                                'animoNegativo' => 'El estado de ánimo del mensaje debe ser positivo',
-                                'textoReescrito' => $textRewrite_groq,
-                            ]);
-                            
-                        }elseif($textAnalizado_groq === "Neutral" && $textErrores_groq === "No"){
-                            $mensaje->mensaje = $request->mensaje;
-                            $mensaje->save();
-
-                        }elseif($textAnalizado_groq === "Positivo" && $textErrores_groq === "No"){
-                            $mensaje->mensaje = $request->mensaje;
-                            $mensaje->save();
-
-                        }elseif($textErrores_groq === "Sí"){
-                            return response()->json([
-                                'textoErrores' => 'El texto tiene errores ortográficos o gramaticales',
-                                'textoCorregido' => $textCorregido_groq,
-                            ]);
-                        }elseif(empty($request->input('mensaje')) && $request->hasFile('imagen')){
-                            $mensaje->save();
-                        }
-
-                    }catch (\Exception $e) {
-
-                        //Si las las dos IA falla que se guarde el mensaje sin analizar
-                        if ($request->hasFile('imagen')) {
-                            $filename = $this->subirImagen($request->file('imagen'));
-                            $mensaje->imagen = $filename;
-                        }
-
-                        $imagenOriginal = $filename ?? null;
-                     
-                        return response()->json([
-                            'errorAll_IA' => $e->getMessage(),
-                            'msjOriginal' => $request->mensaje,
-                            'imagenOriginal' => $imagenOriginal
-                        ], 500);
-
-                    }
-                }
-                
-                // Cambiar la fecha de caducidad agregando el tiempo de Resolucion
-                $ticket = Ticket::find($idTicket);
-                $ticket->fecha_caducidad = Carbon::now()->addDays($tiempoResolucion);
-                $ticket->save();
-                
-                // Notificaciones
-                if ($mensaje->wasRecentlyCreated || $mensaje->wasChanged()) {
-
-                    // Notificación al sistema del técnico
-                    MensajeClienteEvent::dispatch($mensaje);
-                    // Notificación al correo del técnico
-                    MsjClienteCorreoEvent::dispatch($mensaje, $cliente, $tecnico, $idTicket);
+            $mensaje = new Mensaje();
+            $mensaje->user_id = $cliente->id; // Usamos $cliente ya que ya lo obtuviste con Auth::user()
+            $mensaje->ticket_id = $idTicket;
+            $mensaje->mensaje = $request->mensaje;
             
-                    // Notificación al telegram del técnico
-                    $ticketLink = route('form_msjTecnico', ['idTicket' => $ticket->id]);
-                    $message = "Nuevo mensaje del cliente {$cliente->name}: {$mensaje->mensaje}: ({$ticketLink})";
-                    $telegramService = app(TelegramService::class);
+            // Guardar imagen si hay
+            if ($request->hasFile('imagen')) {
+                $filename = $this->subirImagen($request->file('imagen'));
+                $mensaje->imagen = $filename;
+            }
+            
+            // GUARDAR MENSAJE
+            $mensaje->save(); 
+            
+            // --- Lógica de Actualización del Ticket (Fecha de Caducidad) ---
+
+            // Cambiar la fecha de caducidad agregando el tiempo de Resolucion
+            // Se asume que $tick ya fue cargado al inicio de la función
+            $tick->fecha_caducidad = Carbon::now()->addDays($tiempoResolucion);
+            $tick->save();
+            
+            // --- Lógica de Notificaciones ---
+
+            // Verificar si se guardó correctamente para enviar notificaciones
+            if ($mensaje->wasRecentlyCreated) {
+                // Notificación al sistema del técnico
+                MensajeClienteEvent::dispatch($mensaje);
+                // Notificación al correo del técnico
+                MsjClienteCorreoEvent::dispatch($mensaje, $cliente, $tecnico, $idTicket);
+        
+                // Notificación al telegram del técnico
+                $ticketLink = route('form_msjTecnico', ['idTicket' => $tick->id]);
+                $message = "Nuevo mensaje del cliente {$cliente->name}: {$mensaje->mensaje}: ({$ticketLink})";
+                $telegramService = app(TelegramService::class);
+                
+                // Validar que el técnico existe y tiene un telegram_id
+                if ($tecnico && $tecnico->telegram_id) {
                     $telegramService->sendMessage($tecnico->telegram_id, $message);
                 }
-                
-                return response()->json([
-                    'mensaje' => $request->mensaje,
-                    'imagen' => $mensaje->imagen ?? null,
-                    'status' => 'success',
-                    'msjSuccess' => 'Mensaje enviado exitosamente.',
-                    'msjId' => $mensaje->id
-                ]);
-                
+            }
+            
+            return response()->json([
+                'mensaje' => $mensaje->mensaje, // Usar el valor del modelo para consistencia
+                'imagen' => $mensaje->imagen ?? null,
+                'status' => 'success',
+                'msjSuccess' => 'Mensaje enviado exitosamente.',
+                'msjId' => $mensaje->id
+            ]);
 
-                }catch (\Illuminate\Validation\ValidationException $e) {
-                    return response()->json([
-                        'errors' => $e->validator->errors()->toArray(),
-                    ], 422);
-                }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'errors' => $e->validator->errors()->toArray(),
+            ], 422);
         }
-             
-        // return back()->with('status', 'Mensaje enviado exitosamente :)');
     }
+}
 
     public function saveMsjUser(Request $request, $idTicket){
 
